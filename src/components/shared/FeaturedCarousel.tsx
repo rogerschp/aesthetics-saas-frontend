@@ -1,7 +1,7 @@
 "use client";
 
-import { Barbearia } from "@/types";
-import { BarberShopCard } from "@/components/shared/BarberShopCard";
+import { Estabelecimento } from "@/types";
+import { EstabelecimentoCard } from "@/components/shared/EstabelecimentoCard";
 import {
   Carousel,
   CarouselContent,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/carousel";
 
 interface FeaturedCarouselProps {
-  estabelecimentos: Barbearia[];
+  estabelecimentos: Estabelecimento[];
 }
 
 export function FeaturedCarousel({ estabelecimentos }: FeaturedCarouselProps) {
@@ -29,12 +29,12 @@ export function FeaturedCarousel({ estabelecimentos }: FeaturedCarouselProps) {
       className="w-full"
     >
       <CarouselContent className="-ml-4">
-        {estabelecimentos.map((shop) => (
+        {estabelecimentos.map((estabelecimento) => (
           <CarouselItem
-            key={shop.id}
+            key={estabelecimento.id}
             className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
           >
-            <BarberShopCard barbershop={shop} />
+            <EstabelecimentoCard estabelecimento={estabelecimento} />
           </CarouselItem>
         ))}
       </CarouselContent>

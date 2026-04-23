@@ -36,7 +36,7 @@ export interface Avaliacao {
 
 export type CategoriaEstabelecimento = "barbearia" | "salao" | "tatuagem";
 
-export interface Barbearia {
+export interface Estabelecimento {
   id: string;
   slug: string;
   nome: string;
@@ -56,8 +56,8 @@ export interface Barbearia {
 
 export interface Agendamento {
   id: string;
-  barbeariaSlug: string;
-  barbeariaNome: string;
+  estabelecimentoSlug: string;
+  estabelecimentoNome: string;
   servicoNome: string;
   data: string; // ISO string
   status: "confirmado" | "pendente" | "cancelado" | "concluido";
@@ -82,8 +82,8 @@ export interface Usuario {
   role: "CLIENT" | "PROFESSIONAL" | "OWNER";
   agendamentosEmAndamento: Agendamento[];
   historico: {
-    barbeariaSlug: string;
-    barbeariaNome: string;
+    estabelecimentoSlug: string;
+    estabelecimentoNome: string;
     servicoNome: string;
     data: string;
   }[];

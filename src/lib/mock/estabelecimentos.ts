@@ -1,6 +1,6 @@
-import { Barbearia } from "../../types";
+import { Estabelecimento } from "../../types";
 
-const mockBarbers: Barbearia[] = [
+const mockEstabelecimentos: Estabelecimento[] = [
   {
     id: "1",
     slug: "vintage-club",
@@ -259,10 +259,10 @@ const mockBarbers: Barbearia[] = [
  * Simula uma chamada de API com delay (fetch).
  * Para conectar ao backend real, modifique essa função para bater na API.
  */
-export async function getBarbershops(): Promise<Barbearia[]> {
+export async function getEstabelecimentos(): Promise<Estabelecimento[]> {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(mockBarbers);
+      resolve(mockEstabelecimentos);
     }, 800); // 800ms simulando tempo de rede
   });
 }

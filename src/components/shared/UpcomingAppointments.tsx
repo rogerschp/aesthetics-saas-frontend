@@ -39,11 +39,11 @@ export function UpcomingAppointments({ agendamentos }: UpcomingAppointmentsProps
                       <h4 className="font-bold text-white group-hover:text-yellow-500 transition-colors uppercase text-[10px] tracking-widest line-clamp-1">
                         {item.servicoNome}
                       </h4>
-                      <Link 
-                        href={`/barbearia/${item.barbeariaSlug}`}
+                      <Link
+                        href={`/estabelecimento/${item.estabelecimentoSlug}`}
                         className="text-zinc-400 text-xs hover:underline flex items-center gap-1 mt-0.5"
                       >
-                        <span className="truncate">{item.barbeariaNome}</span>
+                        <span className="truncate">{item.estabelecimentoNome}</span>
                         <ExternalLink className="h-3 w-3 shrink-0" />
                       </Link>
                     </div>

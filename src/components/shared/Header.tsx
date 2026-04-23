@@ -98,7 +98,7 @@ export function Header() {
                   <LayoutDashboard className="h-4 w-4" />
                   Meu Painel
                 </Link>
-                <Link href="/painel/barbearia/editar" className="flex items-center gap-2 text-zinc-300 hover:text-yellow-500 transition-colors">
+                <Link href="/painel/estabelecimento/editar" className="flex items-center gap-2 text-zinc-300 hover:text-yellow-500 transition-colors">
                   <Store className="h-4 w-4" />
                   Gerenciar Barbearia
                 </Link>

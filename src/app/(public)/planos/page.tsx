@@ -43,7 +43,7 @@ export default function PlanosPage() {
                 Painel analítico mensal
               </li>
             </ul>
-            <Link href="/painel/barbearia/criar" className="w-full">
+            <Link href="/painel/estabelecimento/criar" className="w-full">
               <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-800 h-12">
                 Começar Teste Grátis
               </Button>
@@ -82,7 +82,7 @@ export default function PlanosPage() {
                 Prioridade alta nas buscas de clientes
               </li>
             </ul>
-            <Link href="/painel/barbearia/criar" className="w-full">
+            <Link href="/painel/estabelecimento/criar" className="w-full">
               <Button className="w-full bg-yellow-500 text-black hover:bg-yellow-600 h-12 font-bold font-lg shadow-lg shadow-yellow-500/20">
                 Assinar Plano Pro
               </Button>
@@ -117,7 +117,7 @@ export default function PlanosPage() {
                 Selo de Franquia Verificada
               </li>
             </ul>
-            <Link href="/painel/barbearia/criar" className="w-full">
+            <Link href="/painel/estabelecimento/criar" className="w-full">
               <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-800 h-12">
                 Contatar Vendas
               </Button>

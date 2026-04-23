@@ -42,12 +42,12 @@ export function HistoryTimeline({ historico }: HistoryTimelineProps) {
                   <h4 className="text-base font-semibold text-white">
                     {item.servicoNome}
                   </h4>
-                  <Link 
-                    href={`/barbearia/${item.barbeariaSlug}`}
+                  <Link
+                    href={`/estabelecimento/${item.estabelecimentoSlug}`}
                     className="inline-flex items-center mt-1 text-sm text-zinc-400 hover:text-yellow-500 transition-colors"
                   >
                     <Store className="mr-1.5 h-3.5 w-3.5" />
-                    {item.barbeariaNome}
+                    {item.estabelecimentoNome}
                   </Link>
                 </div>
                 

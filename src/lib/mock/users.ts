@@ -16,8 +16,8 @@ export const mockClient: Usuario = {
   agendamentosEmAndamento: [
     {
       id: "age_001",
-      barbeariaSlug: "barbearia-classic",
-      barbeariaNome: "Classic Barber",
+      estabelecimentoSlug: "barbearia-classic",
+      estabelecimentoNome: "Classic Barber",
       servicoNome: "Corte Degradê + Barba",
       data: "2024-04-20T10:00:00Z",
       status: "confirmado",
@@ -43,8 +43,8 @@ export const mockProfessional: Usuario = {
   agendamentosEmAndamento: [
     {
       id: "age_pro_001",
-      barbeariaSlug: "barbearia-classic",
-      barbeariaNome: "Classic Barber",
+      estabelecimentoSlug: "barbearia-classic",
+      estabelecimentoNome: "Classic Barber",
       servicoNome: "Corte na Tesoura + Progressiva",
       data: new Date(new Date().setHours(10, 0, 0, 0)).toISOString(), // Hoje 10h
       status: "concluido",
@@ -54,8 +54,8 @@ export const mockProfessional: Usuario = {
     },
     {
       id: "age_pro_002",
-      barbeariaSlug: "barbearia-classic",
-      barbeariaNome: "Classic Barber",
+      estabelecimentoSlug: "barbearia-classic",
+      estabelecimentoNome: "Classic Barber",
       servicoNome: "Corte Degradê",
       data: new Date(new Date().setHours(14, 30, 0, 0)).toISOString(), // Hoje 14:30
       status: "confirmado",
@@ -65,8 +65,8 @@ export const mockProfessional: Usuario = {
     },
     {
       id: "age_pro_003",
-      barbeariaSlug: "barbearia-classic",
-      barbeariaNome: "Classic Barber",
+      estabelecimentoSlug: "barbearia-classic",
+      estabelecimentoNome: "Classic Barber",
       servicoNome: "Barba Terapia Completa",
       data: new Date(new Date().setHours(16, 0, 0, 0)).toISOString(), // Hoje 16h
       status: "pendente",

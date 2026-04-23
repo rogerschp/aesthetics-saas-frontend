@@ -1,11 +1,11 @@
 import { HeroSection } from "@/components/shared/HeroSection";
 import { FeaturedCarousel } from "@/components/shared/FeaturedCarousel";
-import { getBarbershops } from "@/lib/mock/barbershops";
+import { getEstabelecimentos } from "@/lib/mock/estabelecimentos";
 
 const MAX_DESTAQUES = 8;
 
 export default async function Home() {
-  const todos = await getBarbershops();
+  const todos = await getEstabelecimentos();
   const destaques = todos.slice(0, MAX_DESTAQUES);
 
   return (

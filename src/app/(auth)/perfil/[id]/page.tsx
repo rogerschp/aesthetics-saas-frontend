@@ -1,10 +1,10 @@
 import { getMockUser } from "@/lib/mock/users";
-import { getBarbershops } from "@/lib/mock/barbershops";
+import { getEstabelecimentos } from "@/lib/mock/estabelecimentos";
 import { AvatarResume } from "@/components/shared/AvatarResume";
 import { AnalyticMetrics } from "@/components/shared/AnalyticMetrics";
 import { HistoryTimeline } from "@/components/shared/HistoryTimeline";
 import { UpcomingAppointments } from "@/components/shared/UpcomingAppointments";
-import { BarberShopCard } from "@/components/shared/BarberShopCard";
+import { EstabelecimentoCard } from "@/components/shared/EstabelecimentoCard";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Settings, Sparkles, Map } from "lucide-react";
@@ -25,14 +25,14 @@ interface PerfilPageProps {
 export default async function PerfilPage({ params }: PerfilPageProps) {
   const resolvedParams = await params;
   const usuario = await getMockUser(resolvedParams.id);
-  const barbearias = await getBarbershops();
+  const estabelecimentos = await getEstabelecimentos();
 
   if (!usuario) {
     notFound();
   }
 
-  // Filtra barbearias que não são as que ele já frequentou ou apenas pega as top 4
-  const recomendacoes = barbearias.slice(0, 4);
+  // Pega os top 4 estabelecimentos para a seção de descobertas
+  const recomendacoes = estabelecimentos.slice(0, 4);
 
   return (
     <div className="min-h-screen bg-black pb-20 relative overflow-hidden">
@@ -118,8 +118,8 @@ export default async function PerfilPage({ params }: PerfilPageProps) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recomendacoes.map((shop) => (
-              <BarberShopCard key={shop.id} barbershop={shop} />
+            {recomendacoes.map((estabelecimento) => (
+              <EstabelecimentoCard key={estabelecimento.id} estabelecimento={estabelecimento} />
             ))}
           </div>
         </section>

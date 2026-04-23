@@ -57,7 +57,7 @@ export default async function OwnerDashboardPage({}: PageProps) {
           </div>
 
           <div className="flex gap-3">
-            <Link href="/painel/barbearia/editar">
+            <Link href="/painel/estabelecimento/editar">
               <Button variant="outline" className="border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white hover:bg-zinc-800">
                 Ajustes da Loja
               </Button>
