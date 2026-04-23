@@ -1,18 +1,30 @@
 import Link from "next/link";
-import { Star, MapPin } from "lucide-react";
+import { Star, MapPin, Scissors, Sparkles, PenTool } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Estabelecimento } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { CategoriaEstabelecimento, Estabelecimento } from "@/types";
 
 interface EstabelecimentoCardProps {
   estabelecimento: Estabelecimento;
 }
+
+const CATEGORIA_META: Record<
+  CategoriaEstabelecimento,
+  { label: string; Icon: typeof Scissors }
+> = {
+  barbearia: { label: "Barbearia", Icon: Scissors },
+  salao: { label: "Salão", Icon: Sparkles },
+  tatuagem: { label: "Tatuagem", Icon: PenTool },
+};
 
 export function EstabelecimentoCard({ estabelecimento }: EstabelecimentoCardProps) {
   // Pega a média de notas de forma segura
   const mediaAvaliacoes = estabelecimento.avaliacoes?.length
     ? (estabelecimento.avaliacoes.reduce((acc, curr) => acc + curr.nota, 0) / estabelecimento.avaliacoes.length).toFixed(1)
     : "Novo";
+
+  const { label: categoriaLabel, Icon: CategoriaIcon } = CATEGORIA_META[estabelecimento.categoria];
 
   return (
     <Link href={`/estabelecimento/${estabelecimento.slug}`}>
@@ -33,6 +45,12 @@ export function EstabelecimentoCard({ estabelecimento }: EstabelecimentoCardProp
 
           {/* Degradê encapsulado com cor Preta Forte/Invasiva para delimitar imagem e card */}
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/60 via-40% to-transparent pointer-events-none" />
+
+          {/* Badge de categoria — canto superior direito, sobre a imagem */}
+          <Badge className="absolute top-3 right-3 z-20 bg-black/60 text-primary border border-primary/30 backdrop-blur-md gap-1.5 px-2.5 py-1 font-semibold uppercase tracking-wider text-[10px]">
+            <CategoriaIcon className="h-3 w-3" />
+            {categoriaLabel}
+          </Badge>
 
           {/* Avatar da logo do estabelecimento com forte destaque simulando sombra pesada pra desgrudar do fundo */}
           <div className="absolute bottom-4 left-5 border-4 border-card bg-card rounded-full shadow-[0_5px_15px_rgba(0,0,0,0.6)] z-20">

@@ -111,7 +111,7 @@ export default function TenantEditPage() {
   });
 
   useEffect(() => {
-    // Simula tempo de rede carregando a Barbearia que ele vai editar
+    // Simula tempo de rede carregando o Estabelecimento que ele vai editar
     setTimeout(() => {
       methods.reset(mockEditData as TenantFormValues);
     }, 500);
@@ -157,7 +157,7 @@ export default function TenantEditPage() {
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-white flex items-center gap-3">
                   <Paintbrush className="h-8 w-8 text-yellow-500" />
-                  Editar Barbearia
+                  Editar Estabelecimento
                 </h1>
                 <p className="text-zinc-400 mt-2 text-lg">
                   Atualize fotos, preçário e quadro de horários em tempo real.

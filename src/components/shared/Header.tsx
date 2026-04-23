@@ -74,7 +74,7 @@ export function Header() {
             {!auth && (
               <Link href="/planos" className="flex items-center gap-2 text-zinc-300 hover:text-yellow-500 transition-colors">
                 <Store className="h-4 w-4" />
-                Para Barbearias
+                Para Estabelecimentos
               </Link>
             )}
 
@@ -100,7 +100,7 @@ export function Header() {
                 </Link>
                 <Link href="/painel/estabelecimento/editar" className="flex items-center gap-2 text-zinc-300 hover:text-yellow-500 transition-colors">
                   <Store className="h-4 w-4" />
-                  Gerenciar Barbearia
+                  Gerenciar Estabelecimento
                 </Link>
               </>
             )}

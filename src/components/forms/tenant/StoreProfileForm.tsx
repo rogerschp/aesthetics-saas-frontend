@@ -13,7 +13,7 @@ export function StoreProfileForm() {
       <div>
         <h3 className="text-xl font-bold text-white flex items-center gap-2 mb-1">
           <Store className="h-5 w-5 text-yellow-500" />
-          Perfil da Barbearia
+          Perfil do Estabelecimento
         </h3>
         <p className="text-sm text-zinc-400">
           Essas informações ficarão públicas na sua página. Atente-se ao nome e descrição.

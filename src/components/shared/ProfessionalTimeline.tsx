@@ -20,7 +20,7 @@ export function ProfessionalTimeline({ agendamentos }: ProfessionalTimelineProps
     // Tratativa extra se fosse telefone mal inserido
     const cleanedPhone = telefone.replace(/\D/g, "");
     
-    const texto = `Olá ${nome || "cliente"}! Sou da equipe da barbearia. Seu horário para *${servico}* às *${horario}* está chegando. Gostaria de confirmar se está a caminho?`;
+    const texto = `Olá ${nome || "cliente"}! Sou da equipe do estabelecimento. Seu horário para *${servico}* às *${horario}* está chegando. Gostaria de confirmar se está a caminho?`;
     const messageEncoded = encodeURIComponent(texto);
     
     window.open(`https://wa.me/${cleanedPhone}?text=${messageEncoded}`, "_blank");

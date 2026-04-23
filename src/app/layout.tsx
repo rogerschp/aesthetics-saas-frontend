@@ -9,7 +9,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "BarberShop SaaS",
-  description: "A plataforma premium de agendamento de barbearias.",
+  description: "A plataforma premium de agendamento para barbearias, salões de beleza e estúdios de tatuagem.",
 };
 
 import { Header } from "@/components/shared/Header";

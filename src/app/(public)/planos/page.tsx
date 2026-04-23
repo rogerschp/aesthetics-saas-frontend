@@ -8,7 +8,7 @@ export default function PlanosPage() {
       {/* Hero */}
       <section className="container mx-auto px-4 max-w-5xl text-center space-y-6">
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white">
-          Sua Barbearia no <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-200">Próximo Nível</span>
+          Seu Estabelecimento no <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-200">Próximo Nível</span>
         </h1>
         <p className="text-lg md:text-xl text-zinc-400 max-w-3xl mx-auto">
           Gerencie sua equipe, modernize seus agendamentos e seja descoberto por milhares de novos clientes na sua região todos os dias.
@@ -23,7 +23,7 @@ export default function PlanosPage() {
             <div className="mb-6">
               <Scissors className="h-8 w-8 text-zinc-400 mb-4" />
               <h3 className="text-2xl font-bold text-white mb-2">Cadeira Única</h3>
-              <p className="text-zinc-500 text-sm">Perfeito para barbeiros independentes começando sua jornada digital.</p>
+              <p className="text-zinc-500 text-sm">Perfeito para profissionais autônomos começando sua jornada digital.</p>
             </div>
             <div className="mb-8">
               <span className="text-4xl font-bold text-white">R$ 49</span>
@@ -57,7 +57,7 @@ export default function PlanosPage() {
             </div>
             <div className="mb-6">
               <Star className="h-8 w-8 text-yellow-500 mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-2">Barbearia Pro</h3>
+              <h3 className="text-2xl font-bold text-white mb-2">Plano Pro</h3>
               <p className="text-zinc-400 text-sm">O arsenal completo para espaços que estão escalando seus lucros.</p>
             </div>
             <div className="mb-8">

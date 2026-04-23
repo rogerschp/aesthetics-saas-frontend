@@ -108,11 +108,11 @@ export default async function PerfilPage({ params }: PerfilPageProps) {
                 <Map className="h-7 w-7 text-yellow-500" />
                 Descubra em sua região
               </h2>
-              <p className="text-zinc-500 mt-2">Explorar novos estilos e barbearias próximas de você.</p>
+              <p className="text-zinc-500 mt-2">Explore novos estilos e estabelecimentos próximos de você.</p>
             </div>
             <Link href="/">
               <Button variant="link" className="text-yellow-500 p-0 font-bold hover:text-yellow-400">
-                Ver todas as barbearias →
+                Ver todos os estabelecimentos →
               </Button>
             </Link>
           </div>

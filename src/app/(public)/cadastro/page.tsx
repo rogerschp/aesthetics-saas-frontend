@@ -4,7 +4,7 @@ import { Scissors } from "lucide-react";
 
 export const metadata = {
   title: "Cadastro | BarberShop",
-  description: "Crie sua conta para agendar em barbearias premium.",
+  description: "Crie sua conta para agendar em barbearias, salões de beleza e estúdios de tatuagem.",
 };
 
 export default function CadastroPage() {
@@ -19,7 +19,7 @@ export default function CadastroPage() {
             Crie sua conta
           </h2>
           <p className="text-center text-sm text-zinc-400">
-            Junte-se às melhores barbearias da sua região.
+            Junte-se aos melhores estabelecimentos da sua região.
           </p>
         </Link>
       </div>

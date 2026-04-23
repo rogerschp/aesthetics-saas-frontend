@@ -53,7 +53,7 @@ export default async function OwnerDashboardPage({}: PageProps) {
                 Sede Principal
               </span>
             </h1>
-            <p className="text-zinc-400 mt-1">Bem-vindo(a) de volta, <span className="text-zinc-200 font-medium">{currentUser.nome}</span>. Esse é o pulso da sua barbearia hoje.</p>
+            <p className="text-zinc-400 mt-1">Bem-vindo(a) de volta, <span className="text-zinc-200 font-medium">{currentUser.nome}</span>. Esse é o pulso do seu estabelecimento hoje.</p>
           </div>
 
           <div className="flex gap-3">

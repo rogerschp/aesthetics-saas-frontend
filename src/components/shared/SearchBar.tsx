@@ -8,7 +8,7 @@ export function SearchBar() {
       <div className="relative flex-[1.5] w-full">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input 
-          placeholder="Busque por barbearia ou serviço..." 
+          placeholder="Busque por estabelecimento ou serviço..."
           className="pl-10 border-none bg-transparent focus-visible:ring-0 shadow-none text-base h-12"
         />
       </div>
