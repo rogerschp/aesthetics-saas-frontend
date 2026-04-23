@@ -34,10 +34,13 @@ export interface Avaliacao {
   comentario: string;
 }
 
+export type CategoriaEstabelecimento = "barbearia" | "salao" | "tatuagem";
+
 export interface Barbearia {
   id: string;
   slug: string;
   nome: string;
+  categoria: CategoriaEstabelecimento;
   descricao: string;
   banner?: string;
   redesSociais: {

@@ -1,10 +1,12 @@
 import { HeroSection } from "@/components/shared/HeroSection";
-import { BarberShopCard } from "@/components/shared/BarberShopCard";
+import { FeaturedCarousel } from "@/components/shared/FeaturedCarousel";
 import { getBarbershops } from "@/lib/mock/barbershops";
 
+const MAX_DESTAQUES = 8;
+
 export default async function Home() {
-  // Chamada de API simulada aguardando o delay real
-  const barbearias = await getBarbershops();
+  const todos = await getBarbershops();
+  const destaques = todos.slice(0, MAX_DESTAQUES);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -18,18 +20,9 @@ export default async function Home() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {barbearias.map((shop) => (
-              <BarberShopCard key={shop.id} barbershop={shop} />
-            ))}
+          <div className="relative px-12 xl:px-14">
+            <FeaturedCarousel estabelecimentos={destaques} />
           </div>
-          
-          {/* Empty State Fallback (se a array vier vazia) */}
-          {barbearias.length === 0 && (
-            <div className="w-full text-center py-20 text-muted-foreground">
-              Nenhuma barbearia encontrada na sua região.
-            </div>
-          )}
         </section>
       </main>
 
