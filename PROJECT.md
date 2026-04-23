@@ -3,8 +3,8 @@
 Este documento serve como referência central para o desenvolvimento do front-end do BarberShop. Ele foi concebido para guiar o desenvolvimento com padronização e qualidade, e precisa ser atualizado continuamente (Living Document) sempre que novas decisões arquiteturais forem tomadas e novos componentes forem desenvolvidos.
 
 ## 1. Visão Geral do Produto
-O **BarberShop** é uma plataforma SaaS multi-tenant que conecta barbearias e clientes, com funcionalidades de busca e agendamento de serviços, inspirada em arquiteturas de sistemas globais de sucesso (ex: Booksy).
-- **Público-alvo:** Proprietários de barbearias que buscam focar no segmento premium e clientes finais da mesma natureza.
+O **BarberShop** (nome provisório) é uma plataforma SaaS multi-tenant que conecta estabelecimentos de beleza e estética (barbearias, salões de beleza e estúdios de tatuagem) e clientes, com funcionalidades de busca e agendamento de serviços, inspirada em arquiteturas de sistemas globais de sucesso (ex: Booksy).
+- **Público-alvo:** Proprietários de barbearias, salões de beleza e estúdios de tatuagem que buscam focar no segmento premium, e clientes finais da mesma natureza.
 - **Problema que resolve:** Moderniza o processo de gestão, agendamento de equipe e visibilidade digital das barbearias, oferecendo aos clientes uma interface robusta e de alta conversão.
 - **Escopo MVP Atual:** Construção do **front-end mockado**. O back-end já se encontra concluído, portanto, a criação desta casca estática já deve preparar o terreno de interface e tipos e a estratégia para integração futura com API REST.
 
@@ -18,7 +18,7 @@ O **BarberShop** é uma plataforma SaaS multi-tenant que conecta barbearias e cl
 - **Zod:** Garantia de segurança via parsing e validação rigorosa dos formulários e APIs simuladas.
 
 ## 3. Identidade Visual e Design System
-O visual das interfaces exige uma pegada de sistema Premium. Interface simples e que transmita profissionalismo e autoridade (Barbearias clássicas focadas em excelência e luxo).
+O visual das interfaces exige uma pegada de sistema Premium. Interface simples e que transmita profissionalismo e autoridade (focada em excelência e luxo, atendendo perfeitamente barbearias, salões de beleza e estúdios de tatuagem).
 
 - **Fundo / Base:** **Preto** (`bg-black` ou variações de `zinc` muito escuras na paleta de cor).
 - **Destaque / Interação:** **Dourado** (`Gold`) para ações positivas principais (CTAs, alertas visuais, indicações premium, ícones de rating estrelar, borda focus).
@@ -33,11 +33,11 @@ A padronização permite escalar a base de código minimizando complexidades cog
 src/
 ├── app/
 │   ├── (public)/                 # Grupo de rotas não autenticadas
-│   │   ├── barbearia/[slug]/     # Visualizar dados específicos da barbearia
+│   │   ├── estabelecimento/[slug]/ # Visualizar dados específicos do estabelecimento
 │   │   ├── cadastro/             # Criação de conta
 │   │   └── page.tsx              # Home / Busca
 │   ├── (auth)/                   # Grupo de rotas autenticadas
-│   │   ├── painel/barbearia/     # Gestão da Barbearia (/criar e /editar)
+│   │   ├── painel/estabelecimento/ # Gestão do Estabelecimento (/criar e /editar)
 │   │   └── perfil/[id]/          # Histórico cliente
 │   ├── api/auth/[...nextauth]/   # Endpoints do NextAuth.js
 │   ├── layout.tsx                # Principal RootLayout
@@ -56,17 +56,17 @@ src/
 ## 5. Documentação das Páginas
 
 ### [1] `/` — Home (Pública)
-- **Objetivo:** Ponto de entrada, focado explicitamente em conversão inicial de cliente ou conversão em lead corporativo do sistema de gestão se houver acesso de barbearias.
+- **Objetivo:** Ponto de entrada, focado explicitamente em conversão inicial de cliente ou conversão em lead corporativo do sistema de gestão se houver acesso de estabelecimentos.
 - **Componentes Visuais:**
   - `HeroSection`: Descrição clara e agressiva do MVP e botão principal.
   - `SearchInput`: Capaz de identificar input para busca de nome ou região.
-  - `BarbershopGrid`: Estruturação das unidades (geo simulação nos mockups).
+  - `BarbershopGrid` / Carousel: Estruturação das unidades (geo simulação nos mockups).
 - **Comportamento & UX:** Necessidade de feedback sutil quando o formulário de busca de fato executa uma filtragem na array mockada.
 
-### [2] `/barbearia/[slug]` — Página Pública da Barbearia
+### [2] `/estabelecimento/[slug]` — Página Pública do Estabelecimento
 - **Objetivo:** Atuar como o site personalizável e agregador das informações vitais da entidade de serviço para o cliente final.
 - **Componentes Visuais:**
-  - `BarberBanner` & `HeaderCover`: Nome grande, banner longo com avatar encaixado com layout sobreposto, e Action Buttons apontando para as redes e "Denúncia".
+  - `EstabelecimentoBanner` & `HeaderCover`: Nome grande, banner longo com avatar encaixado com layout sobreposto, e Action Buttons apontando para as redes e "Denúncia".
   - `AddressMapper`: Componente visual mock de GPS/Google Maps.
   - `InstitutionalText`: Área de mark-up para apresentação descritiva.
   - `TeamGallery`: Componente de exibição de lista para a equipe.
@@ -82,14 +82,14 @@ src/
 - **Comportamento & UX:** Validação por `Zod` essencial no step-by-step; evitar avanço da página se houver erros nos inputs ou semântica preenchida errada.
 
 ### [4] `/perfil/[id]` — Visualização de perfil do Usuário
-- **Objetivo:** Área do cliente monitorar ações, rastrear o salão preferido, e mensurar as interações.
+- **Objetivo:** Área do cliente monitorar ações, rastrear o salão/estúdio preferido, e mensurar as interações.
 - **Componentes Visuais:**
   - `AvatarResume`: Apresentando os meta-dados cronológicos.
   - `AnalyticMetrics`: Contadores (serviços marcados e comentários realizados).
   - `HistoryTimeline`: Fila de tickets do que já foi completado no sistema.
 - **Dados Mock Necessários:** Objeto de usuário englobando instâncias vinculadas a arrays de histórico estático.
 
-### [5] `/painel/barbearia/criar` — Criação da barbearia (Root/Dono)
+### [5] `/painel/estabelecimento/criar` — Criação do estabelecimento (Root/Dono)
 - **Objetivo:** Admissão e onboarding no multi-tenant, permitindo configurar a loja.
 - **Componentes Visuais:**
   - `StoreProfileForm`: Controle unificado das infos básicas (nome/capa/redes).
@@ -98,7 +98,7 @@ src/
   - `TeamBuilder`: Inserção contínua e lista para Roles criadas ao vivo pelo responsável.
 - **Comportamento & UX:** O usuário depara-se com um formulário de extrema responsabilidade, portando o save state das seções precisa ser gradativo (sugere-se design baseado em Steps/Tabs).
 
-### [6] `/painel/barbearia/editar` — Edição da barbearia (Root/Dono)
+### [6] `/painel/estabelecimento/editar` — Edição do estabelecimento (Root/Dono)
 - **Objetivo:** Manipular ou reciclar o estado do setup gerado outrora. 
 - **Comportamento & UX:** Reúso irrestrito de formulários da rota de criação e popular o `defaultValue`/`value` das props com os dados que retornam (visualmente do mock) do back-end para mitigar código dobrado.
 
@@ -151,10 +151,13 @@ export interface Avaliacao {
   comentario: string;
 }
 
-export interface Barbearia {
+export type CategoriaEstabelecimento = "barbearia" | "salao" | "tatuagem";
+
+export interface Estabelecimento {
   id: string;
   slug: string;
   nome: string;
+  categoria: CategoriaEstabelecimento;
   descricao: string;
   banner?: string;
   redesSociais: {
@@ -166,6 +169,18 @@ export interface Barbearia {
   servicos: ServicoTopico[];
   time: Membro[];
   avaliacoes: Avaliacao[];
+}
+
+export interface Agendamento {
+  id: string;
+  estabelecimentoSlug: string;
+  estabelecimentoNome: string;
+  servicoNome: string;
+  data: string; // ISO string
+  status: "confirmado" | "pendente" | "cancelado" | "concluido";
+  localizacao: string;
+  clienteNome?: string;
+  clienteTelefone?: string;
 }
 
 export interface Usuario {
@@ -181,9 +196,11 @@ export interface Usuario {
     totalServicos: number;
     totalAvaliacoes: number;
   };
+  role: "CLIENT" | "PROFESSIONAL" | "OWNER";
+  agendamentosEmAndamento: Agendamento[];
   historico: {
-    barbeariaSlug: string;
-    barbeariaNome: string;
+    estabelecimentoSlug: string;
+    estabelecimentoNome: string;
     servicoNome: string;
     data: string;
   }[];
@@ -239,12 +256,12 @@ export interface Usuario {
   - [x] Resumo do perfil e métricas (`AvatarResume`, `AnalyticMetrics`)
 
 ### FASE 4: Painel do Proprietário (SaaS Tenant)
-- [x] Rota `/painel/barbearia/criar` — Setup inicial do lojista
+- [x] Rota `/painel/estabelecimento/criar` — Setup inicial do lojista
   - [x] Formulário unificado de dados de loja (`StoreProfileForm`)
   - [x] Gestão de expedientes (`HoursInputRepeater`)
   - [x] Montador de serviços (`ServiceHierarchyBuilder`)
   - [x] Gestor de membros da equipe (`TeamBuilder`)
-- [x] Rota `/painel/barbearia/editar` — Gerenciamento contínuo da barbearia
+- [x] Rota `/painel/estabelecimento/editar` — Gerenciamento contínuo do estabelecimento
 
 ### FASE 5: Portal do Profissional (Agenda e Rotina)
 - [x] Rota `/barbeiro/[id]` — Dashboard do Colaborador
@@ -253,10 +270,15 @@ export interface Usuario {
   - [x] Gestão de status de apontamentos (Concluído/No Show).
 
 ### FASE 6: Dashboards Gerenciais e Vitrine SaaS
-- [x] Rota `/planos` — Landing page B2B vendendo o sistema para as Barbearias.
+- [x] Rota `/planos` — Landing page B2B vendendo o sistema para os Estabelecimentos.
 - [x] Rota `/painel` — Dashboard Master do proprietário
   - [x] Visualização geral de caixa, agendamentos da equipe inteira.
   - [x] Resoluções analíticas.
+
+### FASE 7: Pivot Multi-Segmento (Concluída)
+- [x] Expansão do modelo de dados para Salões de Beleza e Estúdios de Tatuagem
+- [x] Refatoração de rotas e nomenclatura (Barbearia -> Estabelecimento)
+- [x] Atualização de copy, herói e cards para refletir múltiplos segmentos
 
 ---
 
@@ -267,8 +289,10 @@ export interface Usuario {
 - **`[Header]`**: Cabeçalho de navegação fixa com opções primárias de "Entrar/Cadastrar". Usado na rota pública (App wrapper base/home).
 - **`[SearchBar]`**: Input agnóstico para pesquisa e localização, envelopando tipografia e os inputs textuais para reutilização (Home primariamente).
 - **`[HeroSection]`**: Vitrine primária (banner) visando gerar conversão no cliente apresentando um forte call to action agregado junto à *SearchBar*. Escopo da `/`.
-- **`[BarberShopCard]`**: Componente visual unificado para listar a barbearia resumidamente em grades. Ele integra avatar dinâmico (fallback para a letra do salão via Radix) e sistema estático de medições por nota.
-- **`[BarberBanner]`**: Capa da barbearia com título e métricas gerais (usado em `/barbearia/[slug]`), traz botões sociais em um layout herói com overlay premium.
+- **`[EstabelecimentoCard]`**: Componente visual unificado para listar o estabelecimento resumidamente em grades/carousel. Ele integra avatar dinâmico, badge de categoria (barbearia/salão/tatuagem) e sistema estático de medições por nota.
+- **`[EstabelecimentoBanner]`**: Capa do estabelecimento com título e métricas gerais (usado em `/estabelecimento/[slug]`), traz botões sociais em um layout herói com overlay premium.
+- **`[FeaturedCarousel]`**: Container de slides para exibir estabelecimentos em destaque, utilizando Embla Carousel, substituindo o grid infinito.
+- **`[RotatingSegmentWord]`**: Componente para animar a troca de palavras-chave no Hero ("Barbearia", "Salão", "Estúdio") reforçando o novo modelo multi-segmento.
 - **`[AddressMapper]`**: Card emulando simulação visual de mapa com pino CSS pulsante e box informativo sobre local. Centraliza as referências de contato.
 - **`[ServicesAccordion]`**: Listagem de tabela de preços expansiva baseada nos primitivos de componentes Base UI (shadcn), segmentada por categorias baseadas na hierarquia do serviço.
 - **`[TeamGallery]`**: Lista de scroll horizontal fluida (snap scroll mobile/desktop) para mapear fotos de membros e cargos sem ocupar o view port extenso na vertical.

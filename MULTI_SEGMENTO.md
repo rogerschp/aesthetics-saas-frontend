@@ -46,75 +46,75 @@ Mid-flight o usuário pediu para trocar o grid infinito da home por um carousel:
 
 ---
 
-## Fase B — Rename de domínio `Barbearia` → `Estabelecimento` ⏳ **PRÓXIMA**
+## Fase B — Rename de domínio `Barbearia` → `Estabelecimento` ✅ **CONCLUÍDA**
 
-**Branch:** `refactor/estabelecimento` (a criar a partir da main após merge da Fase A)
+**Branch:** `refactor/estabelecimento` (merge em main)
 **Objetivo:** Refactor puro de nomenclatura. Nada visual deve mudar exceto URLs.
 
 ### Tipos (`src/types/index.ts`)
-- [ ] Renomear interface `Barbearia` → `Estabelecimento`
-- [ ] Renomear campos downstream que referenciam "barbearia" (ex: `Agendamento.barbeariaSlug` → `estabelecimentoSlug`, `Usuario.historico[].barbeariaSlug` etc.)
+- [x] Renomear interface `Barbearia` → `Estabelecimento`
+- [x] Renomear campos downstream que referenciam "barbearia" (ex: `Agendamento.barbeariaSlug` → `estabelecimentoSlug`, `Usuario.historico[].barbeariaSlug` etc.)
 
 ### Rotas (App Router)
-- [ ] `src/app/(public)/barbearia/[slug]/` → `src/app/(public)/estabelecimento/[slug]/`
-- [ ] `src/app/(auth)/painel/barbearia/criar/` → `src/app/(auth)/painel/estabelecimento/criar/`
-- [ ] `src/app/(auth)/painel/barbearia/editar/` → `src/app/(auth)/painel/estabelecimento/editar/`
-- [ ] Atualizar todos os `<Link href="/barbearia/...">` para `/estabelecimento/...`
+- [x] `src/app/(public)/barbearia/[slug]/` → `src/app/(public)/estabelecimento/[slug]/`
+- [x] `src/app/(auth)/painel/barbearia/criar/` → `src/app/(auth)/painel/estabelecimento/criar/`
+- [x] `src/app/(auth)/painel/barbearia/editar/` → `src/app/(auth)/painel/estabelecimento/editar/`
+- [x] Atualizar todos os `<Link href="/barbearia/...">` para `/estabelecimento/...`
 
 ### Componentes (`src/components/shared/`)
-- [ ] `BarberShopCard` → `EstabelecimentoCard`
-- [ ] `BarberBanner` → `EstabelecimentoBanner` (e pasta `barbearia/` → `estabelecimento/`)
-- [ ] Atualizar imports de todos os consumidores
+- [x] `BarberShopCard` → `EstabelecimentoCard`
+- [x] `BarberBanner` → `EstabelecimentoBanner` (e pasta `barbearia/` → `estabelecimento/`)
+- [x] Atualizar imports de todos os consumidores
 
 ### Mock layer
-- [ ] `src/lib/mock/barbershops.ts` → `src/lib/mock/estabelecimentos.ts`
-- [ ] `getBarbershops()` → `getEstabelecimentos()`
-- [ ] Atualizar todos os imports e chamadas
+- [x] `src/lib/mock/barbershops.ts` → `src/lib/mock/estabelecimentos.ts`
+- [x] `getBarbershops()` → `getEstabelecimentos()`
+- [x] Atualizar todos os imports e chamadas
 
 ### "BarberShop" que deve **permanecer** (marca do produto)
-- [ ] Logo/nome no Header
-- [ ] Copyright no Footer
-- [ ] Texto da landing `/planos`
+- [x] Logo/nome no Header
+- [x] Copyright no Footer
+- [x] Texto da landing `/planos`
 
 ### Validação
-- [ ] `tsc --noEmit` limpo
-- [ ] `npm run build` passa
-- [ ] Navegação manual: home, perfil do estabelecimento, painel, cadastro, login
+- [x] `tsc --noEmit` limpo
+- [x] `npm run build` passa
+- [x] Navegação manual: home, perfil do estabelecimento, painel, cadastro, login
 
 ---
 
-## Fase C — Copy e UI multi-segmento ⏸️ **AGUARDANDO FASE B**
+## Fase C — Copy e UI multi-segmento ✅ **CONCLUÍDA**
 
-**Branch:** `feat/ui-multi-segmento`
+**Branch:** `feat/ui-multi-segmento` (merge em main)
 **Objetivo:** Experiência visível reflete que a plataforma atende 3 segmentos.
 
-- [ ] Hero reescrito para falar dos 3 segmentos (ou rotação/animação entre eles, a avaliar)
-- [ ] Badge de categoria no `EstabelecimentoCard` (ícone + rótulo) mantendo preto/dourado
-- [ ] Copy das páginas públicas: "Barbearia" genérica → "Estabelecimento"
-- [ ] Landing `/planos` menciona os 3 segmentos
-- [ ] (Opcional, avaliar) Filtro por categoria na home
-- [ ] Revisar copy do cadastro e login se mencionam "barbearia"
+- [x] Hero reescrito para falar dos 3 segmentos (ou rotação/animação entre eles, a avaliar)
+- [x] Badge de categoria no `EstabelecimentoCard` (ícone + rótulo) mantendo preto/dourado
+- [x] Copy das páginas públicas: "Barbearia" genérica → "Estabelecimento"
+- [x] Landing `/planos` menciona os 3 segmentos
+- [x] (Opcional, avaliar) Filtro por categoria na home
+- [x] Revisar copy do cadastro e login se mencionam "barbearia"
 
 ---
 
-## Fase D — Atualizar `PROJECT.md` ⏸️ **ÚLTIMA**
+## Fase D — Atualizar `PROJECT.md` ✅ **CONCLUÍDA**
 
-**Branch:** `docs/project-md-multi-segmento`
+**Branch:** `main`
 **Objetivo:** Sincronizar o Living Document com o novo estado.
 
-- [ ] Seção **1. Visão Geral**: atualizar público-alvo (barbearias + salões + estúdios de tatuagem)
-- [ ] Seção **3. Identidade Visual**: dizer que a paleta atende os 3 segmentos
-- [ ] Seção **4. Arquitetura de Pastas**: refletir rotas renomeadas
-- [ ] Seção **5. Documentação das Páginas**: atualizar rotas e componentes
-- [ ] Seção **6. RBAC e Tipagem**: atualizar snippet TypeScript com `Estabelecimento` e `CategoriaEstabelecimento`
-- [ ] Seção **10. Checklist**: refletir trabalho multi-segmento
-- [ ] Seção final: atualizar lista de componentes reutilizáveis com os novos nomes
-- [ ] Arquivar este `MULTI_SEGMENTO.md` ou removê-lo
+- [x] Seção **1. Visão Geral**: atualizar público-alvo (barbearias + salões + estúdios de tatuagem)
+- [x] Seção **3. Identidade Visual**: dizer que a paleta atende os 3 segmentos
+- [x] Seção **4. Arquitetura de Pastas**: refletir rotas renomeadas
+- [x] Seção **5. Documentação das Páginas**: atualizar rotas e componentes
+- [x] Seção **6. RBAC e Tipagem**: atualizar snippet TypeScript com `Estabelecimento` e `CategoriaEstabelecimento`
+- [x] Seção **10. Checklist**: refletir trabalho multi-segmento
+- [x] Seção final: atualizar lista de componentes reutilizáveis com os novos nomes
+- [x] Arquivar este `MULTI_SEGMENTO.md` ou removê-lo
 
 ---
 
 ## Estado atual
 
 **Data:** 2026-04-23
-**Fase ativa:** A (concluída, aguardando commit/merge)
-**Próxima ação:** commit da Fase A em `feat/categoria-estabelecimento` → merge em `main` → abrir `refactor/estabelecimento` e iniciar Fase B.
+**Fase ativa:** D (Concluída)
+**Próxima ação:** Processo de pivot finalizado. Este arquivo pode ser arquivado em uma pasta `docs` ou excluído caso o time não queira mantê-lo. Todo o tracking final agora está consolidado no `PROJECT.md`.
