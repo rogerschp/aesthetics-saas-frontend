@@ -1,7 +1,9 @@
 import { SearchBar } from "./SearchBar";
 import { RotatingSegmentWord } from "./RotatingSegmentWord";
+import { useTranslations } from "next-intl";
 
 export function HeroSection() {
+  const t = useTranslations("Hero");
   return (
     <section className="relative w-full py-24 md:py-32 flex flex-col items-center justify-center overflow-hidden">
       {/* Background Image: Imagem real com brilho adequado para ficar visível */}
@@ -16,12 +18,11 @@ export function HeroSection() {
       <div className="container relative z-10 mx-auto px-4 flex flex-col items-center text-center gap-10">
         <div className="space-y-6 max-w-4xl pt-4">
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-tight flex flex-col justify-center items-center gap-y-2 md:gap-y-4">
-            <span>Encontre perto de você</span>
+            <span>{t("title_pt1")}</span>
             <RotatingSegmentWord />
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground/90 max-w-2xl mx-auto font-medium shadow-black drop-shadow-md">
-            A plataforma premium para agendar horários em barbearias, salões de
-            beleza e estúdios de tatuagem da sua região.
+            {t("subtitle_pt1")} barbearias, salões de beleza e estúdios de tatuagem {t("subtitle_pt2")}
           </p>
         </div>
 

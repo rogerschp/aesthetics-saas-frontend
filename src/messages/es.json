@@ -1,0 +1,14 @@
+{
+  "Hero": {
+    "title_pt1": "Encuentra cerca de ti",
+    "rotating_1": "barberías",
+    "rotating_2": "salones de belleza",
+    "rotating_3": "estudios de tatuaje",
+    "subtitle_pt1": "La plataforma premium para programar citas en",
+    "subtitle_pt2": "de tu región."
+  },
+  "Header": {
+    "login": "Entrar",
+    "register": "Registrarse"
+  }
+}

@@ -6,6 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Home, Calendar, LayoutDashboard, Store } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 interface AuthState {
   id: string;
@@ -13,6 +15,7 @@ interface AuthState {
 }
 
 export function Header() {
+  const t = useTranslations("Header");
   const [auth, setAuth] = useState<AuthState | null>(null);
   const router = useRouter();
 
@@ -109,6 +112,7 @@ export function Header() {
 
         {/* Right Section: Interactive Auth */}
         <div className="flex items-center gap-4">
+          <LanguageSwitcher />
           {auth ? (
             <div className="flex items-center gap-5">
               <div className="hidden sm:flex flex-col items-end mr-1">
@@ -135,12 +139,12 @@ export function Header() {
             <>
               <Link href="/login">
                 <Button variant="ghost" className="text-foreground hover:text-primary">
-                  Entrar
+                  {t('login')}
                 </Button>
               </Link>
               <Link href="/cadastro">
                 <Button className="font-semibold px-6 shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:shadow-[0_0_25px_rgba(212,175,55,0.5)] hover:-translate-y-0.5 transition-all">
-                  Cadastrar-se
+                  {t('register')}
                 </Button>
               </Link>
             </>

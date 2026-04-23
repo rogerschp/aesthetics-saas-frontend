@@ -1,0 +1,14 @@
+{
+  "Hero": {
+    "title_pt1": "Find near you",
+    "rotating_1": "barbershops",
+    "rotating_2": "beauty salons",
+    "rotating_3": "tattoo studios",
+    "subtitle_pt1": "The premium platform to schedule appointments at",
+    "subtitle_pt2": "in your region."
+  },
+  "Header": {
+    "login": "Login",
+    "register": "Sign Up"
+  }
+}

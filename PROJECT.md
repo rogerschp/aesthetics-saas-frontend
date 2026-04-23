@@ -32,16 +32,17 @@ A padronização permite escalar a base de código minimizando complexidades cog
 ```text
 src/
 ├── app/
-│   ├── (public)/                 # Grupo de rotas não autenticadas
-│   │   ├── estabelecimento/[slug]/ # Visualizar dados específicos do estabelecimento
-│   │   ├── cadastro/             # Criação de conta
-│   │   └── page.tsx              # Home / Busca
-│   ├── (auth)/                   # Grupo de rotas autenticadas
-│   │   ├── painel/estabelecimento/ # Gestão do Estabelecimento (/criar e /editar)
-│   │   └── perfil/[id]/          # Histórico cliente
-│   ├── api/auth/[...nextauth]/   # Endpoints do NextAuth.js
-│   ├── layout.tsx                # Principal RootLayout
-│   └── login/                    # Acesso de usuários
+│   ├── [locale]/                 # Raiz das rotas internacionalizadas
+│   │   ├── (public)/             # Grupo de rotas não autenticadas
+│   │   │   ├── estabelecimento/[slug]/ # Visualizar dados específicos do estabelecimento
+│   │   │   ├── cadastro/         # Criação de conta
+│   │   │   └── page.tsx          # Home / Busca
+│   │   ├── (auth)/               # Grupo de rotas autenticadas
+│   │   │   ├── painel/estabelecimento/ # Gestão do Estabelecimento (/criar e /editar)
+│   │   │   └── perfil/[id]/      # Histórico cliente
+│   │   ├── login/                # Acesso de usuários
+│   │   └── layout.tsx            # RootLayout base com injeção de Locale
+│   └── api/auth/[...nextauth]/   # Endpoints do NextAuth.js (sem i18n)
 ├── components/
 │   ├── ui/                       # Base components estritos do shadcn/ui
 │   ├── forms/                    # Elementos unificados para lidar com hooks complexos
@@ -279,6 +280,12 @@ export interface Usuario {
 - [x] Expansão do modelo de dados para Salões de Beleza e Estúdios de Tatuagem
 - [x] Refatoração de rotas e nomenclatura (Barbearia -> Estabelecimento)
 - [x] Atualização de copy, herói e cards para refletir múltiplos segmentos
+
+### FASE 8: Internacionalização (i18n)
+- [ ] Configuração do `next-intl` e middleware de locale (`/pt`, `/en`, `/es`)
+- [ ] Dicionários de Tradução para toda a interface estática
+- [ ] Componente seletor de idiomas (`LanguageSwitcher`)
+- [ ] Refatoração das páginas e componentes para usar chaves de tradução dinâmicas
 
 ---
 
