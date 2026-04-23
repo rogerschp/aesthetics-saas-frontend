@@ -22,16 +22,23 @@ export function RotatingSegmentWord() {
 
   return (
     <span
-      className="inline-block align-baseline"
+      className="inline-grid align-baseline"
       aria-live="polite"
       aria-atomic="true"
     >
-      <span
-        key={idx}
-        className="inline-block text-primary drop-shadow-[0_0_25px_rgba(212,175,55,0.6)] animate-in fade-in slide-in-from-bottom-3 duration-500"
-      >
-        {SEGMENTOS[idx]}
-      </span>
+      {SEGMENTOS.map((segmento, i) => (
+        <span
+          key={segmento}
+          className={`col-start-1 row-start-1 text-primary drop-shadow-[0_0_25px_rgba(212,175,55,0.6)] transition-all duration-500 ease-in-out ${
+            i === idx
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4 pointer-events-none select-none"
+          }`}
+          aria-hidden={i !== idx}
+        >
+          {segmento}
+        </span>
+      ))}
     </span>
   );
 }
