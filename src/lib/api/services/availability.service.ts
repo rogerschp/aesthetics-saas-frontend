@@ -18,6 +18,14 @@ export const availabilityService = {
     return response as any;
   },
 
+  /** GET .../available-slots/public — SEM Bearer (vitrine/guest/cliente). */
+  getAvailableSlotsPublic: async (tenantId: string, tpId: string, serviceId: string, date: string): Promise<AvailableSlotsResponse> => {
+    const response = await api.get(`/tenants/${tenantId}/tenant-professionals/${tpId}/available-slots/public`, {
+      params: { serviceId, date }
+    });
+    return response as any;
+  },
+
   bootstrapWeek: async (tenantId: string, tpId: string, payload: BootstrapWorkingWeekDto): Promise<any> => {
     const response = await api.post(`/tenants/${tenantId}/tenant-professionals/${tpId}/working-hours/bootstrap-week`, payload);
     return response as any;

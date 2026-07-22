@@ -10,11 +10,12 @@ import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
-import { authService } from "@/lib/api/services/auth.service";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function LoginForm() {
   const t = useTranslations("LoginForm");
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const loginSchema = useMemo(() => z.object({
@@ -45,6 +46,12 @@ export function LoginForm() {
 
       if (res?.error) {
         throw new Error(res.error);
+      }
+
+      // Garante que cache da conta anterior não vazará na navegação.
+      queryClient.clear();
+      if (typeof window !== "undefined") {
+        window.localStorage.removeItem("@barbershop:tenant");
       }
 
       router.push("/");

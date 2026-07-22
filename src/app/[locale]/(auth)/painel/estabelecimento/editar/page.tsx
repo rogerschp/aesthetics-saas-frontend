@@ -13,135 +13,301 @@ import {
   type SecaoEdicao,
 } from "@/components/shared/estabelecimento/EditarEstabelecimentoSidebar";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Save, Building2, Paintbrush } from "lucide-react";
+import {
+  ArrowLeft,
+  Building2,
+  Paintbrush,
+  AlertTriangle,
+  Loader2,
+  Save,
+  Check,
+} from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TenantTema } from "@/types";
 import { TEMA_PADRAO } from "@/lib/mock/temas";
+import { useTenantContext } from "@/components/providers/TenantProvider";
+import { tenantsService } from "@/lib/api/services/tenants.service";
+import { catalogService } from "@/lib/api/services/catalog.service";
+import { tenantProfessionalsService } from "@/lib/api/services/tenant-professionals.service";
+import { themeService } from "@/lib/api/services/theme.service";
+import { formatApiError } from "@/lib/api/errors";
+import { digitsOnly, maskCep, maskCnpj, maskPhoneBR, phoneToApiDigits } from "@/lib/masks";
+import { geocodeAddress } from "@/lib/geocode";
+import {
+  Address,
+  ProfessionalType,
+  Service,
+  Tenant,
+  TenantProfessional,
+  TenantThemeData,
+} from "@/lib/api/types";
 
-// Schema unificado (Mesmo do Criar, exportado num arquivo lib/schemas futuramente)
+const addressSchema = z.object({
+  street: z.string().min(1, "Rua obrigatória"),
+  number: z.string().min(1, "Número obrigatório"),
+  city: z.string().min(1, "Cidade obrigatória"),
+  state: z
+    .string()
+    .length(2, "UF com 2 letras")
+    .transform((s) => s.toUpperCase()),
+  zipCode: z
+    .string()
+    .regex(/^\d{5}-\d{3}$/, "CEP no formato 00000-000"),
+  country: z.string().min(1, "País obrigatório"),
+  complement: z.string().optional(),
+});
+
 const tenantSchema = z.object({
   nome: z.string().min(3, "Nome muito curto"),
-  slug: z.string().min(3, "Slug muito curto").regex(/^[a-z0-9-]+$/, "Apenas letras minúsculas, números e hifens"),
-  descricao: z.string().min(10, "A descrição deve ter pelo menos 10 caracteres"),
+  slug: z.string().min(3),
+  telefone: z
+    .string()
+    .refine((v) => {
+      const d = phoneToApiDigits(v);
+      return d.length >= 12 && d.length <= 13;
+    }, "Telefone inválido. Use DDD + número."),
+  cnpj: z
+    .string()
+    .optional()
+    .refine(
+      (v) => !v?.trim() || digitsOnly(v).length === 14,
+      "CNPJ deve ter 14 dígitos",
+    ),
   banner: z.string().optional(),
-  localizacao: z.string().min(5, "Localização é obrigatória"),
+  endereco: addressSchema,
   redesSociais: z.object({
     instagram: z.string().optional(),
     facebook: z.string().optional(),
   }),
-  horarios: z.array(
-    z.object({
-      fechado: z.boolean(),
-      inicio: z.string(),
-      fim: z.string(),
-    })
-  ).length(7),
+  horarios: z
+    .array(z.object({ fechado: z.boolean(), inicio: z.string(), fim: z.string() }))
+    .length(7),
   servicos: z.array(
     z.object({
       titulo: z.string().min(1, "Obrigatório"),
       itens: z.array(
         z.object({
           descricao: z.string().min(1, "Obrigatório"),
-          preco: z.number().min(0, "Deve ser maior ou igual a 0"),
-        })
-      )
-    })
+          preco: z.number().min(0),
+        }),
+      ),
+    }),
   ),
   time: z.array(
     z.object({
       nome: z.string(),
       role: z.string(),
       foto: z.string().optional(),
-    })
-  )
+    }),
+  ),
 });
 
 type TenantFormValues = z.infer<typeof tenantSchema>;
 
-// Dados mockados que viriam da API para popular Edição
-const mockEditData: Partial<TenantFormValues> = {
-  nome: "Classic Barber (Unidade Centro)",
-  slug: "barbearia-classic",
-  descricao: "A barbearia clássica do centro da cidade. Tradição e cortes premium desde 1999.",
-  localizacao: "Av. Paulista, 1000 - São Paulo, SP",
-  redesSociais: {
-    instagram: "https://instagram.com/classicbarber",
-    facebook: ""
-  },
-  horarios: [
-    { fechado: true, inicio: "09:00", fim: "18:00" }, // Dom
-    { fechado: false, inicio: "10:00", fim: "19:00" }, // Seg
-    { fechado: false, inicio: "09:00", fim: "20:00" }, // Ter
-    { fechado: false, inicio: "09:00", fim: "20:00" }, // Qua
-    { fechado: false, inicio: "09:00", fim: "20:00" }, // Qui
-    { fechado: false, inicio: "09:00", fim: "21:00" }, // Sex
-    { fechado: false, inicio: "08:00", fim: "19:00" }  // Sab
-  ],
-  servicos: [
-    {
-      titulo: "Cortes de Cabelo",
-      itens: [
-        { descricao: "Corte na Tesoura Especial", preco: 65 },
-        { descricao: "Corte Degradê na Máquina", preco: 50 },
-      ]
-    },
-    {
-      titulo: "Barba e Tratamentos",
-      itens: [
-        { descricao: "Barba Completa com Toalha Quente", preco: 45 },
-        { descricao: "Terapia Capilar Regenerativa", preco: 120 },
-      ]
-    }
-  ],
-  time: [
-    { nome: "Roger M.", role: "Barbeiro Sênior", foto: "https://i.pravatar.cc/150?u=roger" },
-    { nome: "Carlos Adão", role: "Especialista Terapia Capilar", foto: "https://i.pravatar.cc/150?u=carlos" }
-  ]
+const TYPE_LABEL: Record<ProfessionalType, string> = {
+  [ProfessionalType.BARBER]: "Barbeiro",
+  [ProfessionalType.TATTOO_ARTIST]: "Tatuador(a)",
+  [ProfessionalType.HAIRDRESSER]: "Cabeleireiro(a)",
+  [ProfessionalType.MANICURE]: "Manicure",
+  [ProfessionalType.ESTHETICIAN]: "Esteticista",
+  [ProfessionalType.LASH_DESIGNER]: "Lash Designer",
+  [ProfessionalType.EYEBROW_DESIGNER]: "Designer de Sobrancelhas",
 };
+
+const DEFAULT_HORARIOS = Array(7).fill({
+  fechado: false,
+  inicio: "09:00",
+  fim: "18:00",
+});
+
+const EMPTY_ADDRESS: Address = {
+  street: "",
+  number: "",
+  city: "",
+  state: "",
+  zipCode: "",
+  country: "Brazil",
+  complement: "",
+};
+
+function buildFormValues(
+  tenant: Tenant,
+  services: Service[],
+  team: TenantProfessional[],
+): TenantFormValues {
+  const ativos = services.filter((s) => s.isActive);
+  return {
+    nome: tenant.name,
+    slug: tenant.slug,
+    telefone: maskPhoneBR(tenant.telephone ?? ""),
+    cnpj: tenant.cnpj ? maskCnpj(tenant.cnpj) : "",
+    banner: tenant.avatarUrl ?? "",
+    endereco: {
+      ...EMPTY_ADDRESS,
+      ...(tenant.address ?? {}),
+      country: tenant.address?.country || "Brazil",
+      state: (tenant.address?.state || "").toUpperCase(),
+      zipCode: tenant.address?.zipCode
+        ? maskCep(tenant.address.zipCode)
+        : "",
+    },
+    redesSociais: {
+      instagram: tenant.socialMedia?.instagram ?? "",
+      facebook: tenant.socialMedia?.facebook ?? "",
+    },
+    horarios: DEFAULT_HORARIOS,
+    servicos:
+      ativos.length > 0
+        ? [
+            {
+              titulo: "Serviços",
+              itens: ativos.map((s) => ({
+                descricao: s.name,
+                preco: Number(s.price),
+              })),
+            },
+          ]
+        : [],
+    time: team.map((tp) => ({
+      nome: tp.professionalProfile?.displayName ?? "Profissional",
+      role: tp.professionalProfile
+        ? TYPE_LABEL[tp.professionalProfile.professionalType] ?? "Profissional"
+        : "Profissional",
+      foto: tp.professionalProfile?.avatarUrl ?? "",
+    })),
+  };
+}
 
 export default function TenantEditPage() {
   const t = useTranslations("EstabelecimentoForm");
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { current, isLoading: tenantLoading, refetch: refetchTenants } =
+    useTenantContext();
+  const tenantId = current?.tenant.id;
+  const queryClient = useQueryClient();
+
   const [secaoAtiva, setSecaoAtiva] = useState<SecaoEdicao>("informacoes");
   const [tema, setTema] = useState<TenantTema>(TEMA_PADRAO);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  // Reset assíncrono para replicar buscar da API
+  const tenantQuery = useQuery({
+    queryKey: ["tenant-edit", tenantId],
+    queryFn: () => tenantsService.getById(tenantId!),
+    enabled: !!tenantId,
+  });
+  const servicesQuery = useQuery({
+    queryKey: ["tenant-edit-services", tenantId],
+    queryFn: () => catalogService.list(tenantId!),
+    enabled: !!tenantId,
+  });
+  const teamQuery = useQuery({
+    queryKey: ["tenant-edit-team", tenantId],
+    queryFn: () => tenantProfessionalsService.list(tenantId!, false),
+    enabled: !!tenantId,
+  });
+  const themeQuery = useQuery({
+    queryKey: ["tenant-edit-theme", tenantId],
+    queryFn: () => themeService.get(tenantId!),
+    enabled: !!tenantId,
+    retry: false,
+  });
+
   const methods = useForm<TenantFormValues>({
     resolver: zodResolver(tenantSchema),
     defaultValues: {
-      horarios: Array(7).fill({ fechado: false, inicio: "09:00", fim: "18:00" }),
+      horarios: DEFAULT_HORARIOS,
       servicos: [],
-      time: []
-    }, // Fallback preventivo
+      time: [],
+      endereco: EMPTY_ADDRESS,
+      redesSociais: {},
+      cnpj: "",
+      telefone: "",
+    },
   });
 
+  const realData = useMemo(() => {
+    if (!tenantQuery.data) return null;
+    return buildFormValues(
+      tenantQuery.data,
+      servicesQuery.data ?? [],
+      teamQuery.data ?? [],
+    );
+  }, [tenantQuery.data, servicesQuery.data, teamQuery.data]);
+
   useEffect(() => {
-    // Simula tempo de rede carregando o Estabelecimento que ele vai editar
-    setTimeout(() => {
-      methods.reset(mockEditData as TenantFormValues);
-    }, 500);
-  }, [methods]);
+    if (realData) methods.reset(realData);
+  }, [realData, methods]);
 
-  const onSubmit = async (data: TenantFormValues) => {
-    setIsLoading(true);
-    // Simula API UPDATE action
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    // TODO(security): No ambiente de produção, os dados devem ser enviados via HTTPS
-    // e validados server-side antes de persistir
-    console.log("Tenant atualizado com sucesso");
-    setIsLoading(false);
-    
-    router.push("/");
-  };
+  useEffect(() => {
+    const apiTheme = themeQuery.data?.theme;
+    if (apiTheme) setTema(apiTheme as unknown as TenantTema);
+  }, [themeQuery.data]);
 
-  /**
-   * Renderiza o conteúdo da seção ativa.
-   * Cada seção carrega seu formulário/componente específico.
-   */
+  const loading =
+    tenantLoading ||
+    (!!tenantId && (tenantQuery.isLoading || servicesQuery.isLoading));
+
+  const saveMutation = useMutation({
+    mutationFn: async (data: TenantFormValues) => {
+      if (!tenantId) throw new Error("no-tenant");
+
+      const socialMedia: Record<string, string> = {};
+      const ig = data.redesSociais.instagram?.trim();
+      const fb = data.redesSociais.facebook?.trim();
+      if (ig) socialMedia.instagram = ig;
+      if (fb) socialMedia.facebook = fb;
+
+      const address: Address = {
+        street: data.endereco.street.trim(),
+        number: data.endereco.number.trim(),
+        city: data.endereco.city.trim(),
+        state: data.endereco.state.trim().toUpperCase(),
+        zipCode: data.endereco.zipCode.trim(),
+        country: data.endereco.country.trim(),
+        ...(data.endereco.complement?.trim()
+          ? { complement: data.endereco.complement.trim() }
+          : {}),
+      };
+
+      const geo = await geocodeAddress(address);
+      const cnpjDigits = digitsOnly(data.cnpj ?? "");
+
+      await tenantsService.update(tenantId, {
+        name: data.nome.trim(),
+        telephone: phoneToApiDigits(data.telefone),
+        ...(cnpjDigits.length === 14 ? { cnpj: cnpjDigits } : {}),
+        avatarUrl: data.banner?.trim() || null,
+        socialMedia,
+        address,
+        ...(geo
+          ? { latitude: geo.latitude, longitude: geo.longitude }
+          : {}),
+      });
+
+      if (tema && secaoAtiva === "aparencia") {
+        try {
+          await themeService.upsert(tenantId, tema as unknown as TenantThemeData);
+        } catch {
+          // Plano pode bloquear tema — não falha o save do tenant.
+        }
+      }
+    },
+    onSuccess: () => {
+      setSaveError(null);
+      setSaveMsg(t("saveSuccess"));
+      queryClient.invalidateQueries({ queryKey: ["tenant-edit", tenantId] });
+      refetchTenants();
+      setTimeout(() => setSaveMsg(null), 2500);
+    },
+    onError: (err) => {
+      setSaveMsg(null);
+      setSaveError(formatApiError(err) || t("saveError"));
+    },
+  });
+
   const renderizarConteudo = () => {
     switch (secaoAtiva) {
       case "informacoes":
@@ -160,67 +326,105 @@ export default function TenantEditPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black pb-20 relative">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none" />
-      
-      <div className="container mx-auto px-4 max-w-7xl relative z-10 pt-28">
-        <div className="flex items-center justify-between mb-8">
+    <div className="relative min-h-screen pb-20">
+      <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-full -translate-x-1/2 bg-gradient-to-b from-blue-500/5 to-transparent" />
+
+      <div className="container relative z-10 mx-auto max-w-7xl px-4 pt-28">
+        <div className="mb-8 flex items-center justify-between">
           <Link
-            href="/"
-            className="group inline-flex items-center text-sm font-medium text-zinc-400 hover:text-yellow-500 transition-colors"
+            href="/painel"
+            className="group inline-flex items-center text-sm font-medium text-zinc-400 transition-colors hover:text-yellow-500"
           >
-            <ArrowLeft className="mr-2 h-4 w-4 transform group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
             {t("back")}
           </Link>
           <div className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-zinc-500" />
-            <span className="text-zinc-500 font-medium tracking-wide">{t("managerPanel")}</span>
+            <span className="font-medium tracking-wide text-zinc-500">
+              {t("managerPanel")}
+            </span>
           </div>
         </div>
 
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-white flex items-center gap-3">
-                  <Paintbrush className="h-8 w-8 text-yellow-500" />
-                  {t("editTitle")}
-                </h1>
-                <p className="text-zinc-400 mt-2 text-lg">
-                  {t("editSubtitle")}
-                </p>
+        {!tenantId && !tenantLoading ? (
+          <div className="rounded-2xl border border-border/50 bg-card p-8 text-center text-muted-foreground">
+            {t("noTenantSelected")}
+          </div>
+        ) : loading ? (
+          <div className="flex justify-center py-24">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <FormProvider {...methods}>
+            <form
+              className="space-y-8"
+              onSubmit={methods.handleSubmit((data) =>
+                saveMutation.mutate(data),
+              )}
+            >
+              <div className="mb-8 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+                <div>
+                  <h1 className="flex items-center gap-3 text-3xl font-bold text-white md:text-4xl">
+                    <Paintbrush className="h-8 w-8 text-yellow-500" />
+                    {t("editTitle")}
+                  </h1>
+                  <p className="mt-2 text-lg text-zinc-400">
+                    {t("editSubtitle")}
+                  </p>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={saveMutation.isPending}
+                  className="px-8 font-bold"
+                >
+                  {saveMutation.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : saveMsg ? (
+                    <Check className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Save className="mr-2 h-4 w-4" />
+                  )}
+                  {saveMsg
+                    ? t("saveSuccess")
+                    : saveMutation.isPending
+                      ? t("saving")
+                      : t("saveChanges")}
+                </Button>
               </div>
-              
-              <Button 
-                type="submit" 
-                disabled={isLoading}
-                className="bg-yellow-500 text-black hover:bg-yellow-600 font-bold px-8 shadow-lg shadow-yellow-500/20"
-              >
-                {isLoading ? t("saving") : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    {t("saveChanges")}
-                  </>
-                )}
-              </Button>
-            </div>
 
-            {/* Layout principal: Sidebar + Conteúdo */}
-            <div className="flex flex-col lg:flex-row gap-6">
-              <EditarEstabelecimentoSidebar
-                secaoAtiva={secaoAtiva}
-                onMudarSecao={setSecaoAtiva}
-              />
+              {(saveError || saveMsg) && (
+                <div
+                  className={
+                    saveError
+                      ? "rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                      : "rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm text-primary"
+                  }
+                >
+                  {saveError ?? saveMsg}
+                </div>
+              )}
 
-              {/* Área de conteúdo principal */}
-              <div className="flex-1 min-w-0">
-                <div className="bg-zinc-950/50 border border-zinc-800/60 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-sm relative">
-                  {renderizarConteudo()}
+              <div className="flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-500">
+                <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
+                <p>{t("readOnlyNotice")}</p>
+              </div>
+
+              <div className="flex flex-col gap-6 lg:flex-row">
+                <EditarEstabelecimentoSidebar
+                  secaoAtiva={secaoAtiva}
+                  onMudarSecao={setSecaoAtiva}
+                />
+
+                <div className="min-w-0 flex-1">
+                  <div className="relative rounded-3xl border border-zinc-800/60 bg-zinc-950/50 p-6 shadow-2xl backdrop-blur-sm sm:p-10">
+                    {renderizarConteudo()}
+                  </div>
                 </div>
               </div>
-            </div>
-          </form>
-        </FormProvider>
+            </form>
+          </FormProvider>
+        )}
       </div>
     </div>
   );

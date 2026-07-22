@@ -11,7 +11,7 @@ import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
 import { usersService } from "@/lib/api/services/users.service";
-import { authService } from "@/lib/api/services/auth.service";
+import { digitsOnly, maskPhoneBR, phoneToApiDigits } from "@/lib/masks";
 
 export function RegistrationForm() {
   const t = useTranslations("RegistrationForm");
@@ -24,7 +24,9 @@ export function RegistrationForm() {
     nome: z.string().min(3, t("nameError")),
     email: z.string().email(t("emailError")),
     senha: z.string().min(6, t("passwordError")),
-    telefone: z.string().min(10, t("phoneError")),
+    telefone: z
+      .string()
+      .refine((v) => digitsOnly(v).length >= 10, t("phoneError")),
     localizacao: z.string().min(3, t("locationError")),
   }), [t]);
 
@@ -38,6 +40,8 @@ export function RegistrationForm() {
     resolver: zodResolver(registrationSchema),
   });
 
+  const telefoneReg = register("telefone");
+
   const onSubmit = async (data: RegistrationData) => {
     setIsLoading(true);
     setGlobalError(null);
@@ -49,7 +53,7 @@ export function RegistrationForm() {
         name: data.nome,
         email: data.email,
         password: data.senha,
-        telephone: data.telefone.replace(/\D/g, ""), // Extrai apenas os números
+        telephone: phoneToApiDigits(data.telefone),
       });
 
       // Sucesso
@@ -117,15 +121,13 @@ export function RegistrationForm() {
           <Input 
             id="telefone" 
             placeholder={t("phonePlaceholder")} 
-            {...register("telefone")} 
+            name={telefoneReg.name}
+            ref={telefoneReg.ref}
+            onBlur={telefoneReg.onBlur}
+            inputMode="tel"
             onChange={(e) => {
-              let v = e.target.value.replace(/\D/g, "");
-              if (v.length > 11) v = v.slice(0, 11);
-              if (v.length > 2) v = `(${v.slice(0, 2)}) ${v.slice(2)}`;
-              if (v.length > 10) v = `${v.slice(0, 10)}-${v.slice(10)}`;
-              e.target.value = v;
-              // Call the original react-hook-form onChange
-              register("telefone").onChange(e);
+              e.target.value = maskPhoneBR(e.target.value);
+              void telefoneReg.onChange(e);
             }}
           />
           {errors.telefone && (

@@ -1,8 +1,7 @@
-import { SearchBar } from "./SearchBar";
 import { RotatingSegmentWord } from "./RotatingSegmentWord";
 import { useTranslations } from "next-intl";
 
-export function HeroSection() {
+export function HeroSection({ children }: { children?: React.ReactNode }) {
   const t = useTranslations("Hero");
   return (
     <section className="relative w-full py-24 md:py-32 flex flex-col items-center justify-center overflow-hidden">
@@ -26,7 +25,7 @@ export function HeroSection() {
           </p>
         </div>
 
-        <SearchBar />
+        {children}
       </div>
     </section>
   );

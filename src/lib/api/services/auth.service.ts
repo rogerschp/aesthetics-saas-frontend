@@ -9,6 +9,7 @@ export interface LoginResponse {
   idToken: string;
   refreshToken: string;
   expiresIn: number;
+  username?: string;
 }
 
 export const authService = {

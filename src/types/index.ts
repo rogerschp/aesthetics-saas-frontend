@@ -92,6 +92,9 @@ export interface Estabelecimento {
   categoria: CategoriaEstabelecimento;
   descricao: string;
   banner?: string;
+  telefone?: string;
+  latitude?: number | null;
+  longitude?: number | null;
   redesSociais: {
     instagram?: string;
     facebook?: string;

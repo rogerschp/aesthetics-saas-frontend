@@ -128,6 +128,15 @@ export interface User {
   updatedAt: string;
 }
 
+export enum TenantSegment {
+  BARBERSHOP = 'BARBERSHOP',
+  TATTOO_STUDIO = 'TATTOO_STUDIO',
+  HAIR_SALON = 'HAIR_SALON',
+  NAIL_STUDIO = 'NAIL_STUDIO',
+  BEAUTY_SALON = 'BEAUTY_SALON',
+  OTHER = 'OTHER',
+}
+
 // ============ Tenant ============
 export interface Tenant {
   id: string;
@@ -139,6 +148,14 @@ export interface Tenant {
   socialMedia?: Record<string, string> | null;
   address: Address | null;
   timezone: string;
+  segment: TenantSegment | null;
+  avatarUrl: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  /** Política de cancelamento de CONFIRMED pelo cliente (default false). */
+  clientCanCancelConfirmed: boolean;
+  /** Antecedência mínima em minutos p/ cancelar confirmado (default 60; 0–43200). */
+  clientCancelConfirmedMinLeadMinutes: number;
 }
 
 // ============ Tenant Member ============
@@ -246,7 +263,346 @@ export interface Booking {
   startsAt: string; // ISO UTC
   endsAt: string; // ISO UTC
   status: BookingStatus;
-  createdByTenantUserId: string | null;
+  clientUserId: string | null;
+  guestName: string | null;
+  guestPhone: string | null;
+  guestEmail: string | null;
   createdAt: string;
   updatedAt: string;
 }
+
+/** Resposta de GET ops de listagem (agenda do dia / profissional). */
+export interface OpsBookingCustomer {
+  kind: "USER" | "GUEST";
+  clientUserId?: string | null;
+  guestName?: string | null;
+  guestPhone?: string | null;
+  guestEmail?: string | null;
+}
+
+export interface OpsBooking {
+  id: string;
+  status: BookingStatus;
+  date: string; // yyyy-MM-dd no fuso do tenant
+  startTime: string;
+  endTime: string;
+  startsAt: string;
+  endsAt: string;
+  professional: {
+    tenantProfessionalId: string;
+    displayName: string;
+  };
+  service: {
+    id: string;
+    name: string;
+    durationInMinutes: number;
+  };
+  customer: OpsBookingCustomer;
+}
+
+// ============ Vitrine pública ============
+export interface PublicProfessional {
+  /** tenantProfessionalId — usar na URL de agenda/booking. */
+  id: string;
+  tenantId: string;
+  displayName: string;
+  bio: string | null;
+  avatarUrl: string;
+  professionalType: ProfessionalType;
+  bookingMode: BookingMode;
+  whatsappNumber: string | null;
+  instagramUsername: string | null;
+}
+
+// ============ Reviews ============
+export type ReviewTargetType = 'TENANT' | 'PROFESSIONAL';
+
+export interface Review {
+  id: string;
+  reviewerUserId: string;
+  reviewerName: string;
+  targetType: ReviewTargetType;
+  targetId: string;
+  rating: number;
+  comment: string | null;
+  isEdited: boolean;
+  editedAt?: string | null;
+  reply: string | null;
+  repliedAt?: string | null;
+  repliedByUserId?: string | null;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface ReviewList {
+  averageRating: number;
+  totalReviews: number;
+  reviews: Review[];
+}
+
+// ============ Theme ============
+export enum FonteDisponivel {
+  INTER = 'Inter',
+  PLAYFAIR = 'Playfair Display',
+  ROBOTO = 'Roboto',
+  OUTFIT = 'Outfit',
+  BEBAS_NEUE = 'Bebas Neue',
+  MONTSERRAT = 'Montserrat',
+  POPPINS = 'Poppins',
+}
+
+export enum BorderRadiusOpcao {
+  NONE = 'none',
+  SM = 'sm',
+  MD = 'md',
+  LG = 'lg',
+  FULL = 'full',
+}
+
+export enum TipoSecao {
+  PROFISSIONAIS = 'profissionais',
+  HORARIOS = 'horarios',
+  SERVICOS = 'servicos',
+  AVALIACOES = 'avaliacoes',
+  SOBRE = 'sobre',
+  ENDERECO = 'endereco',
+}
+
+export enum VarianteComponente {
+  PADRAO = 'padrao',
+  CARDS = 'cards',
+  LISTA = 'lista',
+  GRID = 'grid',
+}
+
+export interface SecaoLayout {
+  id: string;
+  tipo: TipoSecao | string;
+  visivel: boolean;
+  ordem: number;
+  variante: VarianteComponente | string;
+}
+
+export interface TenantThemeData {
+  corPrimaria: string;
+  corSecundaria: string;
+  corFundo: string;
+  corTexto: string;
+  fonte: FonteDisponivel | string;
+  borderRadius: BorderRadiusOpcao | string;
+  secoesLayout: SecaoLayout[];
+}
+
+export interface TenantThemeResponse {
+  tenantId: string;
+  theme: TenantThemeData | null;
+  plan: string;
+}
+
+// ============ Search ============
+export interface TenantSearchResult {
+  id: string;
+  name: string;
+  slug: string;
+  segment: TenantSegment | null;
+  avatarUrl: string | null;
+  city: string | null;
+  averageRating: number;
+  totalReviews: number;
+  distanceKm: number | null;
+  plan: {
+    name: string;
+    eliteBadge: boolean;
+    regionalHighlight: boolean;
+  };
+}
+
+export interface TenantSearchResponse {
+  data: TenantSearchResult[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+// ============ Planos & Assinatura ============
+export enum PlanName {
+  FREE = 'FREE',
+  STANDARD = 'STANDARD',
+  PRO = 'PRO',
+  ELITE = 'ELITE',
+}
+
+export enum SubscriptionStatus {
+  ACTIVE = 'ACTIVE',
+  GRACE_PERIOD = 'GRACE_PERIOD',
+  EXPIRED = 'EXPIRED',
+  CANCELLED = 'CANCELLED',
+}
+
+export interface PlanFeatures {
+  reports: 'NONE' | 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
+  reportExport: boolean;
+  reviews: boolean;
+  marketplace: boolean;
+  regionalHighlight: boolean;
+  eliteBadge: boolean;
+  whatsappNotification: boolean;
+  customization: 'NONE' | 'BASIC' | 'INTERMEDIATE' | 'FULL';
+  maxProfessionals: number | null;
+}
+
+export interface Plan {
+  id: string;
+  name: PlanName;
+  billingCycle: string;
+  price: string;
+  sortWeight: number;
+  gracePeriodDays: number;
+  features: PlanFeatures;
+  isActive: boolean;
+}
+
+export interface Subscription {
+  id: string;
+  tenantId: string;
+  status: SubscriptionStatus | string;
+  currentPeriodStart: string | null;
+  currentPeriodEnd: string | null;
+  gracePeriodEnd: string | null;
+  cancelledAt: string | null;
+  plan: Plan;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SubscriptionHistoryEvent {
+  id: string;
+  event: string;
+  fromPlanId: string | null;
+  toPlanId: string | null;
+  performedBy: string;
+  createdAt: string;
+}
+
+// ============ Memberships (GET /users/me/tenants) ============
+export interface MyTenantSummary {
+  id: string;
+  slug: string;
+  name: string;
+  status: string;
+  telephone: string;
+  timezone: string;
+  segment?: TenantSegment | null;
+  avatarUrl?: string | null;
+  clientCanCancelConfirmed: boolean;
+  clientCancelConfirmedMinLeadMinutes: number;
+}
+
+export interface Membership {
+  membershipId: string;
+  role: TenantUserRole;
+  status: TenantUserStatus;
+  tenant: MyTenantSummary;
+}
+
+// ============ Meus agendamentos (GET /users/me/bookings) ============
+export interface MyBooking {
+  id: string;
+  status: BookingStatus;
+  tenant: {
+    id: string;
+    name: string;
+    slug: string;
+    telephone: string;
+    timezone: string;
+    address: Address | null;
+    clientCanCancelConfirmed?: boolean;
+    clientCancelConfirmedMinLeadMinutes?: number;
+  };
+  professional: {
+    tenantProfessionalId: string;
+    displayName: string;
+  };
+  service: {
+    id: string;
+    name: string;
+    durationInMinutes: number;
+  };
+  date: string;
+  startTime: string;
+  endTime: string;
+  startsAt: string;
+  endsAt: string;
+}
+
+// ============ Reports (GET /tenants/:id/reports/*) ============
+/** Eixo temporal: bookings.startsAt no timezone do tenant. */
+
+export interface ReportPeriod {
+  start: string;
+  end: string;
+}
+
+export interface DashboardSummary {
+  revenue: number;
+  confirmedBookings: number;
+  cancelledBookings: number;
+  cancellationRate: number;
+  averageTicket: number;
+  newCustomers: number;
+  returningCustomers: number;
+}
+
+export interface TopServiceMetrics {
+  serviceId: string;
+  serviceName: string;
+  quantity: number;
+  revenue: number;
+}
+
+export interface MonthlyMetrics {
+  year: number;
+  month: number;
+  revenue: number;
+  confirmedBookings: number;
+  cancelledBookings: number;
+  revenueChangePercent: number | null;
+}
+
+export interface ProfessionalMetrics {
+  tenantProfessionalId: string;
+  professionalName: string;
+  revenue: number;
+  confirmedBookings: number;
+  cancelledBookings: number;
+  averageTicket: number;
+  cancellationRate: number;
+}
+
+export interface StandardReport {
+  period: ReportPeriod;
+  /** Compat: espelha dashboard.revenue */
+  revenue: number;
+  confirmedBookings: number;
+  cancelledBookings: number;
+  dashboard: DashboardSummary;
+  topServices: TopServiceMetrics[];
+  /** Sempre null no MVP — não renderizar bloco de IA */
+  insights: object | null;
+}
+
+export interface ProReport extends StandardReport {
+  monthlyBreakdown: MonthlyMetrics[];
+}
+
+export interface EliteReport extends ProReport {
+  professionalBreakdown: ProfessionalMetrics[];
+}
+
+export type TenantReport = StandardReport | ProReport | EliteReport;
+
+export type ReportTier = 'NONE' | 'BASIC' | 'INTERMEDIATE' | 'ADVANCED';
+
+export type ReportExportFormat = 'pdf' | 'excel';
+

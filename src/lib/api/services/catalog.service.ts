@@ -12,6 +12,12 @@ export interface CreateServiceDto {
 export interface UpdateServiceDto extends Partial<CreateServiceDto> {}
 
 export const catalogService = {
+  /** GET /tenants/:tenantId/public/services — público (vitrine). */
+  listPublic: async (tenantId: string): Promise<Service[]> => {
+    const response = await api.get(`/tenants/${tenantId}/public/services`);
+    return response as any;
+  },
+
   list: async (tenantId: string): Promise<Service[]> => {
     const response = await api.get(`/tenants/${tenantId}/services`);
     return response as any;

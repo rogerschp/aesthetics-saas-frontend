@@ -9,21 +9,19 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-  let token = null;
-
-  // 1. Tentar pegar o token da sessão do NextAuth (client-side ou durante requests compatíveis)
-  try {
-    const session = await getSession();
-    // A tipagem da sessão precisará ser estendida depois para incluir accessToken / idToken
-    if (session && (session as any).idToken) {
-      token = (session as any).idToken;
-    }
-  } catch (err) {
-    // Pode falhar se for Server-Side (dependendo de como for chamado), ignoramos e prosseguimos
+  // getSession() do next-auth/react só funciona no browser.
+  // Em RSC/SSR ele tenta GET /api/auth/session com URL inválida → CLIENT_FETCH_ERROR.
+  if (typeof window === "undefined") {
+    return config;
   }
 
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
+  try {
+    const session = await getSession();
+    if (session?.idToken && config.headers) {
+      config.headers.Authorization = `Bearer ${session.idToken}`;
+    }
+  } catch {
+    // Sem sessão — segue como público
   }
 
   return config;

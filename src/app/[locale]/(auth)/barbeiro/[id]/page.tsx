@@ -1,95 +1,301 @@
-import { getMockUser } from "@/lib/mock/users";
-import { notFound } from "next/navigation";
-import { ProfessionalTimeline } from "@/components/shared/ProfessionalTimeline";
-import { Scissors, TrendingUp, Calendar as CalendarIcon, UserCircle2 } from "lucide-react";
-import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+"use client";
 
-interface BarbeariaProps {
-  params: Promise<{
-    id: string;
-  }>;
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import {
+  Star,
+  Loader2,
+  CalendarClock,
+  Award,
+  MessageSquare,
+  UserCircle2,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { usersService } from "@/lib/api/services/users.service";
+import { reviewsService } from "@/lib/api/services/reviews.service";
+import { tenantProfessionalsService } from "@/lib/api/services/tenant-professionals.service";
+import { bookingService } from "@/lib/api/services/booking.service";
+import { useTenantContext } from "@/components/providers/TenantProvider";
+import {
+  BookingStatus,
+  OpsBooking,
+  ProfessionalType,
+} from "@/lib/api/types";
+import { formatApiError } from "@/lib/api/errors";
+
+const TYPE_LABEL: Record<ProfessionalType, string> = {
+  [ProfessionalType.BARBER]: "Barbeiro",
+  [ProfessionalType.TATTOO_ARTIST]: "Tatuador(a)",
+  [ProfessionalType.HAIRDRESSER]: "Cabeleireiro(a)",
+  [ProfessionalType.MANICURE]: "Manicure",
+  [ProfessionalType.ESTHETICIAN]: "Esteticista",
+  [ProfessionalType.LASH_DESIGNER]: "Lash Designer",
+  [ProfessionalType.EYEBROW_DESIGNER]: "Designer de Sobrancelhas",
+};
+
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
 }
 
-export default async function ProfissionalDashboardPage({ params }: BarbeariaProps) {
-  const t = await getTranslations("BarbeiroDashboard");
-  const resolvedParams = await params;
-  const userId = resolvedParams.id;
-  
-  const user = await getMockUser(userId);
+function customerName(b: OpsBooking): string {
+  if (b.customer.kind === "GUEST") {
+    return b.customer.guestName?.trim() || "Visitante";
+  }
+  return "Cliente";
+}
 
-  // Fallback e Controle de Rotas
-  if (!user || user.role !== "PROFESSIONAL") {
-    notFound(); 
+export default function ProfissionalDashboardPage() {
+  const t = useTranslations("BarbeiroDashboard");
+  const { data: session } = useSession();
+  const sessionUserId = session?.user?.id;
+  const { current, isLoading: tenantLoading } = useTenantContext();
+  const tenantId = current?.tenant.id;
+
+  const meQuery = useQuery({
+    queryKey: ["me", sessionUserId],
+    queryFn: () => usersService.getMe(),
+    enabled: !!sessionUserId,
+  });
+
+  const profileQuery = useQuery({
+    queryKey: ["my-professional-profile", sessionUserId],
+    queryFn: () => usersService.getProfessionalProfile(),
+    enabled: !!sessionUserId,
+    retry: false,
+  });
+
+  const teamQuery = useQuery({
+    queryKey: ["barbeiro-tp", sessionUserId, tenantId],
+    queryFn: () => tenantProfessionalsService.list(tenantId!, true),
+    enabled: !!tenantId && !!sessionUserId,
+  });
+
+  const myTp = useMemo(() => {
+    const userId = meQuery.data?.id;
+    const profileId = profileQuery.isSuccess
+      ? profileQuery.data?.id
+      : undefined;
+    if (!teamQuery.data || (!userId && !profileId)) return null;
+    return (
+      teamQuery.data.find(
+        (tp) =>
+          tp.professionalProfile?.id === profileId ||
+          tp.professionalProfile?.userId === userId,
+      ) ?? null
+    );
+  }, [
+    teamQuery.data,
+    meQuery.data?.id,
+    profileQuery.isSuccess,
+    profileQuery.data?.id,
+  ]);
+
+  const userId = meQuery.data?.id;
+  const reviewsQuery = useQuery({
+    queryKey: ["professional-reviews", userId],
+    queryFn: () => reviewsService.listProfessional(userId!),
+    enabled: !!userId,
+    retry: false,
+  });
+
+  const agendaQuery = useQuery({
+    queryKey: ["barbeiro-agenda", sessionUserId, tenantId, myTp?.id, todayISO()],
+    queryFn: () =>
+      bookingService.listByProfessional(tenantId!, myTp!.id, {
+        date: todayISO(),
+      }),
+    enabled: !!tenantId && !!myTp?.id && !!sessionUserId,
+  });
+
+  if (
+    !sessionUserId ||
+    meQuery.isLoading ||
+    profileQuery.isLoading ||
+    tenantLoading
+  ) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
-  const { agendamentosEmAndamento } = user;
-  
-  // Basic analytics pro dashboard
-  const concluidosHoje = agendamentosEmAndamento.filter(a => a.status === "concluido").length;
-  const pendentesHoje = agendamentosEmAndamento.filter(a => a.status !== "concluido" && a.status !== "cancelado").length;
+  const profile = profileQuery.data;
+
+  if (!profile) {
+    return (
+      <div className="container mx-auto max-w-2xl px-4 py-32 text-center">
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+          <UserCircle2 className="h-8 w-8" />
+        </div>
+        <h1 className="mb-2 text-2xl font-bold">{t("noProfileTitle")}</h1>
+        <p className="text-muted-foreground">{t("noProfileDesc")}</p>
+      </div>
+    );
+  }
+
+  const reviews = reviewsQuery.data;
+  const rating =
+    reviews && reviews.totalReviews > 0
+      ? reviews.averageRating.toFixed(1)
+      : "—";
+
+  const agenda = agendaQuery.data ?? [];
+  const activeToday = agenda.filter((b) => b.status !== BookingStatus.CANCELLED);
+  const confirmedToday = activeToday.filter(
+    (b) => b.status === BookingStatus.CONFIRMED,
+  ).length;
+  const draftToday = activeToday.filter(
+    (b) => b.status === BookingStatus.DRAFT,
+  ).length;
 
   return (
-    <main className="min-h-screen bg-black pb-24 pt-12">
-      <div className="container mx-auto px-4 max-w-5xl">
+    <main className="min-h-screen pb-24 pt-24">
+      <div className="container mx-auto max-w-5xl px-4">
+        <section className="mb-10 flex items-center gap-4">
+          <Avatar className="h-16 w-16 rounded-2xl border-2 border-primary/50">
+            <AvatarImage src={profile.avatarUrl} alt={profile.displayName} />
+            <AvatarFallback className="rounded-2xl bg-primary/20 text-xl font-bold text-primary">
+              {profile.displayName.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="flex items-center gap-2 text-2xl font-bold">
+              {t("hello")} {profile.displayName.split(" ")[0]}
+              <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-primary-foreground">
+                {TYPE_LABEL[profile.professionalType] ?? t("proBadge")}
+              </span>
+            </h1>
+            <p className="text-muted-foreground">{t("dailySummary")}</p>
+          </div>
+        </section>
 
-        {/* Header Resumo */}
-        <section className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between mb-10">
-          <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-yellow-500/50">
-              <Image 
-                src={user.foto || "https://i.pravatar.cc/150"} 
-                alt={user.nome} 
-                fill 
-                className="object-cover"
-              />
+        <section className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <KpiCard
+            icon={<Star className="h-5 w-5 text-yellow-500" />}
+            value={rating}
+            label={t("fiveStarReviews")}
+          />
+          <KpiCard
+            icon={<MessageSquare className="h-5 w-5 text-blue-500" />}
+            value={String(reviews?.totalReviews ?? 0)}
+            label={t("reviews")}
+          />
+          <KpiCard
+            icon={<Award className="h-5 w-5 text-emerald-500" />}
+            value={String(confirmedToday)}
+            label={t("completedToday")}
+          />
+          <KpiCard
+            icon={<CalendarClock className="h-5 w-5 text-purple-500" />}
+            value={String(draftToday + confirmedToday)}
+            label={t("inQueueToday")}
+          />
+        </section>
+
+        <section className="mb-10">
+          <h2 className="mb-4 text-xl font-bold">{t("activeSchedule")}</h2>
+
+          {!tenantId || !myTp ? (
+            <p className="text-sm text-muted-foreground">{t("scheduleGap")}</p>
+          ) : agendaQuery.isLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                {t("hello")} {user.nome.split(" ")[0]} 
-                <span className="bg-yellow-500 text-black text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full font-black">
-                  {t("proBadge")}
-                </span>
-              </h1>
-              <p className="text-zinc-500">{t("dailySummary")}</p>
+          ) : agendaQuery.isError ? (
+            <p className="text-sm text-destructive">
+              {formatApiError(agendaQuery.error)}
+            </p>
+          ) : activeToday.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t("emptyAgenda")}</p>
+          ) : (
+            <div className="space-y-2">
+              {activeToday.map((b) => (
+                <div
+                  key={b.id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-card p-4"
+                >
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold tabular-nums">
+                        {b.startTime}
+                      </span>
+                      <span className="truncate text-sm">{b.service.name}</span>
+                      <Badge
+                        className={
+                          b.status === BookingStatus.CONFIRMED
+                            ? "bg-primary/15 text-primary"
+                            : "bg-amber-500/15 text-amber-500"
+                        }
+                      >
+                        {b.status === BookingStatus.CONFIRMED
+                          ? "Confirmado"
+                          : "Rascunho"}
+                      </Badge>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {t("agendaCustomer")}: {customerName(b)}
+                    </p>
+                  </div>
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    {b.endTime}
+                  </span>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
         </section>
 
-        {/* Quick Analytics Cards */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col">
-            <CalendarIcon className="h-5 w-5 text-yellow-500 mb-2" />
-            <span className="text-2xl font-bold text-white content-end">{pendentesHoje}</span>
-            <span className="text-xs text-zinc-500 uppercase font-medium">{t("inQueueToday")}</span>
-          </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col">
-            <Scissors className="h-5 w-5 text-emerald-500 mb-2" />
-            <span className="text-2xl font-bold text-white content-end">{concluidosHoje}</span>
-            <span className="text-xs text-zinc-500 uppercase font-medium">{t("completedToday")}</span>
-          </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col">
-            <TrendingUp className="h-5 w-5 text-blue-500 mb-2" />
-            <span className="text-2xl font-bold text-white content-end">{user.estatisticas.totalServicos}</span>
-            <span className="text-xs text-zinc-500 uppercase font-medium">{t("totalCuts")}</span>
-          </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col">
-            <UserCircle2 className="h-5 w-5 text-purple-500 mb-2" />
-            <span className="text-2xl font-bold text-white content-end">{user.estatisticas.totalAvaliacoes}</span>
-            <span className="text-xs text-zinc-500 uppercase font-medium">{t("fiveStarReviews")}</span>
-          </div>
-        </section>
-
-        {/* Timeline Manager */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-white">{t("activeSchedule")}</h2>
-            <span className="text-sm text-zinc-500">{t("today")}</span>
-          </div>
-          <ProfessionalTimeline agendamentos={agendamentosEmAndamento} />
-        </section>
-
+        {reviews && reviews.reviews.length > 0 && (
+          <section>
+            <h2 className="mb-4 text-xl font-bold">{t("latestReviews")}</h2>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {reviews.reviews.slice(0, 6).map((r) => (
+                <div
+                  key={r.id}
+                  className="rounded-xl border border-border/50 bg-card p-4"
+                >
+                  <div className="mb-1 flex items-center justify-between">
+                    <span className="text-sm font-medium">{r.reviewerName}</span>
+                    <span className="flex items-center gap-1 text-sm text-primary">
+                      <Star className="h-3.5 w-3.5 fill-primary" />
+                      {r.rating}
+                    </span>
+                  </div>
+                  {r.comment && (
+                    <p className="text-sm italic text-muted-foreground">
+                      &quot;{r.comment}&quot;
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </main>
+  );
+}
+
+function KpiCard({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  value: string;
+  label: string;
+}) {
+  return (
+    <div className="flex flex-col rounded-2xl border border-border/50 bg-card p-4">
+      <div className="mb-2">{icon}</div>
+      <span className="text-2xl font-bold text-foreground">{value}</span>
+      <span className="text-xs font-medium uppercase text-muted-foreground">
+        {label}
+      </span>
+    </div>
   );
 }

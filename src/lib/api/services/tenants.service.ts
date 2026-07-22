@@ -13,6 +13,14 @@ export interface CreateTenantDto {
 export interface UpdateTenantDto extends Partial<CreateTenantDto> {
   status?: string;
   timezone?: string;
+  segment?: string | null;
+  avatarUrl?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  /** Política de cancelamento de confirmado pelo cliente (OWNER/ADMIN). */
+  clientCanCancelConfirmed?: boolean;
+  /** Antecedência mínima (min) 0–43200. */
+  clientCancelConfirmedMinLeadMinutes?: number;
 }
 
 export const tenantsService = {

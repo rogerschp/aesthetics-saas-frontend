@@ -28,18 +28,27 @@ export function EstabelecimentoBanner({ estabelecimento }: EstabelecimentoBanner
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="flex flex-col gap-2">
             <h1 className="text-3xl md:text-5xl font-bold text-foreground">{estabelecimento.nome}</h1>
-            <p className="text-muted-foreground text-sm md:text-base max-w-2xl">{estabelecimento.descricao}</p>
+            <p className="max-w-2xl text-sm text-muted-foreground md:text-base">
+              {estabelecimento.descricao ||
+                (estabelecimento.telefone
+                  ? `Contato: ${estabelecimento.telefone}`
+                  : null)}
+            </p>
 
-            <div className="flex flex-wrap items-center gap-4 mt-2">
-              <div className="flex items-center text-primary font-medium">
-                <Star className="w-4 h-4 fill-primary mr-1" />
+            <div className="mt-2 flex flex-wrap items-center gap-4">
+              <div className="flex items-center font-medium text-primary">
+                <Star className="mr-1 h-4 w-4 fill-primary" />
                 <span>{averageRating}</span>
-                <span className="text-muted-foreground ml-1 text-sm">({estabelecimento.avaliacoes.length} avaliações)</span>
+                <span className="ml-1 text-sm text-muted-foreground">
+                  ({estabelecimento.avaliacoes.length} avaliações)
+                </span>
               </div>
-              <div className="flex items-center text-muted-foreground text-sm">
-                <MapPin className="w-4 h-4 mr-1" />
-                {estabelecimento.localizacao}
-              </div>
+              {estabelecimento.localizacao && (
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <MapPin className="mr-1 h-4 w-4" />
+                  {estabelecimento.localizacao}
+                </div>
+              )}
             </div>
           </div>
 

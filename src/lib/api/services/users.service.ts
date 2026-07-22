@@ -1,5 +1,5 @@
 import { api } from '../client';
-import { User, Address, ProfessionalProfile, ProfessionalType, BookingMode } from '../types';
+import { User, Address, ProfessionalProfile, ProfessionalType, BookingMode, MyBooking, BookingStatus, Membership } from '../types';
 
 export interface RegisterUserRequest {
   email: string;
@@ -36,6 +36,18 @@ export const usersService = {
   
   getMe: async (): Promise<User> => {
     return api.get('/users/me');
+  },
+
+  /** GET /users/me/bookings?status= — Bearer. */
+  getMyBookings: async (status?: BookingStatus): Promise<MyBooking[]> => {
+    return api.get('/users/me/bookings', {
+      params: status ? { status } : undefined,
+    });
+  },
+
+  /** GET /users/me/tenants — memberships ACTIVE + resumo do tenant. */
+  getMyTenants: async (): Promise<Membership[]> => {
+    return api.get('/users/me/tenants');
   },
   
   updateMe: async (data: UpdateMyUserRequest): Promise<User> => {
