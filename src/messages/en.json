@@ -9,6 +9,205 @@
   },
   "Header": {
     "login": "Login",
-    "register": "Sign Up"
+    "register": "Sign Up",
+    "home": "Home",
+    "forEstablishments": "For Establishments",
+    "myAppointments": "My Appointments",
+    "mySchedule": "My Schedule",
+    "myDashboard": "My Dashboard",
+    "manageEstablishment": "Manage Establishment",
+    "welcome": "Welcome,"
+  },
+  "Home": {
+    "highlights": "Highlights in your Region",
+    "footer": "© {year} BarberShop SaaS. All rights reserved."
+  },
+  "Planos": {
+    "heroTitle1": "Your Establishment at the",
+    "heroTitle2": "Next Level",
+    "heroSubtitle": "Manage your team, modernize your appointments, and be discovered by thousands of new clients in your region every day.",
+    "starterName": "Single Chair",
+    "starterDesc": "Perfect for independent professionals starting their digital journey.",
+    "starterPrice": "$ 9",
+    "starterPeriod": "/month",
+    "starterFeatures": [
+      "Basic regional highlight",
+      "Up to 2 professionals on the team",
+      "Monthly analytics dashboard"
+    ],
+    "starterBtn": "Start Free Trial",
+    "proBadge": "Most Popular",
+    "proName": "Pro Plan",
+    "proDesc": "The complete arsenal for spaces that are scaling their profits.",
+    "proPrice": "$ 29",
+    "proPeriod": "/month",
+    "proFeatures": [
+      "Everything from Single Chair",
+      "Unlimited professionals",
+      "WhatsApp booking notifications",
+      "High priority in client searches"
+    ],
+    "proBtn": "Subscribe Pro",
+    "eliteName": "Elite Franchise",
+    "eliteDesc": "Robust solution for chains with dozens of widespread locations.",
+    "elitePrice": "Contact us",
+    "eliteFeatures": [
+      "Multi-store Management Network",
+      "Custom API for integrations",
+      "Dedicated success manager",
+      "Verified Franchise Badge"
+    ],
+    "eliteBtn": "Contact Sales",
+    "trustedBy": "Trusted by over 500 spaces"
+  },
+  "Cadastro": {
+    "title": "Create your account",
+    "subtitle": "Join the best establishments in your region.",
+    "hasAccount": "Already have an account?",
+    "login": "Sign in"
+  },
+  "Estabelecimento": {
+    "about": "About the Establishment",
+    "schedule": "Schedule Appointment"
+  },
+  "Login": {
+    "title": "Access BarberShop",
+    "subtitle": "Sign in to manage your appointments and profile.",
+    "noAccount": "Don't have an account yet?",
+    "register": "Create now"
+  },
+  "LoginForm": {
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "Password",
+    "forgotPassword": "Forgot password?",
+    "passwordPlaceholder": "******",
+    "submitLoading": "Signing in...",
+    "submitBtn": "Sign In",
+    "emailError": "Invalid email",
+    "passwordError": "Password is required"
+  },
+  "RegistrationForm": {
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Your name",
+    "nameError": "Name must have at least 3 characters",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "emailError": "Invalid email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "******",
+    "passwordError": "Password must have at least 6 characters",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "(555) 555-5555",
+    "phoneError": "Invalid phone",
+    "locationLabel": "City / State",
+    "locationPlaceholder": "e.g. New York, NY",
+    "locationError": "Invalid location",
+    "submitLoading": "Creating Account...",
+    "submitBtn": "Create Account",
+    "errorMessage": "Error creating account. Please check your details or try a different email.",
+    "successMessage": "Account created successfully! Redirecting you to login..."
+  },
+  "Perfil": {
+    "backHome": "Back to Home",
+    "editProfile": "Edit Profile",
+    "bronzePrivilege": "Bronze Privileges",
+    "nextLevel": "6 more services for the next level (Silver)",
+    "discover": "Discover in your region",
+    "explore": "Explore new styles and establishments near you.",
+    "viewAll": "View all establishments →"
+  },
+  "BarbeiroDashboard": {
+    "hello": "Hello,",
+    "proBadge": "Pro",
+    "dailySummary": "Your daily summary for today.",
+    "inQueueToday": "In Queue Today",
+    "completedToday": "Completed Today",
+    "totalCuts": "Total Services",
+    "fiveStarReviews": "5-Star Reviews",
+    "activeSchedule": "Active Schedule",
+    "today": "Today"
+  },
+  "Painel": {
+    "overview": "Overview",
+    "mainHQ": "Main HQ",
+    "welcomeBack": "Welcome back,",
+    "pulse": "This is the pulse of your establishment today.",
+    "storeSettings": "Store Settings",
+    "generateReport": "Generate Report",
+    "estRevenue": "Est. Revenue",
+    "occupancy": "Chair Occupancy",
+    "newClients": "New Clients",
+    "cancellations": "Cancellations",
+    "vsYesterday": "vs yesterday",
+    "teamPerformance": "Team Performance",
+    "dailyProgress": "Daily Progress",
+    "profitProduced": "Profit Produced",
+    "storeDynamism": "Store Dynamism",
+    "with": "with",
+    "delayed": "Delayed",
+    "attending": "Attending",
+    "viewFullQueue": "View full queue"
+  },
+  "EstabelecimentoForm": {
+    "back": "Back",
+    "managerPanel": "Manager Panel",
+    "editTitle": "Edit Establishment",
+    "createTitle": "Initial Setup",
+    "editSubtitle": "Update photos, pricing, and schedule in real time.",
+    "createSubtitle": "Set up your space, team, and services to start receiving clients.",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "createAccount": "Complete Setup",
+    "step1": "1. Basic Info",
+    "step2": "2. Schedule",
+    "step3": "3. Services",
+    "step4": "4. Team",
+    "nextStep": "Next Step →"
+  },
+  "Categories": {
+    "barber": "Barbershop",
+    "salon": "Beauty Salon",
+    "tattoo": "Tattoo Studio"
+  },
+  "SearchBar": {
+    "placeholderSearch": "Search for establishment or service...",
+    "placeholderLocation": "Location...",
+    "button": "Search"
+  },
+  "EditarSidebar": {
+    "informacoes": "Basic Info",
+    "redesSociais": "Social Media",
+    "expediente": "Working Hours",
+    "servicos": "Services & Pricing",
+    "equipe": "Team",
+    "aparencia": "Appearance"
+  },
+  "Aparencia": {
+    "titulo": "Customize Appearance",
+    "subtitulo": "Customize colors, fonts, and section layout of your establishment's page.",
+    "cores": "Colors",
+    "corPrimaria": "Primary Color",
+    "corSecundaria": "Secondary Color",
+    "corFundo": "Background Color",
+    "corTexto": "Text Color",
+    "paletas": "Quick Palettes",
+    "tipografia": "Typography",
+    "fonteLabel": "Main Font",
+    "bordas": "Border Radius",
+    "secoes": "Section Layout",
+    "secoesDesc": "Drag to reorder, toggle visibility, and choose the variant for each section.",
+    "variantePadrao": "Default",
+    "varianteAlternativo": "Alternative",
+    "varianteCompacto": "Compact",
+    "secaoProfissionais": "Our Professionals",
+    "secaoHorarios": "Business Hours",
+    "secaoServicos": "Services & Pricing",
+    "secaoAvaliacoes": "Reviews",
+    "secaoSobre": "About the Establishment",
+    "secaoEndereco": "Address & Contact",
+    "preview": "Preview",
+    "previewDesktop": "Desktop",
+    "previewMobile": "Mobile"
   }
 }

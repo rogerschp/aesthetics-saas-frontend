@@ -1,13 +1,16 @@
 import { RegistrationForm } from "@/components/forms/RegistrationForm";
 import Link from "next/link";
 import { Scissors } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 export const metadata = {
   title: "Cadastro | BarberShop",
   description: "Crie sua conta para agendar em barbearias, salões de beleza e estúdios de tatuagem.",
 };
 
-export default function CadastroPage() {
+export default async function CadastroPage() {
+  const t = await getTranslations("Cadastro");
+
   return (
     <div className="flex min-h-[calc(100vh-80px)] flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md mt-6">
@@ -16,10 +19,10 @@ export default function CadastroPage() {
             <Scissors className="text-yellow-500 w-full h-full" />
           </div>
           <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-white mb-2">
-            Crie sua conta
+            {t("title")}
           </h2>
           <p className="text-center text-sm text-zinc-400">
-            Junte-se aos melhores estabelecimentos da sua região.
+            {t("subtitle")}
           </p>
         </Link>
       </div>
@@ -29,12 +32,12 @@ export default function CadastroPage() {
           <RegistrationForm />
 
           <p className="mt-10 text-center text-sm text-zinc-400">
-            Já tem uma conta?{" "}
+            {t("hasAccount")}{" "}
             <Link
               href="/login"
               className="font-semibold leading-6 text-yellow-500 hover:text-yellow-400 transition-colors"
             >
-              Fazer login
+              {t("login")}
             </Link>
           </p>
         </div>

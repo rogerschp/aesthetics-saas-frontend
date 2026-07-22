@@ -1,13 +1,16 @@
 import { LoginForm } from "@/components/forms/LoginForm";
 import Link from "next/link";
 import { Scissors } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 export const metadata = {
   title: "Login | BarberShop",
   description: "Acesse sua conta para gerenciar seus agendamentos.",
 };
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const t = await getTranslations("Login");
+
   return (
     <div className="flex min-h-screen flex-col justify-center px-6 py-12 lg:px-8 bg-black">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -16,10 +19,10 @@ export default function LoginPage() {
             <Scissors className="text-yellow-500 w-full h-full" />
           </div>
           <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-white mb-2">
-            Acesse o BarberShop
+            {t("title")}
           </h2>
           <p className="text-center text-sm text-zinc-400">
-            Entre para gerenciar seus agendamentos e perfil.
+            {t("subtitle")}
           </p>
         </Link>
       </div>
@@ -32,12 +35,12 @@ export default function LoginPage() {
           <LoginForm />
 
           <p className="mt-10 text-center text-sm text-zinc-400">
-            Ainda não tem conta?{" "}
+            {t("noAccount")}{" "}
             <Link
               href="/cadastro"
               className="font-semibold leading-6 text-yellow-500 hover:text-yellow-400 transition-colors"
             >
-              Criar agora
+              {t("register")}
             </Link>
           </p>
         </div>

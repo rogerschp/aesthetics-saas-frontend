@@ -54,9 +54,9 @@ export function EstabelecimentoBanner({ estabelecimento }: EstabelecimentoBanner
                 <Share2 className="w-4 h-4" />
               </Button>
             )}
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive">
-              <AlertTriangle className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Denunciar</span>
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive inline-flex items-center">
+              <AlertTriangle className="w-4 h-4 mr-1.5 shrink-0" />
+              <span className="hidden sm:inline leading-none">Denunciar</span>
             </Button>
           </div>
         </div>

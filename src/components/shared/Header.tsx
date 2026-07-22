@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useSession, signOut } from "next-auth/react";
 
 interface AuthState {
   id: string;
@@ -16,37 +17,19 @@ interface AuthState {
 
 export function Header() {
   const t = useTranslations("Header");
-  const [auth, setAuth] = useState<AuthState | null>(null);
+  const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Verifica o estado de login
-  const checkAuth = () => {
-    try {
-      const stored = localStorage.getItem("@barbershop:user");
-      if (stored) {
-        setAuth(JSON.parse(stored));
-      } else {
-        setAuth(null);
-      }
-    } catch {
-      setAuth(null);
-    }
-  };
-
-  useEffect(() => {
-    checkAuth();
-    window.addEventListener("auth-changed", checkAuth);
-    return () => {
-      window.removeEventListener("auth-changed", checkAuth);
-    };
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("@barbershop:user");
-    setAuth(null);
-    window.dispatchEvent(new Event("auth-changed"));
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
     router.push("/");
   };
+
+  // Consolida o estado de autenticação via NextAuth apenas
+  const auth = session?.user ? {
+    id: (session.user as any).id,
+    role: (session.user as any).role || "CLIENT"
+  } : null;
 
   // Profile data mocked for Header display
   const isOwner = auth?.role === "OWNER";
@@ -70,28 +53,28 @@ export function Header() {
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             <Link href="/" className="flex items-center gap-2 text-zinc-300 hover:text-yellow-500 transition-colors">
               <Home className="h-4 w-4" />
-              Início
+              {t("home")}
             </Link>
 
             {/* Contextual Links */}
             {!auth && (
               <Link href="/planos" className="flex items-center gap-2 text-zinc-300 hover:text-yellow-500 transition-colors">
                 <Store className="h-4 w-4" />
-                Para Estabelecimentos
+                {t("forEstablishments")}
               </Link>
             )}
 
             {isClient && (
               <Link href={`/perfil/${auth.id}`} className="flex items-center gap-2 text-zinc-300 hover:text-yellow-500 transition-colors">
                 <Calendar className="h-4 w-4" />
-                Meus Agendamentos
+                {t("myAppointments")}
               </Link>
             )}
 
             {isPro && (
               <Link href={`/barbeiro/${auth.id}`} className="flex items-center gap-2 text-zinc-300 hover:text-yellow-500 transition-colors">
                 <Calendar className="h-4 w-4" />
-                Minha Agenda
+                {t("mySchedule")}
               </Link>
             )}
 
@@ -99,11 +82,11 @@ export function Header() {
               <>
                 <Link href="/painel" className="flex items-center gap-2 text-zinc-300 hover:text-yellow-500 transition-colors">
                   <LayoutDashboard className="h-4 w-4" />
-                  Meu Painel
+                  {t("myDashboard")}
                 </Link>
                 <Link href="/painel/estabelecimento/editar" className="flex items-center gap-2 text-zinc-300 hover:text-yellow-500 transition-colors">
                   <Store className="h-4 w-4" />
-                  Gerenciar Estabelecimento
+                  {t("manageEstablishment")}
                 </Link>
               </>
             )}
@@ -116,7 +99,7 @@ export function Header() {
           {auth ? (
             <div className="flex items-center gap-5">
               <div className="hidden sm:flex flex-col items-end mr-1">
-                <span className="text-xs text-muted-foreground font-medium">Bem-vindo,</span>
+                <span className="text-xs text-muted-foreground font-medium">{t("welcome")}</span>
                 <span className="text-sm font-bold text-foreground">{profileName}</span>
               </div>
               <Link href={`/perfil/${auth.id}`} className="hover:opacity-80 transition-opacity">

@@ -36,6 +36,55 @@ export interface Avaliacao {
 
 export type CategoriaEstabelecimento = "barbearia" | "salao" | "tatuagem";
 
+// --- Tipos do Sistema de Temas (Feature de Customização de Layout) ---
+
+/** Fontes disponíveis para o tenant customizar sua página pública */
+export type FonteDisponivel =
+  | "Inter"
+  | "Playfair Display"
+  | "Roboto"
+  | "Outfit"
+  | "Bebas Neue"
+  | "Montserrat"
+  | "Poppins";
+
+/** Variante visual dos componentes de seção da página pública */
+export type VarianteComponente = "padrao" | "alternativo" | "compacto";
+
+/** Tipos de seção disponíveis na página pública do estabelecimento */
+export type TipoSecao =
+  | "profissionais"
+  | "horarios"
+  | "servicos"
+  | "avaliacoes"
+  | "sobre"
+  | "endereco";
+
+/** Configuração de posição e exibição de uma seção na página pública */
+export interface SecaoLayout {
+  id: string;
+  tipo: TipoSecao;
+  visivel: boolean;
+  ordem: number;
+  variante: VarianteComponente;
+}
+
+/** Opções de arredondamento de borda disponíveis */
+export type BorderRadiusOpcao = "none" | "sm" | "md" | "lg" | "full";
+
+/** Tema visual completo customizável pelo dono do estabelecimento */
+export interface TenantTema {
+  corPrimaria: string;
+  corSecundaria: string;
+  corFundo: string;
+  corTexto: string;
+  fonte: FonteDisponivel;
+  borderRadius: BorderRadiusOpcao;
+  secoesLayout: SecaoLayout[];
+}
+
+// --- Tipos do Estabelecimento ---
+
 export interface Estabelecimento {
   id: string;
   slug: string;
@@ -52,6 +101,7 @@ export interface Estabelecimento {
   servicos: ServicoTopico[];
   time: Membro[];
   avaliacoes: Avaliacao[];
+  tema?: TenantTema; // Customização visual da página pública (Feature PRO)
 }
 
 export interface Agendamento {

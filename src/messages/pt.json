@@ -9,6 +9,205 @@
   },
   "Header": {
     "login": "Entrar",
-    "register": "Cadastrar"
+    "register": "Cadastrar",
+    "home": "Início",
+    "forEstablishments": "Para Estabelecimentos",
+    "myAppointments": "Meus Agendamentos",
+    "mySchedule": "Minha Agenda",
+    "myDashboard": "Meu Painel",
+    "manageEstablishment": "Gerenciar Estabelecimento",
+    "welcome": "Bem-vindo,"
+  },
+  "Home": {
+    "highlights": "Destaques na sua Região",
+    "footer": "© {year} BarberShop SaaS. Todos os direitos reservados."
+  },
+  "Planos": {
+    "heroTitle1": "Seu Estabelecimento no",
+    "heroTitle2": "Próximo Nível",
+    "heroSubtitle": "Gerencie sua equipe, modernize seus agendamentos e seja descoberto por milhares de novos clientes na sua região todos os dias.",
+    "starterName": "Cadeira Única",
+    "starterDesc": "Perfeito para profissionais autônomos começando sua jornada digital.",
+    "starterPrice": "R$ 49",
+    "starterPeriod": "/mês",
+    "starterFeatures": [
+      "Destaque regional básico",
+      "Até 2 profissionais na equipe",
+      "Painel analítico mensal"
+    ],
+    "starterBtn": "Começar Teste Grátis",
+    "proBadge": "Mais Popular",
+    "proName": "Plano Pro",
+    "proDesc": "O arsenal completo para espaços que estão escalando seus lucros.",
+    "proPrice": "R$ 129",
+    "proPeriod": "/mês",
+    "proFeatures": [
+      "Tudo do plano Cadeíra Única",
+      "Profissionais ilimitados",
+      "Notificações de reserva via WhatsApp",
+      "Prioridade alta nas buscas de clientes"
+    ],
+    "proBtn": "Assinar Plano Pro",
+    "eliteName": "Franquia Elite",
+    "eliteDesc": "Solução robusta para redes com dezenas de unidades espalhadas.",
+    "elitePrice": "Consulte",
+    "eliteFeatures": [
+      "Rede de Gestão Multi-lojas",
+      "API própria para integrações",
+      "Gerente de sucesso dedicado",
+      "Selo de Franquia Verificada"
+    ],
+    "eliteBtn": "Contatar Vendas",
+    "trustedBy": "Confiado por mais de 500 espaços no brasil"
+  },
+  "Cadastro": {
+    "title": "Crie sua conta",
+    "subtitle": "Junte-se aos melhores estabelecimentos da sua região.",
+    "hasAccount": "Já tem uma conta?",
+    "login": "Fazer login"
+  },
+  "Estabelecimento": {
+    "about": "Sobre o Estabelecimento",
+    "schedule": "Agendar Horário"
+  },
+  "Login": {
+    "title": "Acesse o BarberShop",
+    "subtitle": "Entre para gerenciar seus agendamentos e perfil.",
+    "noAccount": "Ainda não tem conta?",
+    "register": "Criar agora"
+  },
+  "LoginForm": {
+    "emailLabel": "E-mail",
+    "emailPlaceholder": "seu@email.com",
+    "passwordLabel": "Senha",
+    "forgotPassword": "Esqueceu a senha?",
+    "passwordPlaceholder": "******",
+    "submitLoading": "Entrando...",
+    "submitBtn": "Entrar no Sistema",
+    "emailError": "E-mail inválido",
+    "passwordError": "A senha é obrigatória"
+  },
+  "RegistrationForm": {
+    "nameLabel": "Nome Completo",
+    "namePlaceholder": "Seu nome",
+    "nameError": "Nome deve ter pelo menos 3 caracteres",
+    "emailLabel": "E-mail",
+    "emailPlaceholder": "seu@email.com",
+    "emailError": "E-mail inválido",
+    "passwordLabel": "Senha",
+    "passwordPlaceholder": "******",
+    "passwordError": "A senha deve ter pelo menos 6 caracteres",
+    "phoneLabel": "Telefone",
+    "phonePlaceholder": "(11) 90000-0000",
+    "phoneError": "Telefone inválido",
+    "locationLabel": "Cidade / Estado (UF)",
+    "locationPlaceholder": "Ex: Curitiba, PR",
+    "locationError": "Localização inválida",
+    "submitLoading": "Criando Conta...",
+    "submitBtn": "Criar Conta",
+    "errorMessage": "Erro ao realizar o cadastro. Por favor, verifique seus dados ou tente um e-mail diferente.",
+    "successMessage": "Conta criada com sucesso! Você será redirecionado para o login..."
+  },
+  "Perfil": {
+    "backHome": "Voltar para Início",
+    "editProfile": "Editar Perfil",
+    "bronzePrivilege": "Privilégios Bronze",
+    "nextLevel": "Faltam 6 serviços para o próximo nível (Prata)",
+    "discover": "Descubra em sua região",
+    "explore": "Explore novos estilos e estabelecimentos próximos de você.",
+    "viewAll": "Ver todos os estabelecimentos →"
+  },
+  "BarbeiroDashboard": {
+    "hello": "Olá,",
+    "proBadge": "Pro",
+    "dailySummary": "Seu resumo diário para hoje.",
+    "inQueueToday": "Na Fila Hoje",
+    "completedToday": "Concluídos Hoje",
+    "totalCuts": "Cortes Totais",
+    "fiveStarReviews": "Avaliações 5 Estrelas",
+    "activeSchedule": "Agenda Ativa",
+    "today": "Hoje"
+  },
+  "Painel": {
+    "overview": "Visão Geral",
+    "mainHQ": "Sede Principal",
+    "welcomeBack": "Bem-vindo(a) de volta,",
+    "pulse": "Esse é o pulso do seu estabelecimento hoje.",
+    "storeSettings": "Ajustes da Loja",
+    "generateReport": "Gerar Relatório",
+    "estRevenue": "Receita Estimada",
+    "occupancy": "Ocupação das Cadeiras",
+    "newClients": "Novos Clientes",
+    "cancellations": "Furos / Cancelamentos",
+    "vsYesterday": "vs ontem",
+    "teamPerformance": "Desempenho da Equipe",
+    "dailyProgress": "Progresso Diário",
+    "profitProduced": "Lucro Produzido",
+    "storeDynamism": "Dinamismo da Loja",
+    "with": "com",
+    "delayed": "Atraso",
+    "attending": "Atendendo",
+    "viewFullQueue": "Ver fila completa"
+  },
+  "EstabelecimentoForm": {
+    "back": "Voltar",
+    "managerPanel": "Painel Gerencial",
+    "editTitle": "Editar Estabelecimento",
+    "createTitle": "Configuração Inicial",
+    "editSubtitle": "Atualize fotos, preçário e quadro de horários em tempo real.",
+    "createSubtitle": "Configure seu espaço, equipe e serviços para começar a receber clientes.",
+    "saveChanges": "Salvar Alterações",
+    "saving": "Salvando...",
+    "createAccount": "Concluir Configuração",
+    "step1": "1. Informações Básicas",
+    "step2": "2. Expediente",
+    "step3": "3. Serviços",
+    "step4": "4. Equipe",
+    "nextStep": "Próxima Etapa →"
+  },
+  "Categories": {
+    "barber": "Barbearia",
+    "salon": "Salão",
+    "tattoo": "Tatuagem"
+  },
+  "SearchBar": {
+    "placeholderSearch": "Busque por estabelecimento ou serviço...",
+    "placeholderLocation": "Localização...",
+    "button": "Buscar"
+  },
+  "EditarSidebar": {
+    "informacoes": "Informações Básicas",
+    "redesSociais": "Redes Sociais",
+    "expediente": "Expediente",
+    "servicos": "Serviços e Preços",
+    "equipe": "Equipe",
+    "aparencia": "Aparência"
+  },
+  "Aparencia": {
+    "titulo": "Personalizar Aparência",
+    "subtitulo": "Customize cores, fontes e organização da página do seu estabelecimento.",
+    "cores": "Cores",
+    "corPrimaria": "Cor Primária",
+    "corSecundaria": "Cor Secundária",
+    "corFundo": "Cor de Fundo",
+    "corTexto": "Cor do Texto",
+    "paletas": "Paletas Rápidas",
+    "tipografia": "Tipografia",
+    "fonteLabel": "Fonte Principal",
+    "bordas": "Arredondamento de Bordas",
+    "secoes": "Organização das Seções",
+    "secoesDesc": "Arraste para reordenar, alterne a visibilidade e escolha a variante de cada seção.",
+    "variantePadrao": "Padrão",
+    "varianteAlternativo": "Alternativo",
+    "varianteCompacto": "Compacto",
+    "secaoProfissionais": "Nossos Profissionais",
+    "secaoHorarios": "Horários de Funcionamento",
+    "secaoServicos": "Serviços e Preços",
+    "secaoAvaliacoes": "Avaliações",
+    "secaoSobre": "Sobre o Estabelecimento",
+    "secaoEndereco": "Endereço e Contato",
+    "preview": "Visualizar Prévia",
+    "previewDesktop": "Desktop",
+    "previewMobile": "Mobile"
   }
 }

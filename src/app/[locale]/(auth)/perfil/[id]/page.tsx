@@ -10,6 +10,7 @@ import Link from "next/link";
 import { ArrowLeft, Settings, Sparkles, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { getTranslations } from "next-intl/server";
 
 export const metadata = {
   title: "Meu Perfil | BarberShop",
@@ -23,6 +24,7 @@ interface PerfilPageProps {
 }
 
 export default async function PerfilPage({ params }: PerfilPageProps) {
+  const t = await getTranslations("Perfil");
   const resolvedParams = await params;
   const usuario = await getMockUser(resolvedParams.id);
   const estabelecimentos = await getEstabelecimentos();
@@ -47,12 +49,12 @@ export default async function PerfilPage({ params }: PerfilPageProps) {
             className="group inline-flex items-center text-sm font-medium text-zinc-400 hover:text-yellow-500 transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4 transform group-hover:-translate-x-1 transition-transform" />
-            Voltar para Início
+            {t("backHome")}
           </Link>
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" className="dark:border-zinc-800 dark:hover:bg-zinc-800">
               <Settings className="mr-2 h-4 w-4" />
-              Editar Perfil
+              {t("editProfile")}
             </Button>
           </div>
         </div>
@@ -72,14 +74,14 @@ export default async function PerfilPage({ params }: PerfilPageProps) {
               <div className="bg-zinc-900/20 border border-zinc-800/30 rounded-2xl p-6">
                 <h4 className="flex items-center gap-2 text-white font-bold mb-4">
                   <Sparkles className="h-4 w-4 text-yellow-500" />
-                  Privilégios Bronze
+                  {t("bronzePrivilege")}
                 </h4>
                 <div className="space-y-3">
                   <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
                     <div className="h-full w-[65%] bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]" />
                   </div>
                   <p className="text-xs text-zinc-500 text-center">
-                    Faltam 6 serviços para o próximo nível (Prata)
+                    {t("nextLevel")}
                   </p>
                 </div>
               </div>
@@ -106,13 +108,13 @@ export default async function PerfilPage({ params }: PerfilPageProps) {
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
                 <Map className="h-7 w-7 text-yellow-500" />
-                Descubra em sua região
+                {t("discover")}
               </h2>
-              <p className="text-zinc-500 mt-2">Explore novos estilos e estabelecimentos próximos de você.</p>
+              <p className="text-zinc-500 mt-2">{t("explore")}</p>
             </div>
             <Link href="/">
               <Button variant="link" className="text-yellow-500 p-0 font-bold hover:text-yellow-400">
-                Ver todos os estabelecimentos →
+                {t("viewAll")}
               </Button>
             </Link>
           </div>

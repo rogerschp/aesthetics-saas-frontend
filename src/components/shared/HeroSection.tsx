@@ -22,7 +22,7 @@ export function HeroSection() {
             <RotatingSegmentWord />
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground/90 max-w-2xl mx-auto font-medium shadow-black drop-shadow-md">
-            {t("subtitle_pt1")} barbearias, salões de beleza e estúdios de tatuagem {t("subtitle_pt2")}
+            {t("subtitle_pt1")} {t("rotating_1")}, {t("rotating_2")} {t.raw("rotating_3").includes("estúdio") ? "e" : (t.raw("rotating_3").includes("estudio") ? "y" : "and")} {t("rotating_3")} {t("subtitle_pt2")}
           </p>
         </div>
 

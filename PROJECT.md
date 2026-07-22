@@ -222,10 +222,12 @@ export interface Usuario {
 5. **Reuso:** Antes de montar componentes novos complexos, certifique e valide as bases do Shadcn e a própria lista descritiva que constará infra neste projeto.
 6. **Atualização do Arquivo:** Sempre que se abstrair algo em um Componente reutilizável para escopo de visualização (Cards, Avatares Complexos, Selectors), a Lista de Componentes deve ser retro-alimentada neste `PROJECT.md` conforme requisitado pelas diretrizes. Registre decisões estáticas.
 
-## 9. Roadmap Pós-MVP
-- Integração estrita dos contratos Type em interfaces de rede (`Fetch`/`Axios`) consumindo a API REST oficial.
-- Gestão e aprofundamento das "Roles Livres" em roles com RBAC em `jwt/sessions` reais da plataforma se necessário para módulos posteriores.
-- Sistema transacional de agendamento acoplado com gateway local e webhooks para travar ocupação.
+## 9. Roadmap de Integração (API Real)
+A atual fase do projeto focará em substituir progressivamente a base de mocks pela API REST definitiva do Cyacsys via Axios.
+- Implementação de um client HTTP resiliente com Axios (Interceptors para Bearer token).
+- Migração modular dividida em 4 fases: (1) Autenticação e Perfis, (2) Setup de Loja (Tenant Onboarding), (3) Descoberta Pública, e (4) Booking Transacional.
+- Tipagem estrita baseada nos modelos do banco de dados (DTOs reais em substituição aos mocks).
+- Substituição planejada do `localStorage` provisório para soluções robustas de sessão.
 
 ## 10. Progresso do Projeto (Checklist)
 
@@ -282,10 +284,54 @@ export interface Usuario {
 - [x] Atualização de copy, herói e cards para refletir múltiplos segmentos
 
 ### FASE 8: Internacionalização (i18n)
-- [ ] Configuração do `next-intl` e middleware de locale (`/pt`, `/en`, `/es`)
-- [ ] Dicionários de Tradução para toda a interface estática
-- [ ] Componente seletor de idiomas (`LanguageSwitcher`)
-- [ ] Refatoração das páginas e componentes para usar chaves de tradução dinâmicas
+- [x] Configuração do `next-intl` e middleware de locale (`/pt`, `/en`, `/es`)
+- [x] **Fase 4: Refatoração em Massa**
+  - [x] Páginas e componentes públicos (/(public))
+  - [x] Componentes de Layout Compartilhados (Header, Footer, etc)
+  - [x] Páginas do Painel e Perfil (/(auth))
+  - [x] Refatoração de Formulários com i18n + zod (LoginForm, RegistrationForm) a usar chaves de tradução dinâmicas
+
+### FASE 9: Customização de Layout do Tenant (Feature PRO)
+- [x] Reestruturação do painel de edição do estabelecimento com sidebar navegável
+  - [x] Componente `EditarEstabelecimentoSidebar` com 5 seções (Info, Expediente, Serviços, Equipe, Aparência)
+  - [x] Responsividade: sidebar vertical (desktop) e tabs horizontais (mobile)
+  - [x] Redes Sociais mantidas dentro de "Informações Básicas" (StoreProfileForm)
+- [x] Sistema de Temas e Editor de Aparência
+  - [x] Tipos `TenantTema`, `SecaoLayout`, `FonteDisponivel`, `VarianteComponente` em `types/index.ts`
+  - [x] Campo `tema?: TenantTema` na interface `Estabelecimento`
+  - [x] Mock data de paletas e temas em `lib/mock/temas.ts`
+  - [x] Componente `ColorPicker` com input nativo + hex manual + `PaletaSeletor`
+  - [x] Componente `FontSelector` com grid visual de fontes
+  - [x] Componente `SecaoOrdenavel` (memo, GPU accel, `@dnd-kit/modifiers` para eixo vertical)
+  - [x] Componente `AparenciaEditor` (compõe tudo: cores, fontes, bordas, seções)
+  - [x] Componente `LayoutPreview` com layout 2 colunas fiel à página real + textos de exemplo
+- [x] Variantes de componentes da página pública
+  - [x] `TeamGallery` com 3 variantes (padrão, alternativo, compacto)
+  - [x] `WeekTimetable` com 3 variantes (padrão, alternativo, compacto)
+  - [x] `ServicesAccordion` com 3 variantes (padrão, alternativo, compacto)
+- [x] Integração do tema na página pública
+  - [x] CSS custom properties inline + Google Fonts dinâmico (server component)
+  - [x] Renderização de seções na ordem definida pelo tema
+  - [x] Ink & Soul Tattoo Studio: tema vermelho-neon, Bebas Neue, border-radius none, seções reordenadas
+
+### FASE 10: Integração com API (Axios & Backend Real)
+- [x] Setup do Client HTTP e Tipagens (`client.ts`, `types.ts`).
+- [x] (Fase A) Conexão da Autenticação e Perfis (`/login`, `/cadastro`, perfis globais).
+- [x] (Fase B) Conexão do Onboarding de Tenant (Cadastro da loja, horários, catálogo, vínculos de equipe).
+- [ ] (Fase C) Conexão das Views Públicas (Busca por slug, slots de disponibilidade, perfil público).
+- [ ] (Fase D) Conexão do Fluxo de Agendamento (Transações Draft, Confirmação, Visualização da Agenda).
+
+## 11. Decisões Técnicas — Customização de Layout
+
+> **Arquitetura de Temas**: A customização visual do tenant é implementada via **CSS Custom Properties** (`--tema-*`) injetadas por um `TemaProvider` context. Essa abordagem permite aplicar temas sem recompilar CSS e sem conflito com o design system global do Tailwind.
+
+> **Drag & Drop**: Utiliza `@dnd-kit/core` + `@dnd-kit/sortable` para reordenação das seções da página pública. A lib foi escolhida por ser leve (~10kb gzipped), acessível (suporte a keyboard) e compatível com React 18+/19.
+
+> **Variantes de Componentes**: Cada componente customizável (`TeamGallery`, `WeekTimetable`, `ServicesAccordion`) aceita uma prop `variante?: VarianteComponente` com 3 opções: `"padrao"`, `"alternativo"` e `"compacto"`. O default é sempre `"padrao"` para manter compatibilidade retroativa.
+
+> **Google Fonts**: As fontes são carregadas dinamicamente via `<link>` no `TemaProvider` quando a fonte selecionada difere da padrão ("Inter"). Não há pré-carregamento estático para minimizar bundle.
+
+> **Plano PRO (MVP)**: A feature de aparência é acessível a todos no MVP. A verificação de plano PRO será implementada futuramente quando o backend de subscriptions estiver integrado.
 
 ---
 
@@ -301,12 +347,21 @@ export interface Usuario {
 - **`[FeaturedCarousel]`**: Container de slides para exibir estabelecimentos em destaque, utilizando Embla Carousel, substituindo o grid infinito.
 - **`[RotatingSegmentWord]`**: Componente para animar a troca de palavras-chave no Hero ("Barbearia", "Salão", "Estúdio") reforçando o novo modelo multi-segmento.
 - **`[AddressMapper]`**: Card emulando simulação visual de mapa com pino CSS pulsante e box informativo sobre local. Centraliza as referências de contato.
-- **`[ServicesAccordion]`**: Listagem de tabela de preços expansiva baseada nos primitivos de componentes Base UI (shadcn), segmentada por categorias baseadas na hierarquia do serviço.
-- **`[TeamGallery]`**: Lista de scroll horizontal fluida (snap scroll mobile/desktop) para mapear fotos de membros e cargos sem ocupar o view port extenso na vertical.
-- **`[WeekTimetable]`**: Relógio/Lista com base dinâmica de dia realçavel com badge 'Hoje', e com layout estritamente de dados de funcionamento diário.
+- **`[ServicesAccordion]`**: Listagem de tabela de preços com 3 variantes visuais (accordion, grid de cards, lista plana). Suporta `variante?: VarianteComponente` para customização via tema.
+- **`[TeamGallery]`**: Galeria de profissionais com 3 variantes (scroll horizontal, grid 2x2, lista compacta). Suporta `variante?: VarianteComponente`.
+- **`[WeekTimetable]`**: Horários de funcionamento com 3 variantes (tabela semanal, barras visuais, grid de cards). Suporta `variante?: VarianteComponente`.
 - **`[ReviewsWall]`**: Componente visual massivo focado em Social Proof exibindo comentários com Stars visuais iterativos em Grid Layout adaptativo.
 - **`[RegistrationForm]`**: Formulário blindado com `zod` e `react-hook-form` simulando a criação da conta em step único.
 - **`[LoginForm]`**: Formulário focado em conversão de login em `/login`, reaproveitando os hooks de forms para UX coesa e ágil.
 - **`[AvatarResume]`**: Componente principal do dashboard do cliente que compila as informações estáticas e a data de ingresso.
 - **`[AnalyticMetrics]`**: Exibição dos KPIs macro do cliente (quantos agendamentos concluídos, avaliações) com design em grid e iconografia de destaque.
 - **`[HistoryTimeline]`**: Timeline vertical e minimalista utilizando CSS para conectar as etapas de uso do cliente pregressas, informando o dia e estabelecimento onde o serviço foi executado.
+- **`[EditarEstabelecimentoSidebar]`**: Sidebar de navegação vertical (desktop) / tabs horizontais (mobile) para a tela de edição do estabelecimento. Contém 6 seções: Informações, Redes Sociais, Expediente, Serviços, Equipe e Aparência (PRO).
+- **`[SocialMediaForm]`**: Formulário dedicado para edição de redes sociais (Instagram/Facebook), separado do `StoreProfileForm` para modularidade na sidebar.
+- **`[AparenciaEditor]`**: Editor visual completo de aparência do tenant. Compõe `ColorPicker`, `FontSelector`, seletor de `borderRadius` e lista drag-and-drop de seções via `@dnd-kit`.
+- **`[ColorPicker]`**: Input de cor com preview visual e campo hex manual. Inclui `PaletaSeletor` com paletas pré-definidas para seleção rápida.
+- **`[FontSelector]`**: Grid visual de fontes Google disponíveis com indicador de seleção e preview descritivo de cada fonte.
+- **`[SecaoOrdenavel]`**: Item arrastável para reordenação de seções da página pública. Integra handle de arraste, toggle de visibilidade e seletor de variante visual (padrão/alternativo/compacto).
+- **`[LayoutPreview]`**: Preview miniatura ao vivo da página pública com o tema aplicado. Exibe wireframes das seções respeitando ordem, visibilidade e cores. Alterna entre desktop e mobile.
+- **`[TemaProvider]`**: Context Provider que injeta CSS custom properties (`--tema-*`) e carrega Google Fonts dinamicamente. Envolver conteúdo da página pública quando o estabelecimento possui tema.
+

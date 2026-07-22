@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 };
 
 import { Header } from "@/components/shared/Header";
+import { Providers } from "@/components/providers";
 
 export default async function RootLayout({
   children,
@@ -41,8 +42,10 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans">
         <NextIntlClientProvider messages={messages}>
-          <Header />
-          {children}
+          <Providers>
+            <Header />
+            {children}
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

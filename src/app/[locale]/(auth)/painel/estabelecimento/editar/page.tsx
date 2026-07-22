@@ -3,16 +3,23 @@
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StoreProfileForm } from "@/components/forms/tenant/StoreProfileForm";
 import { HoursInputRepeater } from "@/components/forms/tenant/HoursInputRepeater";
 import { ServiceHierarchyBuilder } from "@/components/forms/tenant/ServiceHierarchyBuilder";
 import { TeamBuilder } from "@/components/forms/tenant/TeamBuilder";
+import { AparenciaEditor } from "@/components/forms/tenant/AparenciaEditor";
+import {
+  EditarEstabelecimentoSidebar,
+  type SecaoEdicao,
+} from "@/components/shared/estabelecimento/EditarEstabelecimentoSidebar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Save, Building2, Paintbrush } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import type { TenantTema } from "@/types";
+import { TEMA_PADRAO } from "@/lib/mock/temas";
 
 // Schema unificado (Mesmo do Criar, exportado num arquivo lib/schemas futuramente)
 const tenantSchema = z.object({
@@ -96,9 +103,11 @@ const mockEditData: Partial<TenantFormValues> = {
 };
 
 export default function TenantEditPage() {
+  const t = useTranslations("EstabelecimentoForm");
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("perfil");
+  const [secaoAtiva, setSecaoAtiva] = useState<SecaoEdicao>("informacoes");
+  const [tema, setTema] = useState<TenantTema>(TEMA_PADRAO);
 
   // Reset assíncrono para replicar buscar da API
   const methods = useForm<TenantFormValues>({
@@ -121,33 +130,51 @@ export default function TenantEditPage() {
     setIsLoading(true);
     // Simula API UPDATE action
     await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("Tenant atualizado com sucesso:", data);
+    // TODO(security): No ambiente de produção, os dados devem ser enviados via HTTPS
+    // e validados server-side antes de persistir
+    console.log("Tenant atualizado com sucesso");
     setIsLoading(false);
     
-    // Mostra um alert na vida real, pro MVP vamos voltar ao início
     router.push("/");
   };
 
-  const handleNextTab = (next: string) => {
-    setActiveTab(next);
+  /**
+   * Renderiza o conteúdo da seção ativa.
+   * Cada seção carrega seu formulário/componente específico.
+   */
+  const renderizarConteudo = () => {
+    switch (secaoAtiva) {
+      case "informacoes":
+        return <StoreProfileForm />;
+      case "expediente":
+        return <HoursInputRepeater />;
+      case "servicos":
+        return <ServiceHierarchyBuilder />;
+      case "equipe":
+        return <TeamBuilder />;
+      case "aparencia":
+        return <AparenciaEditor tema={tema} onTemaChange={setTema} />;
+      default:
+        return <StoreProfileForm />;
+    }
   };
 
   return (
     <div className="min-h-screen bg-black pb-20 relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none" />
       
-      <div className="container mx-auto px-4 max-w-5xl relative z-10 pt-28">
+      <div className="container mx-auto px-4 max-w-7xl relative z-10 pt-28">
         <div className="flex items-center justify-between mb-8">
           <Link
             href="/"
             className="group inline-flex items-center text-sm font-medium text-zinc-400 hover:text-yellow-500 transition-colors"
           >
             <ArrowLeft className="mr-2 h-4 w-4 transform group-hover:-translate-x-1 transition-transform" />
-            Voltar
+            {t("back")}
           </Link>
           <div className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-zinc-500" />
-            <span className="text-zinc-500 font-medium tracking-wide">Painel Gerencial</span>
+            <span className="text-zinc-500 font-medium tracking-wide">{t("managerPanel")}</span>
           </div>
         </div>
 
@@ -157,10 +184,10 @@ export default function TenantEditPage() {
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-white flex items-center gap-3">
                   <Paintbrush className="h-8 w-8 text-yellow-500" />
-                  Editar Estabelecimento
+                  {t("editTitle")}
                 </h1>
                 <p className="text-zinc-400 mt-2 text-lg">
-                  Atualize fotos, preçário e quadro de horários em tempo real.
+                  {t("editSubtitle")}
                 </p>
               </div>
               
@@ -169,89 +196,29 @@ export default function TenantEditPage() {
                 disabled={isLoading}
                 className="bg-yellow-500 text-black hover:bg-yellow-600 font-bold px-8 shadow-lg shadow-yellow-500/20"
               >
-                {isLoading ? "Salvando..." : (
+                {isLoading ? t("saving") : (
                   <>
                     <Save className="h-4 w-4 mr-2" />
-                    Salvar Alterações
+                    {t("saveChanges")}
                   </>
                 )}
               </Button>
             </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <div className="border-b border-zinc-800/80 mb-6 overflow-x-auto scrollbar-hide">
-                <TabsList className="bg-transparent h-auto p-0 flex justify-start space-x-6 w-max">
-                  <TabsTrigger 
-                    value="perfil"
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 data-[state=active]:text-yellow-500 data-[state=active]:shadow-none rounded-none px-1 pb-3 text-zinc-400 font-medium text-base h-auto"
-                  >
-                    1. Informações Básicas
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="expediente"
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 data-[state=active]:text-yellow-500 data-[state=active]:shadow-none rounded-none px-1 pb-3 text-zinc-400 font-medium text-base h-auto"
-                  >
-                    2. Expediente
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="servicos"
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 data-[state=active]:text-yellow-500 data-[state=active]:shadow-none rounded-none px-1 pb-3 text-zinc-400 font-medium text-base h-auto"
-                  >
-                    3. Serviços
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="equipe"
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 data-[state=active]:text-yellow-500 data-[state=active]:shadow-none rounded-none px-1 pb-3 text-zinc-400 font-medium text-base h-auto"
-                  >
-                    4. Equipe
-                  </TabsTrigger>
-                </TabsList>
+            {/* Layout principal: Sidebar + Conteúdo */}
+            <div className="flex flex-col lg:flex-row gap-6">
+              <EditarEstabelecimentoSidebar
+                secaoAtiva={secaoAtiva}
+                onMudarSecao={setSecaoAtiva}
+              />
+
+              {/* Área de conteúdo principal */}
+              <div className="flex-1 min-w-0">
+                <div className="bg-zinc-950/50 border border-zinc-800/60 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-sm relative">
+                  {renderizarConteudo()}
+                </div>
               </div>
-
-              <div className="bg-zinc-950/50 border border-zinc-800/60 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-sm relative">
-                <TabsContent value="perfil" className="m-0 focus-visible:outline-none focus-visible:ring-0">
-                  <StoreProfileForm />
-                  <div className="mt-8 flex justify-end">
-                    <Button type="button" onClick={() => handleNextTab("expediente")} variant="secondary" className="bg-zinc-800 text-white hover:bg-zinc-700">
-                      Próxima Etapa →
-                    </Button>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="expediente" className="m-0 focus-visible:outline-none focus-visible:ring-0">
-                  <HoursInputRepeater />
-                  <div className="mt-8 flex justify-between">
-                    <Button type="button" onClick={() => handleNextTab("perfil")} variant="ghost" className="text-zinc-400 hover:text-white">
-                      ← Voltar
-                    </Button>
-                    <Button type="button" onClick={() => handleNextTab("servicos")} variant="secondary" className="bg-zinc-800 text-white hover:bg-zinc-700">
-                      Próxima Etapa →
-                    </Button>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="servicos" className="m-0 focus-visible:outline-none focus-visible:ring-0">
-                  <ServiceHierarchyBuilder />
-                  <div className="mt-8 flex justify-between">
-                    <Button type="button" onClick={() => handleNextTab("expediente")} variant="ghost" className="text-zinc-400 hover:text-white">
-                      ← Voltar
-                    </Button>
-                    <Button type="button" onClick={() => handleNextTab("equipe")} variant="secondary" className="bg-zinc-800 text-white hover:bg-zinc-700">
-                      Próxima Etapa →
-                    </Button>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="equipe" className="m-0 focus-visible:outline-none focus-visible:ring-0">
-                  <TeamBuilder />
-                  <div className="mt-8 flex justify-start">
-                    <Button type="button" onClick={() => handleNextTab("servicos")} variant="ghost" className="text-zinc-400 hover:text-white">
-                      ← Voltar
-                    </Button>
-                  </div>
-                </TabsContent>
-              </div>
-            </Tabs>
+            </div>
           </form>
         </FormProvider>
       </div>

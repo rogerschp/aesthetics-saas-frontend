@@ -1,4 +1,4 @@
-import { Estabelecimento } from "../../types";
+import { Estabelecimento, TenantTema } from "../../types";
 
 const mockEstabelecimentos: Estabelecimento[] = [
   {
@@ -235,7 +235,23 @@ const mockEstabelecimentos: Estabelecimento[] = [
       { id: "a7-1", nota: 5, comentario: "Rafa é um artista. Traço impecável e atendimento humano.", usuario: { nome: "Guilherme" } },
       { id: "a7-2", nota: 5, comentario: "Estúdio extremamente limpo e profissional. Fineline da Mari é perfeito.", usuario: { nome: "Amanda" } },
       { id: "a7-3", nota: 4, comentario: "Trabalho sensacional, só demoraram pra responder no direct.", usuario: { nome: "Bruno" } }
-    ]
+    ],
+    tema: {
+      corPrimaria: "#EF4444",
+      corSecundaria: "#1C1917",
+      corFundo: "#0C0A09",
+      corTexto: "#F5F5F4",
+      fonte: "Bebas Neue",
+      borderRadius: "none",
+      secoesLayout: [
+        { id: "sec-servicos", tipo: "servicos", visivel: true, ordem: 0, variante: "alternativo" },
+        { id: "sec-profissionais", tipo: "profissionais", visivel: true, ordem: 1, variante: "compacto" },
+        { id: "sec-avaliacoes", tipo: "avaliacoes", visivel: true, ordem: 2, variante: "padrao" },
+        { id: "sec-sobre", tipo: "sobre", visivel: false, ordem: 3, variante: "padrao" },
+        { id: "sec-horarios", tipo: "horarios", visivel: true, ordem: 4, variante: "alternativo" },
+        { id: "sec-endereco", tipo: "endereco", visivel: true, ordem: 5, variante: "padrao" },
+      ],
+    } as TenantTema,
   },
   {
     id: "8",

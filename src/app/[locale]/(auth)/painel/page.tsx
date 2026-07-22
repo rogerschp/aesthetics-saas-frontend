@@ -4,6 +4,7 @@ import { Scissors, TrendingUp, Users, DollarSign, CalendarX, ArrowUpRight, Arrow
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 // --- MOCK DATA SPECÍFICO DA TELA (Em um MVP Real seria extraído de uma chamada pesada no banco) ---
 const KpiMetrics = {
@@ -34,6 +35,7 @@ interface PageProps {
 }
 
 export default async function OwnerDashboardPage({}: PageProps) {
+  const t = await getTranslations("Painel");
   // Simularemos que passamos um middleware que injetou 'own_001' se fosse server fetch real
   // No caso de Auth com next-auth usariamos `await getServerSession()`
   const currentUser = await getMockUser("own_001");
@@ -48,22 +50,22 @@ export default async function OwnerDashboardPage({}: PageProps) {
         <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
-              Visão Geral
+              {t("overview")}
               <span className="bg-yellow-500/10 text-yellow-500 text-xs tracking-widest font-bold uppercase px-3 py-1 rounded-full border border-yellow-500/20">
-                Sede Principal
+                {t("mainHQ")}
               </span>
             </h1>
-            <p className="text-zinc-400 mt-1">Bem-vindo(a) de volta, <span className="text-zinc-200 font-medium">{currentUser.nome}</span>. Esse é o pulso do seu estabelecimento hoje.</p>
+            <p className="text-zinc-400 mt-1">{t("welcomeBack")} <span className="text-zinc-200 font-medium">{currentUser.nome}</span>. {t("pulse")}</p>
           </div>
 
           <div className="flex gap-3">
             <Link href="/painel/estabelecimento/editar">
               <Button variant="outline" className="border-zinc-700 bg-zinc-900 text-zinc-300 hover:text-white hover:bg-zinc-800">
-                Ajustes da Loja
+                {t("storeSettings")}
               </Button>
             </Link>
             <Button className="bg-yellow-500 text-black hover:bg-yellow-600 font-bold shadow-lg shadow-yellow-500/20">
-              Gerar Relatório
+              {t("generateReport")}
             </Button>
           </div>
         </section>
@@ -71,32 +73,36 @@ export default async function OwnerDashboardPage({}: PageProps) {
         {/* 2. SUPER MÉTRICAS (KPIs) */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <KpiCard 
-            title="Receita Estimada" 
+            title={t("estRevenue")} 
             value={KpiMetrics.revenue.value} 
             change={KpiMetrics.revenue.change} 
             up={KpiMetrics.revenue.up} 
             icon={<DollarSign className="w-5 h-5 text-emerald-500" />} 
+            vsYesterday={t("vsYesterday")}
           />
           <KpiCard 
-            title="Ocupação das Cadeiras" 
+            title={t("occupancy")} 
             value={KpiMetrics.occupancy.value} 
             change={KpiMetrics.occupancy.change} 
             up={KpiMetrics.occupancy.up} 
             icon={<Target className="w-5 h-5 text-blue-500" />} 
+            vsYesterday={t("vsYesterday")}
           />
           <KpiCard 
-            title="Novos Clientes" 
+            title={t("newClients")} 
             value={KpiMetrics.newClients.value} 
             change={KpiMetrics.newClients.change} 
             up={KpiMetrics.newClients.up} 
             icon={<Users className="w-5 h-5 text-purple-500" />} 
+            vsYesterday={t("vsYesterday")}
           />
           <KpiCard 
-            title="Furos / Cancelamentos" 
+            title={t("cancellations")} 
             value={KpiMetrics.cancellations.value} 
             change={KpiMetrics.cancellations.change} 
             up={KpiMetrics.cancellations.up} 
             icon={<CalendarX className="w-5 h-5 text-red-500" />} 
+            vsYesterday={t("vsYesterday")}
           />
         </section>
 
@@ -110,7 +116,7 @@ export default async function OwnerDashboardPage({}: PageProps) {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <Users className="w-5 h-5 text-yellow-500" />
-                Desempenho da Equipe
+                {t("teamPerformance")}
               </h2>
             </div>
 
@@ -142,7 +148,7 @@ export default async function OwnerDashboardPage({}: PageProps) {
                     {/* Progress Bar & Stats */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-medium">
-                        <span className="text-zinc-400">Progresso Diário</span>
+                        <span className="text-zinc-400">{t("dailyProgress")}</span>
                         <span className="text-white">{member.done} / {member.total} ({percent}%)</span>
                       </div>
                       <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
@@ -151,7 +157,7 @@ export default async function OwnerDashboardPage({}: PageProps) {
                     </div>
 
                     <div className="pt-2 border-t border-zinc-800/50 flex justify-between items-center">
-                      <span className="text-xs text-zinc-500">Lucro Produzido</span>
+                      <span className="text-xs text-zinc-500">{t("profitProduced")}</span>
                       <span className="text-sm font-bold text-emerald-400">{member.revenue}</span>
                     </div>
                   </div>
@@ -165,7 +171,7 @@ export default async function OwnerDashboardPage({}: PageProps) {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-white flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-yellow-500" />
-                Dinamismo da Loja
+                {t("storeDynamism")}
               </h2>
             </div>
 
@@ -183,13 +189,13 @@ export default async function OwnerDashboardPage({}: PageProps) {
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
                       <div className="flex items-center gap-1.5 mb-1">
                         <span className="font-bold text-sm text-zinc-200 truncate">{flow.client}</span>
-                        <span className="text-zinc-600 text-xs">com</span>
+                        <span className="text-zinc-600 text-xs">{t("with")}</span>
                         <span className="font-bold text-sm text-yellow-500/80 truncate">{flow.barber.split(' ')[0]}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-zinc-400 truncate pr-2">{flow.service}</span>
-                        {isDelayed && <span className="bg-red-500/10 text-red-500 text-[10px] px-1.5 rounded uppercase font-bold shrink-0">Atraso</span>}
-                        {isActive && <span className="bg-emerald-500/10 text-emerald-500 text-[10px] px-1.5 rounded uppercase font-bold shrink-0">Atendendo</span>}
+                        {isDelayed && <span className="bg-red-500/10 text-red-500 text-[10px] px-1.5 rounded uppercase font-bold shrink-0">{t("delayed")}</span>}
+                        {isActive && <span className="bg-emerald-500/10 text-emerald-500 text-[10px] px-1.5 rounded uppercase font-bold shrink-0">{t("attending")}</span>}
                       </div>
                     </div>
                   </div>
@@ -198,7 +204,7 @@ export default async function OwnerDashboardPage({}: PageProps) {
             </div>
             
             <div className="mt-4 pt-4 border-t border-zinc-800/80">
-              <Button variant="ghost" className="w-full text-zinc-400 hover:text-white">Ver fila completa</Button>
+              <Button variant="ghost" className="w-full text-zinc-400 hover:text-white">{t("viewFullQueue")}</Button>
             </div>
           </div>
 
@@ -211,7 +217,7 @@ export default async function OwnerDashboardPage({}: PageProps) {
 // -----------------------------------------
 // Subcomponente de Card Auxiliar
 // -----------------------------------------
-function KpiCard({ title, value, change, up, icon }: { title: string, value: string, change: string, up: boolean, icon: React.ReactNode }) {
+function KpiCard({ title, value, change, up, icon, vsYesterday }: { title: string, value: string, change: string, up: boolean, icon: React.ReactNode, vsYesterday: string }) {
   return (
     <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6 flex flex-col transition-all hover:bg-zinc-900">
       <div className="flex items-start justify-between mb-2">
@@ -223,7 +229,7 @@ function KpiCard({ title, value, change, up, icon }: { title: string, value: str
         <div className="flex items-center gap-1.5 mt-2">
           {up ? <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500" /> : <ArrowDownRight className="w-3.5 h-3.5 text-red-500" />}
           <span className={`text-xs font-bold ${up ? 'text-emerald-500' : 'text-red-500'}`}>{change}</span>
-          <span className="text-xs text-zinc-600">vs ontem</span>
+          <span className="text-xs text-zinc-600">{vsYesterday}</span>
         </div>
       </div>
     </div>

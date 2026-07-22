@@ -30,13 +30,14 @@ export function LanguageSwitcher() {
 
   return (
     <DropdownMenu>
-      {/* @ts-expect-error Radix UI asChild type error mismatch */}
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9">
-          <Globe className="h-4 w-4" />
-          <span className="sr-only">Toggle language</span>
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Globe className="h-4 w-4" />
+            <span className="sr-only">Toggle language</span>
+          </Button>
+        }
+      />
       <DropdownMenuContent align="end">
         {languages.map((lang) => (
           <DropdownMenuItem

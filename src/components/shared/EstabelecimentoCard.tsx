@@ -5,26 +5,26 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { CategoriaEstabelecimento, Estabelecimento } from "@/types";
 
+import { useTranslations } from "next-intl";
+
 interface EstabelecimentoCardProps {
   estabelecimento: Estabelecimento;
 }
 
-const CATEGORIA_META: Record<
-  CategoriaEstabelecimento,
-  { label: string; Icon: typeof Scissors }
-> = {
-  barbearia: { label: "Barbearia", Icon: Scissors },
-  salao: { label: "Salão", Icon: Sparkles },
-  tatuagem: { label: "Tatuagem", Icon: PenTool },
+const CATEGORIA_ICONS: Record<CategoriaEstabelecimento, typeof Scissors> = {
+  barbearia: Scissors,
+  salao: Sparkles,
+  tatuagem: PenTool,
 };
 
 export function EstabelecimentoCard({ estabelecimento }: EstabelecimentoCardProps) {
+  const t = useTranslations("Categories");
   // Pega a média de notas de forma segura
   const mediaAvaliacoes = estabelecimento.avaliacoes?.length
     ? (estabelecimento.avaliacoes.reduce((acc, curr) => acc + curr.nota, 0) / estabelecimento.avaliacoes.length).toFixed(1)
     : "Novo";
 
-  const { label: categoriaLabel, Icon: CategoriaIcon } = CATEGORIA_META[estabelecimento.categoria];
+  const CategoriaIcon = CATEGORIA_ICONS[estabelecimento.categoria];
 
   return (
     <Link href={`/estabelecimento/${estabelecimento.slug}`}>
@@ -49,7 +49,7 @@ export function EstabelecimentoCard({ estabelecimento }: EstabelecimentoCardProp
           {/* Badge de categoria — canto superior direito, sobre a imagem */}
           <Badge className="absolute top-3 right-3 z-20 bg-black/60 text-primary border border-primary/30 backdrop-blur-md gap-1.5 px-2.5 py-1 font-semibold uppercase tracking-wider text-[10px]">
             <CategoriaIcon className="h-3 w-3" />
-            {categoriaLabel}
+            {t(estabelecimento.categoria === 'barbearia' ? 'barber' : (estabelecimento.categoria === 'salao' ? 'salon' : 'tattoo'))}
           </Badge>
 
           {/* Avatar da logo do estabelecimento com forte destaque simulando sombra pesada pra desgrudar do fundo */}

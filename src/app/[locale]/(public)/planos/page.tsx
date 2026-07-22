@@ -1,17 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Check, Scissors, Star, Zap } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function PlanosPage() {
+  const t = useTranslations("Planos");
+
   return (
     <main className="min-h-screen bg-black pb-24 pt-24">
       {/* Hero */}
       <section className="container mx-auto px-4 max-w-5xl text-center space-y-6">
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white">
-          Seu Estabelecimento no <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-200">Próximo Nível</span>
+          {t("heroTitle1")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-200">{t("heroTitle2")}</span>
         </h1>
         <p className="text-lg md:text-xl text-zinc-400 max-w-3xl mx-auto">
-          Gerencie sua equipe, modernize seus agendamentos e seja descoberto por milhares de novos clientes na sua região todos os dias.
+          {t("heroSubtitle")}
         </p>
       </section>
 
@@ -22,30 +25,30 @@ export default function PlanosPage() {
           <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 flex flex-col hover:border-zinc-700 transition-colors">
             <div className="mb-6">
               <Scissors className="h-8 w-8 text-zinc-400 mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-2">Cadeira Única</h3>
-              <p className="text-zinc-500 text-sm">Perfeito para profissionais autônomos começando sua jornada digital.</p>
+              <h3 className="text-2xl font-bold text-white mb-2">{t("starterName")}</h3>
+              <p className="text-zinc-500 text-sm">{t("starterDesc")}</p>
             </div>
             <div className="mb-8">
-              <span className="text-4xl font-bold text-white">R$ 49</span>
-              <span className="text-zinc-500">/mês</span>
+              <span className="text-4xl font-bold text-white">{t("starterPrice")}</span>
+              <span className="text-zinc-500">{t("starterPeriod")}</span>
             </div>
             <ul className="space-y-4 mb-8 flex-1">
               <li className="flex items-center text-zinc-300 text-sm">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                Destaque regional básico
+                {t("starterFeatures.0")}
               </li>
               <li className="flex items-center text-zinc-300 text-sm">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                Até 2 profissionais na equipe
+                {t("starterFeatures.1")}
               </li>
               <li className="flex items-center text-zinc-300 text-sm">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                Painel analítico mensal
+                {t("starterFeatures.2")}
               </li>
             </ul>
             <Link href="/painel/estabelecimento/criar" className="w-full">
               <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-800 h-12">
-                Começar Teste Grátis
+                {t("starterBtn")}
               </Button>
             </Link>
           </div>
@@ -53,38 +56,38 @@ export default function PlanosPage() {
           {/* Pro Plan */}
           <div className="bg-zinc-900 border border-yellow-500/50 rounded-3xl p-8 flex flex-col relative shadow-[0_0_40px_rgba(212,175,55,0.15)] transform md:-translate-y-4">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-yellow-500 text-black px-4 py-1 rounded-full text-xs font-bold tracking-widest uppercase">
-              Mais Popular
+              {t("proBadge")}
             </div>
             <div className="mb-6">
               <Star className="h-8 w-8 text-yellow-500 mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-2">Plano Pro</h3>
-              <p className="text-zinc-400 text-sm">O arsenal completo para espaços que estão escalando seus lucros.</p>
+              <h3 className="text-2xl font-bold text-white mb-2">{t("proName")}</h3>
+              <p className="text-zinc-400 text-sm">{t("proDesc")}</p>
             </div>
             <div className="mb-8">
-              <span className="text-4xl font-bold text-white">R$ 129</span>
-              <span className="text-zinc-500">/mês</span>
+              <span className="text-4xl font-bold text-white">{t("proPrice")}</span>
+              <span className="text-zinc-500">{t("proPeriod")}</span>
             </div>
             <ul className="space-y-4 mb-8 flex-1">
               <li className="flex items-center text-white text-sm font-medium">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                Tudo do plano Cadeíra Única
+                {t("proFeatures.0")}
               </li>
               <li className="flex items-center text-zinc-300 text-sm">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                Profissionais ilimitados
+                {t("proFeatures.1")}
               </li>
               <li className="flex items-center text-zinc-300 text-sm">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                Notificações de reserva via WhatsApp
+                {t("proFeatures.2")}
               </li>
               <li className="flex items-center text-zinc-300 text-sm">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                Prioridade alta nas buscas de clientes
+                {t("proFeatures.3")}
               </li>
             </ul>
             <Link href="/painel/estabelecimento/criar" className="w-full">
               <Button className="w-full bg-yellow-500 text-black hover:bg-yellow-600 h-12 font-bold font-lg shadow-lg shadow-yellow-500/20">
-                Assinar Plano Pro
+                {t("proBtn")}
               </Button>
             </Link>
           </div>
@@ -93,33 +96,33 @@ export default function PlanosPage() {
           <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 flex flex-col hover:border-zinc-700 transition-colors">
             <div className="mb-6">
               <Zap className="h-8 w-8 text-emerald-400 mb-4" />
-              <h3 className="text-2xl font-bold text-white mb-2">Franquia Elite</h3>
-              <p className="text-zinc-500 text-sm">Solução robusta para redes com dezenas de unidades espalhadas.</p>
+              <h3 className="text-2xl font-bold text-white mb-2">{t("eliteName")}</h3>
+              <p className="text-zinc-500 text-sm">{t("eliteDesc")}</p>
             </div>
             <div className="mb-8">
-              <span className="text-4xl font-bold text-white">Consulte</span>
+              <span className="text-4xl font-bold text-white">{t("elitePrice")}</span>
             </div>
             <ul className="space-y-4 mb-8 flex-1">
               <li className="flex items-center text-zinc-300 text-sm">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                Rede de Gestão Multi-lojas
+                {t("eliteFeatures.0")}
               </li>
               <li className="flex items-center text-zinc-300 text-sm">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                API própria para integrações
+                {t("eliteFeatures.1")}
               </li>
               <li className="flex items-center text-zinc-300 text-sm">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                Gerente de sucesso dedicado
+                {t("eliteFeatures.2")}
               </li>
               <li className="flex items-center text-zinc-300 text-sm">
                 <Check className="h-5 w-5 text-yellow-500 mr-3 shrink-0" />
-                Selo de Franquia Verificada
+                {t("eliteFeatures.3")}
               </li>
             </ul>
             <Link href="/painel/estabelecimento/criar" className="w-full">
               <Button variant="outline" className="w-full border-zinc-700 hover:bg-zinc-800 h-12">
-                Contatar Vendas
+                {t("eliteBtn")}
               </Button>
             </Link>
           </div>
@@ -129,7 +132,7 @@ export default function PlanosPage() {
       {/* Social Proof */}
       <section className="container mx-auto px-4 max-w-4xl mt-32 text-center border-t border-zinc-800/50 pt-16">
         <p className="text-zinc-400 text-sm uppercase tracking-widest font-bold mb-8">
-          Confiado por mais de 500 espaços no brasil
+          {t("trustedBy")}
         </p>
         <div className="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
           <div className="flex items-center gap-2">
