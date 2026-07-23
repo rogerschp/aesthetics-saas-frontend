@@ -66,7 +66,7 @@ export function TenantDangerZone({
   const busy = statusMutation.isPending || deleteMutation.isPending;
 
   return (
-    <section className="mt-10 space-y-6 rounded-3xl border border-red-500/30 bg-red-500/5 p-6 sm:p-8">
+    <section className="space-y-6 rounded-3xl border border-red-500/30 bg-red-500/5 p-6 sm:p-8">
       <div>
         <h3 className="text-lg font-bold text-red-300">{t("title")}</h3>
         <p className="mt-1 text-sm text-zinc-400">{t("subtitle")}</p>

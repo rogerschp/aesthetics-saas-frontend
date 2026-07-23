@@ -7,6 +7,7 @@ import {
   Scissors,
   Users,
   Palette,
+  Power,
   Lock,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -20,13 +21,16 @@ export type SecaoEdicao =
   | "expediente"
   | "servicos"
   | "equipe"
-  | "aparencia";
+  | "aparencia"
+  | "desativar";
 
 interface EditarEstabelecimentoSidebarProps {
   secaoAtiva: SecaoEdicao;
   onMudarSecao: (secao: SecaoEdicao) => void;
   /** Free = false. Standard+ libera Aparência. */
   canCustomize?: boolean;
+  /** OWNER/ADMIN: mostra item Desativar. */
+  canManageTenant?: boolean;
 }
 
 /** Definição de um item no menu lateral */
@@ -50,6 +54,7 @@ export function EditarEstabelecimentoSidebar({
   secaoAtiva,
   onMudarSecao,
   canCustomize = true,
+  canManageTenant = false,
 }: EditarEstabelecimentoSidebarProps) {
   const t = useTranslations("EditarSidebar");
 
@@ -80,6 +85,15 @@ export function EditarEstabelecimentoSidebar({
       chaveI18n: "aparencia",
       locked: !canCustomize,
     },
+    ...(canManageTenant
+      ? [
+          {
+            id: "desativar" as const,
+            icone: <Power className={TAMANHO_ICONE} />,
+            chaveI18n: "desativar",
+          },
+        ]
+      : []),
   ];
 
   return (

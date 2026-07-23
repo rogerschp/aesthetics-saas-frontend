@@ -411,6 +411,22 @@ export default function TenantEditPage() {
           );
         }
         return <AparenciaEditor tema={tema} onTemaChange={setTema} />;
+      case "desativar":
+        if (!canManageTenant || !tenantQuery.data || !tenantId) {
+          return null;
+        }
+        return (
+          <TenantDangerZone
+            tenantId={tenantId}
+            tenantSlug={tenantQuery.data.slug}
+            tenantName={tenantQuery.data.name}
+            status={tenantQuery.data.status}
+            onStatusChange={() => {
+              void tenantQuery.refetch();
+              void refetchTenants();
+            }}
+          />
+        );
       default:
         return <StoreProfileForm />;
     }
@@ -464,24 +480,26 @@ export default function TenantEditPage() {
                   </p>
                 </div>
 
-                <Button
-                  type="submit"
-                  disabled={saveMutation.isPending}
-                  className="px-8 font-bold"
-                >
-                  {saveMutation.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : saveMsg ? (
-                    <Check className="mr-2 h-4 w-4" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4" />
-                  )}
-                  {saveMsg
-                    ? t("saveSuccess")
-                    : saveMutation.isPending
-                      ? t("saving")
-                      : t("saveChanges")}
-                </Button>
+                {secaoAtiva !== "desativar" && (
+                  <Button
+                    type="submit"
+                    disabled={saveMutation.isPending}
+                    className="px-8 font-bold"
+                  >
+                    {saveMutation.isPending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : saveMsg ? (
+                      <Check className="mr-2 h-4 w-4" />
+                    ) : (
+                      <Save className="mr-2 h-4 w-4" />
+                    )}
+                    {saveMsg
+                      ? t("saveSuccess")
+                      : saveMutation.isPending
+                        ? t("saving")
+                        : t("saveChanges")}
+                  </Button>
+                )}
               </div>
 
               {(saveError || saveMsg) && (
@@ -506,29 +524,24 @@ export default function TenantEditPage() {
                   secaoAtiva={secaoAtiva}
                   onMudarSecao={setSecaoAtiva}
                   canCustomize={canCustomize}
+                  canManageTenant={canManageTenant}
                 />
 
                 <div className="min-w-0 flex-1">
-                  <div className="relative rounded-3xl border border-zinc-800/60 bg-zinc-950/50 p-6 shadow-2xl backdrop-blur-sm sm:p-10">
+                  <div
+                    className={cn(
+                      "relative rounded-3xl border p-6 shadow-2xl backdrop-blur-sm sm:p-10",
+                      secaoAtiva === "desativar"
+                        ? "border-transparent bg-transparent p-0 shadow-none sm:p-0"
+                        : "border-zinc-800/60 bg-zinc-950/50",
+                    )}
+                  >
                     {renderizarConteudo()}
                   </div>
                 </div>
               </div>
             </form>
           </FormProvider>
-        )}
-
-        {canManageTenant && tenantQuery.data && tenantId && (
-          <TenantDangerZone
-            tenantId={tenantId}
-            tenantSlug={tenantQuery.data.slug}
-            tenantName={tenantQuery.data.name}
-            status={tenantQuery.data.status}
-            onStatusChange={() => {
-              void tenantQuery.refetch();
-              void refetchTenants();
-            }}
-          />
         )}
       </div>
     </div>
