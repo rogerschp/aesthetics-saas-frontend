@@ -52,6 +52,32 @@ export function StoreProfileForm({
   const bannerUrl = watch("bannerWide") as string | undefined;
   const coverUrl = watch("cover") as string | undefined;
 
+  async function persistSocialMediaUrls(next?: {
+    bannerWide?: string | null;
+    cover?: string | null;
+  }) {
+    if (!tenantId) return;
+    const socialMedia: Record<string, string> = {};
+    const ig = String(getValues("redesSociais.instagram") ?? "").trim();
+    const fb = String(getValues("redesSociais.facebook") ?? "").trim();
+    if (ig) socialMedia.instagram = ig;
+    if (fb) socialMedia.facebook = fb;
+
+    const banner =
+      next && "bannerWide" in next
+        ? (next.bannerWide ?? "").trim()
+        : String(getValues("bannerWide") ?? "").trim();
+    const cover =
+      next && "cover" in next
+        ? (next.cover ?? "").trim()
+        : String(getValues("cover") ?? "").trim();
+    if (banner) socialMedia.banner = banner;
+    if (cover) socialMedia.cover = cover;
+
+    await tenantsService.update(tenantId, { socialMedia });
+    await queryClient.invalidateQueries({ queryKey: ["tenant-edit", tenantId] });
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -208,9 +234,10 @@ export function StoreProfileForm({
               mediaType={MediaType.BANNER}
               context={{ tenantId }}
               value={bannerUrl || null}
-              onChange={(url) =>
-                setValue("bannerWide", url ?? "", { shouldDirty: true })
-              }
+              onChange={async (url) => {
+                setValue("bannerWide", url ?? "", { shouldDirty: true });
+                await persistSocialMediaUrls({ bannerWide: url });
+              }}
               variant="wide"
               className="md:col-span-2"
             />
@@ -220,9 +247,10 @@ export function StoreProfileForm({
               mediaType={MediaType.COVER}
               context={{ tenantId }}
               value={coverUrl || null}
-              onChange={(url) =>
-                setValue("cover", url ?? "", { shouldDirty: true })
-              }
+              onChange={async (url) => {
+                setValue("cover", url ?? "", { shouldDirty: true });
+                await persistSocialMediaUrls({ cover: url });
+              }}
               variant="cover"
               className="md:col-span-2"
             />

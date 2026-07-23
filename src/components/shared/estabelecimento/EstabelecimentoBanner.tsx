@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Star, MapPin, Globe, Share2, AlertTriangle } from "lucide-react";
 import { Estabelecimento } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -12,17 +11,22 @@ export function EstabelecimentoBanner({ estabelecimento }: EstabelecimentoBanner
     ? (estabelecimento.avaliacoes.reduce((acc, curr) => acc + curr.nota, 0) / estabelecimento.avaliacoes.length).toFixed(1)
     : "Novo";
 
+  const heroSrc =
+    estabelecimento.banner ||
+    "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074&auto=format&fit=crop";
+
   return (
     <div className="relative w-full h-[300px] md:h-[400px]">
       <div className="absolute inset-0 z-0">
-        <Image
-          src={estabelecimento.banner || "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074&auto=format&fit=crop"}
+        {/* img nativo: Cloudinary e CDNs sem whitelisting quebram next/image */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={heroSrc}
           alt={estabelecimento.nome}
-          fill
-          className="object-cover brightness-[0.4]"
+          className="h-full w-full object-cover brightness-[0.45]"
         />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent z-10" />
 
       <div className="relative z-20 container mx-auto px-4 h-full flex flex-col justify-end pb-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
