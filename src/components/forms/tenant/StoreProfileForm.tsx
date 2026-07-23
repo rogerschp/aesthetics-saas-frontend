@@ -6,16 +6,34 @@ import { Label } from "@/components/ui/label";
 import { CopyPlus, Store, MapPin, Phone } from "lucide-react";
 import { maskCep, maskCnpj, maskPhoneBR } from "@/lib/masks";
 
-export function StoreProfileForm() {
+function slugify(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+}
+
+interface StoreProfileFormProps {
+  /** Na criação o slug é editável; na edição fica bloqueado. */
+  slugLocked?: boolean;
+}
+
+export function StoreProfileForm({ slugLocked = true }: StoreProfileFormProps) {
   const {
     register,
     setValue,
+    getValues,
     formState: { errors },
   } = useFormContext();
 
   const telefoneReg = register("telefone");
   const cepReg = register("endereco.zipCode");
   const cnpjReg = register("cnpj");
+  const nomeReg = register("nome");
+  const slugReg = register("slug");
 
   return (
     <div className="space-y-6">
@@ -35,7 +53,25 @@ export function StoreProfileForm() {
           <Input
             id="nome"
             placeholder="Ex: Classic Barber"
-            {...register("nome")}
+            name={nomeReg.name}
+            ref={nomeReg.ref}
+            onBlur={nomeReg.onBlur}
+            onChange={(e) => {
+              if (!slugLocked) {
+                const previousSuggestion = slugify(
+                  String(getValues("nome") ?? ""),
+                );
+                const currentSlug = String(getValues("slug") ?? "");
+                void nomeReg.onChange(e);
+                if (!currentSlug || currentSlug === previousSuggestion) {
+                  setValue("slug", slugify(e.target.value), {
+                    shouldValidate: true,
+                  });
+                }
+              } else {
+                void nomeReg.onChange(e);
+              }
+            }}
             className="border-zinc-800 focus-visible:ring-yellow-500/50"
           />
           {errors.nome && (
@@ -46,21 +82,36 @@ export function StoreProfileForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="slug">Slug (URL)</Label>
+          <Label htmlFor="slug">Slug (URL){slugLocked ? "" : " *"}</Label>
           <div className="flex rounded-md shadow-sm">
             <span className="inline-flex items-center rounded-l-md border border-r-0 border-zinc-800 bg-zinc-900/50 px-3 text-zinc-500 sm:text-sm">
               /estabelecimento/
             </span>
             <Input
               id="slug"
-              disabled
-              {...register("slug")}
-              className="rounded-l-none border-zinc-800 opacity-70"
+              disabled={slugLocked}
+              name={slugReg.name}
+              ref={slugReg.ref}
+              onBlur={slugReg.onBlur}
+              onChange={(e) => {
+                const next = slugify(e.target.value);
+                e.target.value = next;
+                void slugReg.onChange(e);
+                setValue("slug", next, { shouldValidate: true });
+              }}
+              className={`rounded-l-none border-zinc-800 ${slugLocked ? "opacity-70" : "focus-visible:ring-yellow-500/50"}`}
             />
           </div>
           <p className="text-xs text-zinc-500">
-            Imutável na API — só definição na criação.
+            {slugLocked
+              ? "Imutável na API — só definição na criação."
+              : "Gerado a partir do nome; você pode ajustar antes de concluir."}
           </p>
+          {errors.slug && (
+            <p className="text-sm text-destructive">
+              {errors.slug.message as string}
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">
