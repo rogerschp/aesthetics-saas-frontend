@@ -19,12 +19,18 @@ import { Label } from "@/components/ui/label";
 import { usersService } from "@/lib/api/services/users.service";
 import {
   BookingMode,
+  MediaType,
   ProfessionalProfile,
   ProfessionalType,
 } from "@/lib/api/types";
 import { formatApiError } from "@/lib/api/errors";
 import { maskPhoneBR, phoneToApiDigits } from "@/lib/masks";
 import { cn } from "@/lib/utils";
+import { MediaImageField } from "@/components/shared/MediaImageField";
+import {
+  MediaGalleryField,
+  type GalleryItem,
+} from "@/components/shared/MediaGalleryField";
 
 const TYPE_OPTIONS: { value: ProfessionalType; labelKey: string }[] = [
   { value: ProfessionalType.BARBER, labelKey: "typeBarber" },
@@ -42,8 +48,6 @@ const BOOKING_MODE_OPTIONS: { value: BookingMode; labelKey: string }[] = [
   { value: BookingMode.WHATSAPP_ONLY, labelKey: "modeWhatsapp" },
 ];
 
-const DEFAULT_AVATAR = "https://i.pravatar.cc/150";
-
 const selectClass =
   "w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary";
 
@@ -60,7 +64,7 @@ type FormState = {
 
 const emptyForm = (fallbackName = ""): FormState => ({
   displayName: fallbackName,
-  avatarUrl: DEFAULT_AVATAR,
+  avatarUrl: "",
   professionalType: ProfessionalType.BARBER,
   experienceYears: 1,
   whatsappNumber: "",
@@ -72,7 +76,7 @@ const emptyForm = (fallbackName = ""): FormState => ({
 function formFromProfile(profile: ProfessionalProfile): FormState {
   return {
     displayName: profile.displayName ?? "",
-    avatarUrl: profile.avatarUrl || DEFAULT_AVATAR,
+    avatarUrl: profile.avatarUrl ?? "",
     professionalType: profile.professionalType,
     experienceYears: profile.experienceYears ?? 0,
     whatsappNumber: maskPhoneBR(profile.whatsappNumber ?? ""),
@@ -87,7 +91,6 @@ function buildPayload(form: FormState, fallbackName: string) {
   const instagram = form.instagramUsername.trim().replace(/^@/, "");
   return {
     displayName: form.displayName.trim() || fallbackName || "Profissional",
-    avatarUrl: form.avatarUrl.trim() || DEFAULT_AVATAR,
     professionalType: form.professionalType,
     experienceYears: Math.max(0, Number(form.experienceYears) || 0),
     bookingMode: form.bookingMode,
@@ -99,11 +102,13 @@ function buildPayload(form: FormState, fallbackName: string) {
 
 export function ProfessionalProfileCard() {
   const t = useTranslations("PerfilPro");
+  const tMedia = useTranslations("MediaUpload");
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const queryClient = useQueryClient();
   const [mode, setMode] = useState<"view" | "create" | "edit">("view");
   const [form, setForm] = useState<FormState>(() => emptyForm());
+  const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
@@ -273,13 +278,37 @@ export function ProfessionalProfileCard() {
             />
           </div>
           <div className="sm:col-span-2">
-            <Label className="mb-1.5 block text-sm">{t("avatarUrl")}</Label>
-            <Input
-              value={form.avatarUrl}
-              onChange={(e) => patchForm("avatarUrl", e.target.value)}
-              placeholder="https://..."
-            />
+            {isEdit && userId ? (
+              <MediaImageField
+                label={t("avatarUrl")}
+                hint={tMedia("avatarHint")}
+                mediaType={MediaType.AVATAR}
+                context={{ professionalId: userId }}
+                value={form.avatarUrl || null}
+                onLink={async (media) => {
+                  await usersService.setProfessionalAvatar(media.id);
+                  invalidate();
+                }}
+                onChange={(url) => patchForm("avatarUrl", url ?? "")}
+                variant="square"
+              />
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                {tMedia("proAvatarAfterCreate")}
+              </p>
+            )}
           </div>
+          {isEdit && userId && (
+            <div className="sm:col-span-2">
+              <MediaGalleryField
+                label={tMedia("gallery")}
+                hint={tMedia("galleryHint")}
+                professionalId={userId}
+                items={gallery}
+                onChange={setGallery}
+              />
+            </div>
+          )}
           <div className="sm:col-span-2">
             <Label className="mb-1.5 block text-sm">{t("bio")}</Label>
             <textarea

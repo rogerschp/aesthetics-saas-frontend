@@ -214,16 +214,12 @@ export default function TenantCreatePage() {
         address,
       });
 
-      // avatar/coords só no PATCH (CreateTenantDto não inclui esses campos)
-      if (geo || data.banner?.trim()) {
+      // coords no PATCH; logo só via POST /media/upload + PATCH /tenants/:id/logo
+      if (geo) {
         try {
           await tenantsService.update(tenant.id, {
-            ...(data.banner?.trim()
-              ? { avatarUrl: data.banner.trim() }
-              : {}),
-            ...(geo
-              ? { latitude: geo.latitude, longitude: geo.longitude }
-              : {}),
+            latitude: geo.latitude,
+            longitude: geo.longitude,
           });
         } catch {
           // Tenant já criado — não bloqueia o fluxo.
@@ -246,7 +242,6 @@ export default function TenantCreatePage() {
       try {
         await usersService.createProfessionalProfile({
           displayName: `${data.nome.trim()} Admin`,
-          avatarUrl: data.banner || "https://i.pravatar.cc/150",
           professionalType: ProfessionalType.BARBER,
           experienceYears: 1,
         });

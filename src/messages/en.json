@@ -105,7 +105,8 @@
   "PerfilEdit": {
     "editBtn": "Edit profile",
     "title": "Edit my details",
-    "hint": "API allows name, phone, password and address. Email cannot be changed here.",
+    "hint": "API allows name, phone, password and address. Avatar via upload (USER_AVATAR).",
+    "avatar": "Profile photo",
     "name": "Name",
     "phone": "Phone",
     "password": "New password (optional)",
@@ -145,7 +146,7 @@
     "experience": "Years of experience",
     "whatsapp": "WhatsApp",
     "instagram": "Instagram",
-    "avatarUrl": "Photo URL",
+    "avatarUrl": "Photo",
     "bio": "Bio",
     "bioPlaceholder": "Tell a bit about your work…",
     "bookingMode": "Booking mode",
@@ -505,5 +506,29 @@
     "new": "New",
     "elite": "Elite",
     "highlight": "Featured"
+  },
+  "MediaUpload": {
+    "upload": "Upload image",
+    "replace": "Replace image",
+    "remove": "Remove",
+    "addPhoto": "Add photo",
+    "empty": "No image",
+    "galleryEmpty": "No photos in the gallery",
+    "error": "Upload failed. Please try again.",
+    "logo": "Logo",
+    "logoHint": "Uploaded to Cloudinary and linked via PATCH /tenants/:id/logo.",
+    "banner": "Banner",
+    "bannerHint": "Cloudinary upload (no tenant link endpoint yet — saved to socialMedia.banner on save).",
+    "cover": "Cover",
+    "coverHint": "Cloudinary upload (saved to socialMedia.cover on save).",
+    "logoAfterCreate": "After creating the establishment, upload logo/banner/cover in edit.",
+    "avatarHint": "JPEG, PNG, or WebP · max 5 MB",
+    "proAvatarAfterCreate": "Create the profile first; then edit to upload the professional photo.",
+    "gallery": "Gallery",
+    "galleryHint": "Photos of your work. Documents are off for now.",
+    "serviceImagesTitle": "Service images",
+    "serviceImagesHint": "Cover per service (Cloudinary). Storefront will show them once the API exposes the URL.",
+    "serviceCover": "Cover — {name}",
+    "noServices": "No active services. Create services to upload images."
   }
 }

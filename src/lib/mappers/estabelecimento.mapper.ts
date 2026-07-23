@@ -117,7 +117,7 @@ export function mapToEstabelecimento({
       : "barbearia",
     // API de tenant não tem description — vitrine monta bloco de contato/info.
     descricao: "",
-    banner: tenant.avatarUrl || undefined,
+    banner: tenant.socialMedia?.banner || tenant.avatarUrl || undefined,
     telefone: tenant.telephone || undefined,
     latitude: tenant.latitude,
     longitude: tenant.longitude,

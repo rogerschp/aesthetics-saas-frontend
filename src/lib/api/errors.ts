@@ -81,6 +81,12 @@ const CODE_MESSAGES: Record<string, string> = {
   // Reviews
   REVIEW_ALREADY_EXISTS: 'Você já avaliou este estabelecimento.',
   CANNOT_REVIEW_YOURSELF: 'Você não pode avaliar a si mesmo.',
+  // Media
+  MEDIA_FILE_REQUIRED: 'Selecione um arquivo para enviar.',
+  MEDIA_INVALID_MIME: 'Tipo de arquivo não permitido. Use JPEG, PNG ou WebP.',
+  MEDIA_EMPTY_FILE: 'Arquivo vazio não é permitido.',
+  MEDIA_FILE_TOO_LARGE: 'Arquivo excede o limite permitido (imagens: 5 MB).',
+  MEDIA_NOT_OWNED: 'Esta mídia não pertence a você ou ao estabelecimento.',
 };
 
 export function formatApiError(error: unknown): string {

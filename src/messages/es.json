@@ -105,7 +105,8 @@
   "PerfilEdit": {
     "editBtn": "Editar perfil",
     "title": "Editar mis datos",
-    "hint": "La API permite nombre, teléfono, contraseña y dirección. El correo no se cambia aquí.",
+    "hint": "La API permite nombre, teléfono, contraseña y dirección. Avatar vía upload (USER_AVATAR).",
+    "avatar": "Foto de perfil",
     "name": "Nombre",
     "phone": "Teléfono",
     "password": "Nueva contraseña (opcional)",
@@ -145,7 +146,7 @@
     "experience": "Años de experiencia",
     "whatsapp": "WhatsApp",
     "instagram": "Instagram",
-    "avatarUrl": "URL de la foto",
+    "avatarUrl": "Foto",
     "bio": "Bio",
     "bioPlaceholder": "Cuenta un poco sobre tu trabajo…",
     "bookingMode": "Modo de reserva",
@@ -505,5 +506,29 @@
     "new": "Nuevo",
     "elite": "Élite",
     "highlight": "Destacado"
+  },
+  "MediaUpload": {
+    "upload": "Subir imagen",
+    "replace": "Cambiar imagen",
+    "remove": "Quitar",
+    "addPhoto": "Añadir foto",
+    "empty": "Sin imagen",
+    "galleryEmpty": "No hay fotos en la galería",
+    "error": "Error al subir. Inténtalo de nuevo.",
+    "logo": "Logo",
+    "logoHint": "Subida a Cloudinary y vinculada con PATCH /tenants/:id/logo.",
+    "banner": "Banner",
+    "bannerHint": "Upload Cloudinary (aún sin endpoint de vínculo — se guarda en socialMedia.banner al guardar).",
+    "cover": "Cover",
+    "coverHint": "Upload Cloudinary (se guarda en socialMedia.cover al guardar).",
+    "logoAfterCreate": "Tras crear el establecimiento, sube logo/banner/cover en la edición.",
+    "avatarHint": "JPEG, PNG o WebP · máx. 5 MB",
+    "proAvatarAfterCreate": "Crea el perfil primero; luego edita para subir la foto profesional.",
+    "gallery": "Galería",
+    "galleryHint": "Fotos de tu trabajo. Documentos desactivados por ahora.",
+    "serviceImagesTitle": "Imágenes de servicios",
+    "serviceImagesHint": "Portada por servicio (Cloudinary). La vitrina las mostrará cuando la API exponga la URL.",
+    "serviceCover": "Portada — {name}",
+    "noServices": "Ningún servicio activo. Crea servicios para subir imágenes."
   }
 }

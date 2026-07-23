@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   LogOut,
   Home,
@@ -176,6 +176,13 @@ export function Header() {
                 className="transition-opacity hover:opacity-80"
               >
                 <Avatar className="h-9 w-9 border border-primary/50 shadow-sm shadow-primary/20">
+                  {me?.avatarUrl && (
+                    <AvatarImage
+                      src={me.avatarUrl}
+                      alt={profileName}
+                      className="object-cover"
+                    />
+                  )}
                   <AvatarFallback className="bg-primary/20 font-bold text-primary">
                     {avatarLetter}
                   </AvatarFallback>
@@ -243,6 +250,13 @@ export function Header() {
                 onClick={() => setMenuOpen(false)}
               >
                 <Avatar className="h-9 w-9 border border-primary/50">
+                  {me?.avatarUrl && (
+                    <AvatarImage
+                      src={me.avatarUrl}
+                      alt={profileName}
+                      className="object-cover"
+                    />
+                  )}
                   <AvatarFallback className="bg-primary/20 font-bold text-primary">
                     {avatarLetter}
                   </AvatarFallback>

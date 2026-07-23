@@ -12,6 +12,8 @@ import { usersService } from "@/lib/api/services/users.service";
 import { formatApiError } from "@/lib/api/errors";
 import { maskCep, maskPhoneBR, phoneToApiDigits } from "@/lib/masks";
 import type { Address } from "@/lib/api/types";
+import { MediaType } from "@/lib/api/types";
+import { MediaImageField } from "@/components/shared/MediaImageField";
 
 const emptyAddress: Address = {
   street: "",
@@ -25,6 +27,7 @@ const emptyAddress: Address = {
 
 export function ProfileEditForm() {
   const t = useTranslations("PerfilEdit");
+  const tMedia = useTranslations("MediaUpload");
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const queryClient = useQueryClient();
@@ -32,6 +35,7 @@ export function ProfileEditForm() {
   const [name, setName] = useState("");
   const [telephone, setTelephone] = useState("");
   const [password, setPassword] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [address, setAddress] = useState<Address>(emptyAddress);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -46,6 +50,7 @@ export function ProfileEditForm() {
     if (!me) return;
     setName(me.name ?? "");
     setTelephone(maskPhoneBR(me.telephone ?? ""));
+    setAvatarUrl(me.avatarUrl ?? null);
     setAddress({
       ...emptyAddress,
       ...(me.address ?? {}),
@@ -120,6 +125,21 @@ export function ProfileEditForm() {
       <h3 className="mb-1 text-lg font-bold">{t("title")}</h3>
       <p className="mb-4 text-xs text-muted-foreground">{t("hint")}</p>
       {error && <p className="mb-3 text-sm text-destructive">{error}</p>}
+
+      <div className="mb-4">
+        <MediaImageField
+          label={t("avatar")}
+          hint={tMedia("avatarHint")}
+          mediaType={MediaType.USER_AVATAR}
+          value={avatarUrl}
+          onLink={async (media) => {
+            await usersService.setMyAvatar(media.id);
+            await queryClient.invalidateQueries({ queryKey: ["me", userId] });
+          }}
+          onChange={(url) => setAvatarUrl(url)}
+          variant="square"
+        />
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>

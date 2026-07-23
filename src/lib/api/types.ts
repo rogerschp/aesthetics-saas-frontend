@@ -40,6 +40,51 @@ export enum TenantProfessionalStatus {
   LEFT = 'LEFT',
 }
 
+// ============ Media ============
+export enum MediaType {
+  AVATAR = 'AVATAR',
+  USER_AVATAR = 'USER_AVATAR',
+  LOGO = 'LOGO',
+  BANNER = 'BANNER',
+  COVER = 'COVER',
+  SERVICE_IMAGE = 'SERVICE_IMAGE',
+  GALLERY = 'GALLERY',
+  DOCUMENT = 'DOCUMENT',
+  OTHER = 'OTHER',
+}
+
+export enum MediaStatus {
+  UPLOADING = 'UPLOADING',
+  AVAILABLE = 'AVAILABLE',
+  FAILED = 'FAILED',
+  DELETED = 'DELETED',
+}
+
+export interface MediaAsset {
+  id: string;
+  provider: string;
+  providerResourceId: string;
+  providerAssetId: string | null;
+  storagePath: string;
+  url: string;
+  checksum: string | null;
+  originalFileName: string | null;
+  mimeType: string;
+  extension: string;
+  size: number;
+  width: number | null;
+  height: number | null;
+  mediaType: MediaType;
+  visibility: string;
+  accessLevel: string;
+  status: MediaStatus;
+  failureReason: string | null;
+  tenantId: string | null;
+  createdByUserId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export enum ProfessionalType {
   BARBER = 'BARBER',
   TATTOO_ARTIST = 'TATTOO_ARTIST',
@@ -102,7 +147,8 @@ export interface ProfessionalProfile {
   userId: string;
   displayName: string;
   bio: string | null;
-  avatarUrl: string;
+  avatarMediaId?: string | null;
+  avatarUrl: string | null;
   professionalType: ProfessionalType;
   bookingMode: BookingMode;
   whatsappNumber: string | null;
@@ -123,6 +169,9 @@ export interface User {
   role: Role;
   telephone: string;
   address: Address | null;
+  avatarMediaId?: string | null;
+  /** Resolvido do Media (USER_AVATAR). */
+  avatarUrl?: string | null;
   professionalProfile: ProfessionalProfile | null;
   createdAt: string;
   updatedAt: string;
@@ -150,6 +199,7 @@ export interface Tenant {
   timezone: string;
   segment: TenantSegment | null;
   avatarUrl: string | null;
+  logoMediaId?: string | null;
   latitude: number | null;
   longitude: number | null;
   /** Política de cancelamento de CONFIRMED pelo cliente (default false). */

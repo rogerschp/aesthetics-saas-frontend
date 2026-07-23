@@ -14,7 +14,6 @@ export interface UpdateTenantDto extends Partial<CreateTenantDto> {
   status?: TenantStatus;
   timezone?: string;
   segment?: string | null;
-  avatarUrl?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   /** Política de cancelamento de confirmado pelo cliente (OWNER/ADMIN). */
@@ -51,6 +50,12 @@ export const tenantsService = {
 
   update: async (id: string, payload: UpdateTenantDto): Promise<Tenant> => {
     const response = await api.patch(`/tenants/${id}`, payload);
+    return response as any;
+  },
+
+  /** PATCH /tenants/:id/logo — vincula LOGO ({ mediaId }). */
+  setLogo: async (id: string, mediaId: string): Promise<Tenant> => {
+    const response = await api.patch(`/tenants/${id}/logo`, { mediaId });
     return response as any;
   },
 

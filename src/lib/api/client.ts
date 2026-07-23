@@ -81,6 +81,19 @@ api.interceptors.request.use(
       // Sem sessão — segue como público
     }
 
+    // Multipart: não forçar application/json (senão o boundary some).
+    if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+      const headers = config.headers;
+      if (headers && typeof headers === "object") {
+        if (typeof (headers as { delete?: (k: string) => void }).delete === "function") {
+          (headers as { delete: (k: string) => void }).delete("Content-Type");
+        } else {
+          delete (headers as Record<string, unknown>)["Content-Type"];
+          delete (headers as Record<string, unknown>)["content-type"];
+        }
+      }
+    }
+
     return config;
   },
   (error) => {

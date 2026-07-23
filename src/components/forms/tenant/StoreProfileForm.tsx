@@ -3,8 +3,13 @@
 import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CopyPlus, Store, MapPin, Phone } from "lucide-react";
+import { Store, MapPin, Phone } from "lucide-react";
 import { maskCep, maskCnpj, maskPhoneBR } from "@/lib/masks";
+import { MediaImageField } from "@/components/shared/MediaImageField";
+import { MediaType } from "@/lib/api/types";
+import { tenantsService } from "@/lib/api/services/tenants.service";
+import { useTranslations } from "next-intl";
+import { useQueryClient } from "@tanstack/react-query";
 
 function slugify(value: string): string {
   return value
@@ -19,13 +24,21 @@ function slugify(value: string): string {
 interface StoreProfileFormProps {
   /** Na criação o slug é editável; na edição fica bloqueado. */
   slugLocked?: boolean;
+  /** Necessário para POST /media/upload (LOGO/BANNER/COVER). */
+  tenantId?: string;
 }
 
-export function StoreProfileForm({ slugLocked = true }: StoreProfileFormProps) {
+export function StoreProfileForm({
+  slugLocked = true,
+  tenantId,
+}: StoreProfileFormProps) {
+  const t = useTranslations("MediaUpload");
+  const queryClient = useQueryClient();
   const {
     register,
     setValue,
     getValues,
+    watch,
     formState: { errors },
   } = useFormContext();
 
@@ -34,6 +47,10 @@ export function StoreProfileForm({ slugLocked = true }: StoreProfileFormProps) {
   const cnpjReg = register("cnpj");
   const nomeReg = register("nome");
   const slugReg = register("slug");
+
+  const logoUrl = watch("banner") as string | undefined;
+  const bannerUrl = watch("bannerWide") as string | undefined;
+  const coverUrl = watch("cover") as string | undefined;
 
   return (
     <div className="space-y-6">
@@ -165,15 +182,56 @@ export function StoreProfileForm({ slugLocked = true }: StoreProfileFormProps) {
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="banner">Avatar / banner URL</Label>
-          <Input
-            id="banner"
-            placeholder="https://cdn.exemplo.com/logo.jpg"
-            {...register("banner")}
-            className="border-zinc-800 focus-visible:ring-yellow-500/50"
-          />
-        </div>
+        {tenantId ? (
+          <div className="grid grid-cols-1 gap-6 border-t border-zinc-800/50 pt-4 md:grid-cols-2">
+            <MediaImageField
+              label={t("logo")}
+              hint={t("logoHint")}
+              mediaType={MediaType.LOGO}
+              context={{ tenantId }}
+              value={logoUrl || null}
+              onLink={async (media) => {
+                await tenantsService.setLogo(tenantId, media.id);
+                await queryClient.invalidateQueries({
+                  queryKey: ["tenant-edit", tenantId],
+                });
+                await queryClient.invalidateQueries({ queryKey: ["me-tenants"] });
+              }}
+              onChange={(url) =>
+                setValue("banner", url ?? "", { shouldDirty: true })
+              }
+              variant="square"
+            />
+            <MediaImageField
+              label={t("banner")}
+              hint={t("bannerHint")}
+              mediaType={MediaType.BANNER}
+              context={{ tenantId }}
+              value={bannerUrl || null}
+              onChange={(url) =>
+                setValue("bannerWide", url ?? "", { shouldDirty: true })
+              }
+              variant="wide"
+              className="md:col-span-2"
+            />
+            <MediaImageField
+              label={t("cover")}
+              hint={t("coverHint")}
+              mediaType={MediaType.COVER}
+              context={{ tenantId }}
+              value={coverUrl || null}
+              onChange={(url) =>
+                setValue("cover", url ?? "", { shouldDirty: true })
+              }
+              variant="cover"
+              className="md:col-span-2"
+            />
+          </div>
+        ) : (
+          <p className="rounded-xl border border-border/40 bg-card/30 px-3 py-2 text-xs text-muted-foreground">
+            {t("logoAfterCreate")}
+          </p>
+        )}
 
         <div className="border-t border-zinc-800/50 pb-2 pt-4">
           <h4 className="mb-3 flex items-center gap-2 text-sm font-bold text-white">
@@ -224,16 +282,14 @@ export function StoreProfileForm({ slugLocked = true }: StoreProfileFormProps) {
               <Input
                 id="state"
                 maxLength={2}
-                placeholder="SP"
                 {...register("endereco.state")}
                 className="border-zinc-800 uppercase"
               />
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="zipCode">CEP *</Label>
+              <Label htmlFor="zip">CEP *</Label>
               <Input
-                id="zipCode"
-                placeholder="01310-100"
+                id="zip"
                 name={cepReg.name}
                 ref={cepReg.ref}
                 onBlur={cepReg.onBlur}
@@ -243,6 +299,7 @@ export function StoreProfileForm({ slugLocked = true }: StoreProfileFormProps) {
                   void cepReg.onChange(e);
                   setValue("endereco.zipCode", masked, { shouldValidate: true });
                 }}
+                placeholder="00000-000"
                 inputMode="numeric"
                 className="border-zinc-800"
               />
@@ -252,44 +309,6 @@ export function StoreProfileForm({ slugLocked = true }: StoreProfileFormProps) {
               <Input
                 id="country"
                 {...register("endereco.country")}
-                className="border-zinc-800"
-              />
-            </div>
-          </div>
-          {errors.endereco &&
-            typeof (errors.endereco as { message?: string }).message ===
-              "string" && (
-              <p className="mt-2 text-sm text-destructive">
-                {(errors.endereco as { message?: string }).message}
-              </p>
-            )}
-        </div>
-
-        <div className="border-t border-zinc-800/50 pb-2 pt-4">
-          <h4 className="mb-3 flex items-center gap-2 text-sm font-bold text-white">
-            <CopyPlus className="h-4 w-4 text-yellow-500" />
-            Redes sociais
-          </h4>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="instagram" className="text-xs">
-                Instagram (handle ou URL)
-              </Label>
-              <Input
-                id="instagram"
-                placeholder="seu.perfil"
-                {...register("redesSociais.instagram")}
-                className="border-zinc-800"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="facebook" className="text-xs">
-                Facebook (handle ou URL)
-              </Label>
-              <Input
-                id="facebook"
-                placeholder="seu.perfil"
-                {...register("redesSociais.facebook")}
                 className="border-zinc-800"
               />
             </div>

@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usersService } from "@/lib/api/services/users.service";
 import { formatAddressLine } from "@/lib/utils";
 
@@ -30,6 +30,9 @@ export function ProfileHeader() {
   return (
     <div className="flex items-center gap-4 rounded-2xl border border-border/40 bg-card/40 p-6">
       <Avatar className="h-16 w-16">
+        {user.avatarUrl && (
+          <AvatarImage src={user.avatarUrl} alt={user.name} className="object-cover" />
+        )}
         <AvatarFallback className="bg-primary/20 text-xl font-bold text-primary">
           {user.name?.charAt(0).toUpperCase()}
         </AvatarFallback>

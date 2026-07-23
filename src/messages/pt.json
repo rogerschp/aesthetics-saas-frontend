@@ -105,7 +105,8 @@
   "PerfilEdit": {
     "editBtn": "Editar perfil",
     "title": "Editar meus dados",
-    "hint": "API permite nome, telefone, senha e endereço. E-mail não é alterável por aqui.",
+    "hint": "API permite nome, telefone, senha e endereço. Avatar via upload (USER_AVATAR).",
+    "avatar": "Foto de perfil",
     "name": "Nome",
     "phone": "Telefone",
     "password": "Nova senha (opcional)",
@@ -145,7 +146,7 @@
     "experience": "Anos de experiência",
     "whatsapp": "WhatsApp",
     "instagram": "Instagram",
-    "avatarUrl": "URL da foto",
+    "avatarUrl": "Foto",
     "bio": "Bio",
     "bioPlaceholder": "Conte um pouco sobre seu trabalho…",
     "bookingMode": "Modo de agendamento",
@@ -505,5 +506,29 @@
     "new": "Novo",
     "elite": "Elite",
     "highlight": "Destaque"
+  },
+  "MediaUpload": {
+    "upload": "Enviar imagem",
+    "replace": "Trocar imagem",
+    "remove": "Remover",
+    "addPhoto": "Adicionar foto",
+    "empty": "Sem imagem",
+    "galleryEmpty": "Nenhuma foto na galeria",
+    "error": "Falha no upload. Tente novamente.",
+    "logo": "Logo",
+    "logoHint": "Enviada ao Cloudinary e vinculada com PATCH /tenants/:id/logo.",
+    "banner": "Banner",
+    "bannerHint": "Upload Cloudinary (ainda sem endpoint de vínculo no tenant — salva em socialMedia.banner ao salvar).",
+    "cover": "Cover",
+    "coverHint": "Upload Cloudinary (salva em socialMedia.cover ao salvar).",
+    "logoAfterCreate": "Após criar o estabelecimento, envie logo/banner/cover na edição.",
+    "avatarHint": "JPEG, PNG ou WebP · máx. 5 MB",
+    "proAvatarAfterCreate": "Crie o perfil primeiro; depois edite para enviar a foto profissional.",
+    "gallery": "Galeria",
+    "galleryHint": "Fotos do seu trabalho. Documentos ficam desativados por enquanto.",
+    "serviceImagesTitle": "Imagens dos serviços",
+    "serviceImagesHint": "Capa por serviço (Cloudinary). A vitrine ainda não exibe até o back expor a URL no catálogo.",
+    "serviceCover": "Capa — {name}",
+    "noServices": "Nenhum serviço ativo. Cadastre serviços para enviar imagens."
   }
 }

@@ -18,7 +18,6 @@ export interface UpdateMyUserRequest {
 
 export interface CreateProfessionalProfileRequest {
   displayName: string;
-  avatarUrl: string;
   professionalType: ProfessionalType;
   bookingMode?: BookingMode;
   whatsappNumber?: string;
@@ -54,6 +53,11 @@ export const usersService = {
     return api.patch('/users/me', data);
   },
 
+  /** PATCH /users/me/avatar — vincula USER_AVATAR ({ mediaId }). */
+  setMyAvatar: async (mediaId: string): Promise<User> => {
+    return api.patch('/users/me/avatar', { mediaId });
+  },
+
   getProfessionalProfile: async (): Promise<ProfessionalProfile> => {
     return api.get('/users/me/professional-profile');
   },
@@ -64,6 +68,11 @@ export const usersService = {
 
   updateProfessionalProfile: async (data: UpdateProfessionalProfileRequest): Promise<ProfessionalProfile> => {
     return api.patch('/users/me/professional-profile', data);
+  },
+
+  /** PATCH /users/me/professional-profile/avatar — vincula AVATAR ({ mediaId }). */
+  setProfessionalAvatar: async (mediaId: string): Promise<ProfessionalProfile> => {
+    return api.patch('/users/me/professional-profile/avatar', { mediaId });
   },
 
   deactivateProfessionalProfile: async (): Promise<ProfessionalProfile> => {

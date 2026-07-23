@@ -6,6 +6,7 @@ import * as z from "zod";
 import { StoreProfileForm } from "@/components/forms/tenant/StoreProfileForm";
 import { HoursInputRepeater } from "@/components/forms/tenant/HoursInputRepeater";
 import { ServiceHierarchyBuilder } from "@/components/forms/tenant/ServiceHierarchyBuilder";
+import { TenantServicesImages } from "@/components/forms/tenant/TenantServicesImages";
 import { TeamBuilder } from "@/components/forms/tenant/TeamBuilder";
 import { AparenciaEditor } from "@/components/forms/tenant/AparenciaEditor";
 import { TenantDangerZone } from "@/components/forms/tenant/TenantDangerZone";
@@ -91,6 +92,8 @@ const tenantSchema = z.object({
       "CNPJ deve ter 14 dígitos",
     ),
   banner: z.string().optional(),
+  bannerWide: z.string().optional(),
+  cover: z.string().optional(),
   endereco: addressSchema,
   redesSociais: z.object({
     instagram: z.string().optional(),
@@ -154,6 +157,8 @@ function buildFormValues(
     telefone: maskPhoneBR(tenant.telephone ?? ""),
     cnpj: tenant.cnpj ? maskCnpj(tenant.cnpj) : "",
     banner: tenant.avatarUrl ?? "",
+    bannerWide: tenant.socialMedia?.banner ?? "",
+    cover: tenant.socialMedia?.cover ?? "",
     endereco: {
       ...EMPTY_ADDRESS,
       ...(tenant.address ?? {}),
@@ -312,6 +317,10 @@ export default function TenantEditPage() {
       const fb = data.redesSociais.facebook?.trim();
       if (ig) socialMedia.instagram = ig;
       if (fb) socialMedia.facebook = fb;
+      const bannerWide = data.bannerWide?.trim();
+      const cover = data.cover?.trim();
+      if (bannerWide) socialMedia.banner = bannerWide;
+      if (cover) socialMedia.cover = cover;
 
       const address: Address = {
         street: data.endereco.street.trim(),
@@ -332,7 +341,6 @@ export default function TenantEditPage() {
         name: data.nome.trim(),
         telephone: phoneToApiDigits(data.telefone),
         ...(cnpjDigits.length === 14 ? { cnpj: cnpjDigits } : {}),
-        avatarUrl: data.banner?.trim() || null,
         socialMedia,
         address,
         ...(geo
@@ -385,11 +393,16 @@ export default function TenantEditPage() {
   const renderizarConteudo = () => {
     switch (secaoAtiva) {
       case "informacoes":
-        return <StoreProfileForm />;
+        return <StoreProfileForm tenantId={tenantId} />;
       case "expediente":
         return <HoursInputRepeater />;
       case "servicos":
-        return <ServiceHierarchyBuilder />;
+        return (
+          <div className="space-y-10">
+            <ServiceHierarchyBuilder />
+            {tenantId && <TenantServicesImages tenantId={tenantId} />}
+          </div>
+        );
       case "equipe":
         return <TeamBuilder />;
       case "aparencia":
