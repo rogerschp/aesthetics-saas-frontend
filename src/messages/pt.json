@@ -206,6 +206,23 @@
     "saveError": "Não foi possível salvar. Tente novamente.",
     "saveSuccess": "Alterações salvas."
   },
+  "TenantDanger": {
+    "title": "Zona de risco",
+    "subtitle": "Desative a vitrine temporariamente ou exclua o estabelecimento de forma permanente (soft delete).",
+    "statusTitle": "Status do estabelecimento",
+    "statusActiveHint": "Ativo: aparece na busca e aceita agendamentos conforme a configuração.",
+    "statusInactiveHint": "Inativo: some da busca pública. Você pode reativar quando quiser.",
+    "badgeActive": "Ativo",
+    "badgeInactive": "Inativo",
+    "deactivate": "Desativar",
+    "activate": "Reativar",
+    "deleteTitle": "Excluir estabelecimento",
+    "deleteHint": "Isso remove \"{name}\" (soft delete). Digite o slug {slug} para confirmar.",
+    "confirmLabel": "Confirme o slug",
+    "deleteConfirm": "Tem certeza que deseja excluir \"{name}\"? Esta ação não pode ser desfeita pelo painel.",
+    "deleteBtn": "Excluir definitivamente",
+    "error": "Não foi possível concluir a operação."
+  },
   "Categories": {
     "barber": "Barbearia",
     "salon": "Salão",

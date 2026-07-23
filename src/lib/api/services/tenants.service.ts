@@ -1,5 +1,5 @@
 import { api } from "../client";
-import { Tenant } from "../types";
+import { Tenant, TenantStatus } from "../types";
 
 export interface CreateTenantDto {
   name: string;
@@ -11,7 +11,7 @@ export interface CreateTenantDto {
 }
 
 export interface UpdateTenantDto extends Partial<CreateTenantDto> {
-  status?: string;
+  status?: TenantStatus;
   timezone?: string;
   segment?: string | null;
   avatarUrl?: string | null;

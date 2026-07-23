@@ -206,6 +206,23 @@
     "saveError": "Could not save. Please try again.",
     "saveSuccess": "Changes saved."
   },
+  "TenantDanger": {
+    "title": "Danger zone",
+    "subtitle": "Temporarily deactivate the storefront or permanently delete the establishment (soft delete).",
+    "statusTitle": "Establishment status",
+    "statusActiveHint": "Active: appears in search and accepts bookings per your settings.",
+    "statusInactiveHint": "Inactive: hidden from public search. You can reactivate anytime.",
+    "badgeActive": "Active",
+    "badgeInactive": "Inactive",
+    "deactivate": "Deactivate",
+    "activate": "Reactivate",
+    "deleteTitle": "Delete establishment",
+    "deleteHint": "This removes \"{name}\" (soft delete). Type the slug {slug} to confirm.",
+    "confirmLabel": "Confirm slug",
+    "deleteConfirm": "Are you sure you want to delete \"{name}\"? This cannot be undone from the panel.",
+    "deleteBtn": "Delete permanently",
+    "error": "Could not complete the operation."
+  },
   "Categories": {
     "barber": "Barbershop",
     "salon": "Beauty Salon",

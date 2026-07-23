@@ -8,6 +8,7 @@ import { HoursInputRepeater } from "@/components/forms/tenant/HoursInputRepeater
 import { ServiceHierarchyBuilder } from "@/components/forms/tenant/ServiceHierarchyBuilder";
 import { TeamBuilder } from "@/components/forms/tenant/TeamBuilder";
 import { AparenciaEditor } from "@/components/forms/tenant/AparenciaEditor";
+import { TenantDangerZone } from "@/components/forms/tenant/TenantDangerZone";
 import {
   EditarEstabelecimentoSidebar,
   type SecaoEdicao,
@@ -55,6 +56,7 @@ import {
   TenantProfessional,
   TenantProfessionalStatus,
   TenantThemeData,
+  TenantUserRole,
 } from "@/lib/api/types";
 
 const addressSchema = z.object({
@@ -191,9 +193,11 @@ function buildFormValues(
 export default function TenantEditPage() {
   const t = useTranslations("EstabelecimentoForm");
   const tAparencia = useTranslations("Aparencia");
-  const { current, isLoading: tenantLoading, refetch: refetchTenants } =
+  const { current, isLoading: tenantLoading, refetch: refetchTenants, role } =
     useTenantContext();
   const tenantId = current?.tenant.id;
+  const canManageTenant =
+    role === TenantUserRole.OWNER || role === TenantUserRole.ADMIN;
   const queryClient = useQueryClient();
 
   const [secaoAtiva, setSecaoAtiva] = useState<SecaoEdicao>("informacoes");
@@ -512,6 +516,19 @@ export default function TenantEditPage() {
               </div>
             </form>
           </FormProvider>
+        )}
+
+        {canManageTenant && tenantQuery.data && tenantId && (
+          <TenantDangerZone
+            tenantId={tenantId}
+            tenantSlug={tenantQuery.data.slug}
+            tenantName={tenantQuery.data.name}
+            status={tenantQuery.data.status}
+            onStatusChange={() => {
+              void tenantQuery.refetch();
+              void refetchTenants();
+            }}
+          />
         )}
       </div>
     </div>

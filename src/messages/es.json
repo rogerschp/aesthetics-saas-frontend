@@ -206,6 +206,23 @@
     "saveError": "No se pudo guardar. Inténtalo de nuevo.",
     "saveSuccess": "Cambios guardados."
   },
+  "TenantDanger": {
+    "title": "Zona de riesgo",
+    "subtitle": "Desactiva la vitrina temporalmente o elimina el establecimiento de forma permanente (soft delete).",
+    "statusTitle": "Estado del establecimiento",
+    "statusActiveHint": "Activo: aparece en la búsqueda y acepta reservas según tu configuración.",
+    "statusInactiveHint": "Inactivo: oculto de la búsqueda pública. Puedes reactivarlo cuando quieras.",
+    "badgeActive": "Activo",
+    "badgeInactive": "Inactivo",
+    "deactivate": "Desactivar",
+    "activate": "Reactivar",
+    "deleteTitle": "Eliminar establecimiento",
+    "deleteHint": "Esto elimina \"{name}\" (soft delete). Escribe el slug {slug} para confirmar.",
+    "confirmLabel": "Confirma el slug",
+    "deleteConfirm": "¿Seguro que quieres eliminar \"{name}\"? Esta acción no se puede deshacer desde el panel.",
+    "deleteBtn": "Eliminar definitivamente",
+    "error": "No se pudo completar la operación."
+  },
   "Categories": {
     "barber": "Barbería",
     "salon": "Salón de Belleza",
