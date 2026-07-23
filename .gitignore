@@ -44,8 +44,9 @@ next-env.d.ts
 
 #AI and other files
 .agents
-./docs
+docs/
 PROJECT.md
 FRONTEND_API_GUIDE.md
 AGENTS.md
 CLAUDE.md
+MULTI_SEGMENTO.md

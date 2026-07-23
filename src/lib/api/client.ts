@@ -1,33 +1,47 @@
-import axios from 'axios';
-import { getSession } from 'next-auth/react';
+import axios from "axios";
+import { getSession } from "next-auth/react";
+
+/**
+ * Browser e SSR usam a URL absoluta da API quando `NEXT_PUBLIC_API_URL` está setada
+ * (Vercel → Render). Localmente, sem env, o browser pode usar o rewrite `/api/backend`.
+ */
+function resolveApiBaseURL(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/$/, "");
+  if (fromEnv) return fromEnv;
+  if (typeof window !== "undefined") return "/api/backend";
+  return "http://127.0.0.1:3000";
+}
 
 export const api = axios.create({
-  baseURL: typeof window !== 'undefined' ? '/api/backend' : (process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3000'),
+  baseURL: resolveApiBaseURL(),
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-api.interceptors.request.use(async (config) => {
-  // getSession() do next-auth/react só funciona no browser.
-  // Em RSC/SSR ele tenta GET /api/auth/session com URL inválida → CLIENT_FETCH_ERROR.
-  if (typeof window === "undefined") {
-    return config;
-  }
-
-  try {
-    const session = await getSession();
-    if (session?.idToken && config.headers) {
-      config.headers.Authorization = `Bearer ${session.idToken}`;
+api.interceptors.request.use(
+  async (config) => {
+    // getSession() do next-auth/react só funciona no browser.
+    // Em RSC/SSR ele tenta GET /api/auth/session com URL inválida → CLIENT_FETCH_ERROR.
+    if (typeof window === "undefined") {
+      return config;
     }
-  } catch {
-    // Sem sessão — segue como público
-  }
 
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+    try {
+      const session = await getSession();
+      if (session?.idToken && config.headers) {
+        config.headers.Authorization = `Bearer ${session.idToken}`;
+      }
+    } catch {
+      // Sem sessão — segue como público
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
 api.interceptors.response.use(
   (response) => {
@@ -38,12 +52,12 @@ api.interceptors.response.use(
   (error) => {
     // Tratar erro retornado pela API padronizada do Cyacsys
     // { statusCode, requestId, timestamp, code, message }
-    if (error.response?.status === 401 && typeof window !== 'undefined') {
+    if (error.response?.status === 401 && typeof window !== "undefined") {
       // Se for um unauthorized real, limpa a sessão local por segurança e força login
       // TODO: Aqui também poderiamos integrar o signOut do next-auth depois e o refresh token (POST /auth/refresh)
     }
 
     // Retorna o payload de erro para o hook/service tratar (ex: BusinessRuleException)
     return Promise.reject(error.response?.data || error);
-  }
+  },
 );
