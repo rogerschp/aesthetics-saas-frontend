@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -79,22 +79,42 @@ export function Header() {
 
   const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
     <>
-      <Link href="/" className={navLinkClass} onClick={onNavigate}>
+      <Link
+        href="/"
+        prefetch={false}
+        className={navLinkClass}
+        onClick={onNavigate}
+      >
         <Home className="h-4 w-4" />
         {t("home")}
       </Link>
-      <Link href="/planos" className={navLinkClass} onClick={onNavigate}>
+      <Link
+        href="/planos"
+        prefetch={false}
+        className={navLinkClass}
+        onClick={onNavigate}
+      >
         <Sparkles className="h-4 w-4" />
         {t("plans")}
       </Link>
       {isAuthenticated && (
-        <Link href="/perfil/me" className={navLinkClass} onClick={onNavigate}>
+        <Link
+          href="/perfil/me"
+          prefetch={false}
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
           <Calendar className="h-4 w-4" />
           {t("myAppointments")}
         </Link>
       )}
       {isAuthenticated && hasPanel && (
-        <Link href="/painel" className={navLinkClass} onClick={onNavigate}>
+        <Link
+          href="/painel"
+          prefetch={false}
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
           <LayoutDashboard className="h-4 w-4" />
           {t("myDashboard")}
         </Link>
@@ -102,6 +122,7 @@ export function Header() {
       {isAuthenticated && hasPanel && canSeeReports && (
         <Link
           href="/painel/relatorios"
+          prefetch={false}
           className={navLinkClass}
           onClick={onNavigate}
         >
@@ -112,6 +133,7 @@ export function Header() {
       {isAuthenticated && !hasPanel && (
         <Link
           href="/painel/estabelecimento/criar"
+          prefetch={false}
           className={navLinkClass}
           onClick={onNavigate}
         >
@@ -125,7 +147,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/40 backdrop-blur-lg">
       <div className="container mx-auto flex h-14 max-w-screen-2xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4">
-        <Link href="/" className="min-w-0 shrink">
+        <Link href="/" prefetch={false} className="min-w-0 shrink">
           <span className="text-xl font-bold tracking-tight text-primary sm:text-2xl">
             BarberShop
           </span>
@@ -150,6 +172,7 @@ export function Header() {
               </div>
               <Link
                 href="/perfil/me"
+                prefetch={false}
                 className="transition-opacity hover:opacity-80"
               >
                 <Avatar className="h-9 w-9 border border-primary/50 shadow-sm shadow-primary/20">
@@ -170,7 +193,7 @@ export function Header() {
             </div>
           ) : (
             <div className="hidden items-center gap-2 sm:flex">
-              <Link href="/login">
+              <Link href="/login" prefetch={false}>
                 <Button
                   variant="ghost"
                   className="text-foreground hover:text-primary"
@@ -178,7 +201,7 @@ export function Header() {
                   {t("login")}
                 </Button>
               </Link>
-              <Link href="/cadastro">
+              <Link href="/cadastro" prefetch={false}>
                 <Button className="px-5 font-semibold">
                   {t("register")}
                 </Button>
@@ -200,7 +223,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* Menu mobile */}
       <div
         className={cn(
           "border-t border-white/5 bg-black/95 md:hidden",
@@ -216,6 +238,7 @@ export function Header() {
             <div className="flex items-center justify-between gap-3">
               <Link
                 href="/perfil/me"
+                prefetch={false}
                 className="flex min-w-0 items-center gap-3"
                 onClick={() => setMenuOpen(false)}
               >
@@ -240,12 +263,20 @@ export function Header() {
             </div>
           ) : (
             <div className="flex flex-col gap-2">
-              <Link href="/login" onClick={() => setMenuOpen(false)}>
+              <Link
+                href="/login"
+                prefetch={false}
+                onClick={() => setMenuOpen(false)}
+              >
                 <Button variant="outline" className="w-full">
                   {t("login")}
                 </Button>
               </Link>
-              <Link href="/cadastro" onClick={() => setMenuOpen(false)}>
+              <Link
+                href="/cadastro"
+                prefetch={false}
+                onClick={() => setMenuOpen(false)}
+              >
                 <Button className="w-full font-semibold">{t("register")}</Button>
               </Link>
             </div>

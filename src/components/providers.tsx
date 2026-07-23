@@ -22,9 +22,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider
-      // Evita GET /api/auth/session a cada foco de aba.
+      // Evita rajada de GET /api/auth/session no foco/remoount.
       refetchOnWindowFocus={false}
-      // Rotação do Firebase idToken: o callback jwt só roda quando /session é chamado.
+      refetchWhenOffline={false}
+      // Rotação do Firebase idToken (~1h). Não precisa no mount.
       refetchInterval={5 * 60}
     >
       <QueryClientProvider client={queryClient}>

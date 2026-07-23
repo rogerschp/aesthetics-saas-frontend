@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { Star, MapPin, Crown, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +12,7 @@ export function TenantSearchCard({ tenant }: { tenant: TenantSearchResult }) {
     tenant.totalReviews > 0 ? tenant.averageRating.toFixed(1) : t("new");
 
   return (
-    <Link href={`/estabelecimento/${tenant.slug}`}>
+    <Link href={`/estabelecimento/${tenant.slug}`} prefetch={false}>
       <Card className="group flex h-full cursor-pointer flex-col gap-0 overflow-hidden rounded-xl border-border bg-card p-0 transition-all duration-300 hover:border-primary/60 hover:shadow-[0_0_30px_rgba(212,175,55,0.15)]">
         <div className="relative h-40 w-full transform-gpu overflow-hidden bg-muted">
           {tenant.avatarUrl ? (
@@ -20,6 +20,7 @@ export function TenantSearchCard({ tenant }: { tenant: TenantSearchResult }) {
               src={tenant.avatarUrl}
               alt={tenant.name}
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+              loading="lazy"
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
