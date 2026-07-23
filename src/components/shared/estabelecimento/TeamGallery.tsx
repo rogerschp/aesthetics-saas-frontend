@@ -66,6 +66,11 @@ export function TeamGallery({ time, variante = "padrao" }: TeamGalleryProps) {
               <span className="text-xs text-muted-foreground text-center mt-1 line-clamp-1">
                 {membro.role}
               </span>
+              {membro.userId && (
+                <span className="mt-1.5 text-[10px] font-medium uppercase tracking-wide text-primary">
+                  Avaliar
+                </span>
+              )}
             </MemberShell>
           ))}
         </div>

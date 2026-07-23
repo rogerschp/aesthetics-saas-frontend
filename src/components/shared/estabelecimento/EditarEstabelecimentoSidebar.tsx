@@ -9,6 +9,7 @@ import {
   Palette,
   Power,
   Lock,
+  MessageSquare,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -21,6 +22,7 @@ export type SecaoEdicao =
   | "expediente"
   | "servicos"
   | "equipe"
+  | "avaliacoes"
   | "aparencia"
   | "desativar";
 
@@ -78,6 +80,11 @@ export function EditarEstabelecimentoSidebar({
       id: "equipe",
       icone: <Users className={TAMANHO_ICONE} />,
       chaveI18n: "equipe",
+    },
+    {
+      id: "avaliacoes",
+      icone: <MessageSquare className={TAMANHO_ICONE} />,
+      chaveI18n: "avaliacoes",
     },
     {
       id: "aparencia",

@@ -74,10 +74,7 @@ function RenderizarSecao({
     case "avaliacoes":
       return (
         <section>
-          <ReviewsWall
-            tenantId={tenantId}
-            avaliacoes={estabelecimento.avaliacoes}
-          />
+          <ReviewsWall tenantId={tenantId} />
         </section>
       );
     case "endereco":

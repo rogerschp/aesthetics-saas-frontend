@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
-import {NextIntlClientProvider} from 'next-intl';
 import {getMessages} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
+import { IntlProvider } from "@/components/providers/IntlProvider";
+import { Header } from "@/components/shared/Header";
+import { Providers } from "@/components/providers";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -15,9 +17,6 @@ export const metadata: Metadata = {
   title: "BarberShop SaaS",
   description: "A plataforma premium de agendamento para barbearias, salões de beleza e estúdios de tatuagem.",
 };
-
-import { Header } from "@/components/shared/Header";
-import { Providers } from "@/components/providers";
 
 export default async function RootLayout({
   children,
@@ -41,12 +40,12 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-sans">
-        <NextIntlClientProvider messages={messages}>
+        <IntlProvider locale={locale} messages={messages}>
           <Providers>
             <Header />
             {children}
           </Providers>
-        </NextIntlClientProvider>
+        </IntlProvider>
       </body>
     </html>
   );

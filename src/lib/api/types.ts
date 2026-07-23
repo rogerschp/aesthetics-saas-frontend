@@ -105,6 +105,7 @@ export enum BookingStatus {
   DRAFT = 'DRAFT',
   CONFIRMED = 'CONFIRMED',
   CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
 }
 
 export enum DayOfWeek {
@@ -340,6 +341,8 @@ export interface OpsBooking {
   endsAt: string;
   professional: {
     tenantProfessionalId: string;
+    professionalProfileId?: string;
+    userId?: string;
     displayName: string;
   };
   service: {
@@ -355,6 +358,7 @@ export interface PublicProfessional {
   /** tenantProfessionalId — usar na URL de agenda/booking. */
   id: string;
   tenantId: string;
+  professionalProfileId?: string;
   /** UUID do usuário dono do perfil — necessário para avaliações. */
   userId?: string;
   displayName: string;
@@ -369,6 +373,16 @@ export interface PublicProfessional {
 // ============ Reviews ============
 export type ReviewTargetType = 'TENANT' | 'PROFESSIONAL';
 
+export interface ReviewComment {
+  id: string;
+  reviewId: string;
+  authorUserId: string;
+  authorName: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Review {
   id: string;
   reviewerUserId: string;
@@ -377,11 +391,10 @@ export interface Review {
   targetId: string;
   rating: number;
   comment: string | null;
-  isEdited: boolean;
-  editedAt?: string | null;
   reply: string | null;
   repliedAt?: string | null;
   repliedByUserId?: string | null;
+  comments: ReviewComment[];
   createdAt: string;
   updatedAt?: string;
 }
@@ -574,8 +587,9 @@ export interface MyBooking {
   };
   professional: {
     tenantProfessionalId: string;
+    professionalProfileId?: string;
     displayName: string;
-    /** Se a API enviar — usado para link de avaliação. */
+    /** UUID do usuário — link para /profissional/[userId] e reviews. */
     userId?: string;
   };
   service: {

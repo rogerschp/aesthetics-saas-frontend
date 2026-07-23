@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { CalendarPlus, Check, Clock, Loader2, X } from "lucide-react";
+import { CalendarPlus, Check, CheckCircle2, Clock, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +26,7 @@ const STATUS_KEY: Record<BookingStatus, string> = {
   [BookingStatus.DRAFT]: "statusDraft",
   [BookingStatus.CONFIRMED]: "statusConfirmed",
   [BookingStatus.CANCELLED]: "statusCancelled",
+  [BookingStatus.COMPLETED]: "statusCompleted",
 };
 
 function customerLabel(b: OpsBooking, t: (k: string) => string): string {
@@ -110,13 +111,17 @@ export function OpsBookingPanel({ tenantId }: { tenantId: string }) {
   const actionMutation = useMutation({
     mutationFn: async (input: {
       booking: OpsBooking;
-      action: "confirm" | "cancel";
+      action: "confirm" | "cancel" | "complete";
     }) => {
       const { booking, action } = input;
       const tpId = booking.professional.tenantProfessionalId;
-      return action === "confirm"
-        ? bookingService.confirmOps(tenantId, tpId, booking.id)
-        : bookingService.cancelOps(tenantId, tpId, booking.id);
+      if (action === "confirm") {
+        return bookingService.confirmOps(tenantId, tpId, booking.id);
+      }
+      if (action === "complete") {
+        return bookingService.completeOps(tenantId, tpId, booking.id);
+      }
+      return bookingService.cancelOps(tenantId, tpId, booking.id);
     },
     onSuccess: () => {
       setError(null);
@@ -353,9 +358,11 @@ export function OpsBookingPanel({ tenantId }: { tenantId: string }) {
                     className={
                       booking.status === BookingStatus.CONFIRMED
                         ? "bg-primary/15 text-primary"
-                        : booking.status === BookingStatus.CANCELLED
-                          ? "bg-muted text-muted-foreground"
-                          : "bg-amber-500/15 text-amber-500"
+                        : booking.status === BookingStatus.COMPLETED
+                          ? "bg-emerald-500/15 text-emerald-500"
+                          : booking.status === BookingStatus.CANCELLED
+                            ? "bg-muted text-muted-foreground"
+                            : "bg-amber-500/15 text-amber-500"
                     }
                   >
                     {t(STATUS_KEY[booking.status])}
@@ -393,17 +400,29 @@ export function OpsBookingPanel({ tenantId }: { tenantId: string }) {
                 </div>
               )}
               {booking.status === BookingStatus.CONFIRMED && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  disabled={actionMutation.isPending}
-                  onClick={() =>
-                    actionMutation.mutate({ booking, action: "cancel" })
-                  }
-                >
-                  <X className="mr-1.5 h-4 w-4" />
-                  {t("cancel")}
-                </Button>
+                <div className="flex shrink-0 gap-2">
+                  <Button
+                    size="sm"
+                    disabled={actionMutation.isPending}
+                    onClick={() =>
+                      actionMutation.mutate({ booking, action: "complete" })
+                    }
+                  >
+                    <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                    {t("complete")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={actionMutation.isPending}
+                    onClick={() =>
+                      actionMutation.mutate({ booking, action: "cancel" })
+                    }
+                  >
+                    <X className="mr-1.5 h-4 w-4" />
+                    {t("cancel")}
+                  </Button>
+                </div>
               )}
             </div>
           ))}

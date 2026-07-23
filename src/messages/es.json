@@ -71,7 +71,8 @@
     "submitLoading": "Iniciando...",
     "submitBtn": "Iniciar Sesión",
     "emailError": "Correo electrónico inválido",
-    "passwordError": "La contraseña es requerida"
+    "passwordError": "La contraseña es requerida",
+    "errorMessage": "Correo o contraseña inválidos. Inténtalo de nuevo."
   },
   "RegistrationForm": {
     "nameLabel": "Nombre Completo",
@@ -265,6 +266,7 @@
     "expediente": "Horario",
     "servicos": "Servicios y Precios",
     "equipe": "Equipo",
+    "avaliacoes": "Reseñas",
     "aparencia": "Apariencia",
     "desativar": "Desactivar",
     "badgePlan": "Standard+"
@@ -345,13 +347,15 @@
     "statusDraft": "Borrador",
     "statusConfirmed": "Confirmado",
     "statusCancelled": "Cancelado",
+    "statusCompleted": "Completado",
     "upcoming": "Próximas citas",
     "noUpcoming": "No tienes citas futuras.",
     "history": "Historial",
     "noHistory": "Sin registros anteriores.",
     "confirm": "Confirmar",
     "cancel": "Cancelar",
-    "review": "Evaluar"
+    "review": "Evaluar profesional",
+    "reviewTenant": "Evaluar establecimiento"
   },
   "ProfessionalReviews": {
     "pageTitle": "Profesional",
@@ -363,6 +367,7 @@
     "title": "Reseñas",
     "empty": "Aún no hay reseñas para este profesional.",
     "leaveReview": "Deja tu reseña",
+    "leaveReviewHint": "Disponible tras un servicio completado.",
     "thanks": "¡Gracias por tu reseña!",
     "commentOptional": "Comentario (opcional)",
     "submit": "Enviar reseña",
@@ -373,6 +378,25 @@
     "reply": "Responder",
     "editReply": "Editar respuesta",
     "replyLabel": "Respuesta del profesional",
+    "replyPlaceholder": "Tu respuesta…",
+    "saveReply": "Guardar respuesta",
+    "cancel": "Cancelar"
+  },
+  "TenantReviews": {
+    "title": "Reseñas de clientes",
+    "empty": "Aún no hay reseñas para este establecimiento.",
+    "leaveReview": "Deja tu reseña",
+    "leaveReviewHint": "Disponible tras un servicio completado.",
+    "thanks": "¡Gracias por tu reseña!",
+    "commentOptional": "Comentario (opcional)",
+    "submit": "Enviar reseña",
+    "loginLink": "Inicia sesión",
+    "loginHint": "para evaluar este establecimiento.",
+    "cannotSelf": "Dueños y admins no pueden evaluar su propio establecimiento.",
+    "starsAria": "{n} estrellas",
+    "reply": "Responder",
+    "editReply": "Editar respuesta",
+    "replyLabel": "Respuesta del establecimiento",
     "replyPlaceholder": "Tu respuesta…",
     "saveReply": "Guardar respuesta",
     "cancel": "Cancelar"
@@ -442,13 +466,22 @@
     "sessionBookings": "Reservas de esta sesión",
     "confirm": "Confirmar",
     "cancel": "Cancelar",
+    "complete": "Completar",
     "statusDraft": "Borrador",
     "statusConfirmed": "Confirmado",
     "statusCancelled": "Cancelado",
+    "statusCompleted": "Completado",
     "guestFallback": "Visitante",
     "walkIn": "Encaje",
     "serviceFallback": "Servicio",
     "professionalFallback": "Profesional"
+  },
+  "ReviewComments": {
+    "title": "Comentarios",
+    "empty": "Aún no hay comentarios.",
+    "placeholder": "Añadir un comentario…",
+    "submit": "Comentar",
+    "delete": "Eliminar comentario"
   },
   "PainelHome": {
     "noTenantTitle": "Aún no tienes un establecimiento",

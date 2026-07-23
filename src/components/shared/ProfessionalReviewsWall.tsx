@@ -13,6 +13,7 @@ import { reviewsService } from "@/lib/api/services/reviews.service";
 import { formatApiError } from "@/lib/api/errors";
 import type { Review } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
+import { ReviewCommentsBlock } from "@/components/shared/ReviewCommentsBlock";
 
 interface ProfessionalReviewsWallProps {
   /** userId do dono do perfil profissional (rota da API). */
@@ -31,6 +32,7 @@ export function ProfessionalReviewsWall({
   const { status, data: session } = useSession();
   const isLogged = status === "authenticated";
   const isSelf = session?.user?.id === professionalUserId;
+  const allowReply = canReply || isSelf;
   const queryClient = useQueryClient();
 
   const [rating, setRating] = useState(5);
@@ -49,7 +51,7 @@ export function ProfessionalReviewsWall({
 
   const createMutation = useMutation({
     mutationFn: () =>
-      reviewsService.createProfessional(professionalUserId, {
+      reviewsService.upsertProfessional(professionalUserId, {
         rating,
         comment: comment.trim() || undefined,
       }),
@@ -124,7 +126,8 @@ export function ProfessionalReviewsWall({
             <ReviewCard
               key={review.id}
               review={review}
-              canReply={canReply}
+              professionalUserId={professionalUserId}
+              canReply={allowReply}
               isReplying={replyingId === review.id}
               replyText={replyText}
               replyError={replyingId === review.id ? replyError : null}
@@ -155,6 +158,7 @@ export function ProfessionalReviewsWall({
       {isLogged && !isSelf && (
         <div className="mt-2 rounded-xl border border-border/50 bg-card p-4">
           <p className="mb-3 text-sm font-medium">{t("leaveReview")}</p>
+          <p className="mb-3 text-xs text-muted-foreground">{t("leaveReviewHint")}</p>
           {done ? (
             <p className="text-sm text-primary">{t("thanks")}</p>
           ) : (
@@ -214,7 +218,7 @@ export function ProfessionalReviewsWall({
         </p>
       )}
 
-      {isSelf && !canReply && (
+      {isSelf && !allowReply && (
         <p className="text-xs text-muted-foreground">{t("cannotSelf")}</p>
       )}
     </div>
@@ -223,6 +227,7 @@ export function ProfessionalReviewsWall({
 
 function ReviewCard({
   review,
+  professionalUserId,
   canReply,
   isReplying,
   replyText,
@@ -234,6 +239,7 @@ function ReviewCard({
   onSubmitReply,
 }: {
   review: Review;
+  professionalUserId: string;
   canReply: boolean;
   isReplying: boolean;
   replyText: string;
@@ -328,6 +334,11 @@ function ReviewCard({
           </div>
         </div>
       )}
+      <ReviewCommentsBlock
+        review={review}
+        target={{ kind: "professional", userId: professionalUserId }}
+        invalidateKey={["professional-reviews", professionalUserId]}
+      />
     </div>
   );
 }

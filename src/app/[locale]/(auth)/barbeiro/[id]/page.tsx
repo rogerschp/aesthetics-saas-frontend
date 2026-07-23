@@ -231,12 +231,16 @@ export default function ProfissionalDashboardPage() {
                         className={
                           b.status === BookingStatus.CONFIRMED
                             ? "bg-primary/15 text-primary"
-                            : "bg-amber-500/15 text-amber-500"
+                            : b.status === BookingStatus.COMPLETED
+                              ? "bg-emerald-500/15 text-emerald-500"
+                              : "bg-amber-500/15 text-amber-500"
                         }
                       >
                         {b.status === BookingStatus.CONFIRMED
                           ? "Confirmado"
-                          : "Rascunho"}
+                          : b.status === BookingStatus.COMPLETED
+                            ? "Concluído"
+                            : "Rascunho"}
                       </Badge>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">

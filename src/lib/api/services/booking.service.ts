@@ -2,8 +2,23 @@ import { api } from "../client";
 import { Booking, BookingStatus, OpsBooking } from "../types";
 
 export interface ListOpsBookingsParams {
-  date?: string; // yyyy-MM-dd
+  /** Um dia `yyyy-MM-dd` — XOR com from/to. */
+  date?: string;
+  /** Início do intervalo (inclusivo) — exige `to`. */
+  from?: string;
+  /** Fim do intervalo (inclusivo) — exige `from`; máx. 31 dias. */
+  to?: string;
   status?: BookingStatus;
+}
+
+function opsListParams(params: ListOpsBookingsParams) {
+  return {
+    ...(params.date ? { date: params.date } : {}),
+    ...(params.from && params.to
+      ? { from: params.from, to: params.to }
+      : {}),
+    ...(params.status ? { status: params.status } : {}),
+  };
 }
 
 export interface BookingSlotDraftDto {
@@ -78,31 +93,25 @@ export const bookingService = {
   },
 
   // ---------- Ops (equipe / membership) ----------
-  /** GET /tenants/:tenantId/bookings?date=&status= — OWNER/ADMIN/STAFF. */
+  /** GET /tenants/:tenantId/bookings?date=|from=&to=&status= — OWNER/ADMIN/STAFF. */
   listTenant: async (
     tenantId: string,
     params: ListOpsBookingsParams = {},
   ): Promise<OpsBooking[]> => {
     const response = await api.get(`/tenants/${tenantId}/bookings`, {
-      params: {
-        ...(params.date ? { date: params.date } : {}),
-        ...(params.status ? { status: params.status } : {}),
-      },
+      params: opsListParams(params),
     });
     return response as any;
   },
 
-  /** GET .../tenant-professionals/:tpId/bookings?date=&status= — agenda do profissional. */
+  /** GET .../tenant-professionals/:tpId/bookings?date=|from=&to=&status=. */
   listByProfessional: async (
     tenantId: string,
     tpId: string,
     params: ListOpsBookingsParams = {},
   ): Promise<OpsBooking[]> => {
     const response = await api.get(base(tenantId, tpId), {
-      params: {
-        ...(params.date ? { date: params.date } : {}),
-        ...(params.status ? { status: params.status } : {}),
-      },
+      params: opsListParams(params),
     });
     return response as any;
   },
@@ -131,6 +140,18 @@ export const bookingService = {
     bookingId: string,
   ): Promise<Booking> => {
     const response = await api.patch(`${base(tenantId, tpId)}/${bookingId}/cancel`);
+    return response as any;
+  },
+
+  /** PATCH .../bookings/:id/complete — CONFIRMED → COMPLETED. */
+  completeOps: async (
+    tenantId: string,
+    tpId: string,
+    bookingId: string,
+  ): Promise<Booking> => {
+    const response = await api.patch(
+      `${base(tenantId, tpId)}/${bookingId}/complete`,
+    );
     return response as any;
   },
 };

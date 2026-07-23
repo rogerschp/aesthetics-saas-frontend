@@ -27,10 +27,12 @@ const STATUS_KEY: Record<BookingStatus, string> = {
   [BookingStatus.DRAFT]: "statusDraft",
   [BookingStatus.CONFIRMED]: "statusConfirmed",
   [BookingStatus.CANCELLED]: "statusCancelled",
+  [BookingStatus.COMPLETED]: "statusCompleted",
 };
 
 function statusVariant(status: BookingStatus): string {
   if (status === BookingStatus.CONFIRMED) return "bg-primary/15 text-primary";
+  if (status === BookingStatus.COMPLETED) return "bg-emerald-500/15 text-emerald-500";
   if (status === BookingStatus.DRAFT) return "bg-amber-500/15 text-amber-500";
   return "bg-muted text-muted-foreground";
 }
@@ -215,10 +217,24 @@ function BookingItem({
         </div>
       </div>
 
-      {(canCancel || onConfirm || booking.professional.userId) && (
+      {(canCancel ||
+        onConfirm ||
+        booking.tenant.slug ||
+        booking.professional.userId) && (
         <div className="flex shrink-0 flex-wrap gap-2">
+          {booking.status === BookingStatus.COMPLETED && booking.tenant.slug && (
+            <Link
+              href={`/estabelecimento/${booking.tenant.slug}`}
+              className="inline-flex"
+            >
+              <Button size="sm" variant="outline" type="button">
+                <Star className="mr-1.5 h-4 w-4" />
+                {t("reviewTenant")}
+              </Button>
+            </Link>
+          )}
           {booking.professional.userId &&
-            booking.status === BookingStatus.CONFIRMED && (
+            booking.status === BookingStatus.COMPLETED && (
               <Link
                 href={`/profissional/${booking.professional.userId}`}
                 className="inline-flex"

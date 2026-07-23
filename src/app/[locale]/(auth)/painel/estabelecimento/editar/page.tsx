@@ -10,6 +10,7 @@ import { TenantServicesImages } from "@/components/forms/tenant/TenantServicesIm
 import { TeamBuilder } from "@/components/forms/tenant/TeamBuilder";
 import { AparenciaEditor } from "@/components/forms/tenant/AparenciaEditor";
 import { TenantDangerZone } from "@/components/forms/tenant/TenantDangerZone";
+import { ReviewsWall } from "@/components/shared/estabelecimento/ReviewsWall";
 import {
   EditarEstabelecimentoSidebar,
   type SecaoEdicao,
@@ -412,6 +413,10 @@ export default function TenantEditPage() {
         );
       case "equipe":
         return <TeamBuilder />;
+      case "avaliacoes":
+        return tenantId ? (
+          <ReviewsWall tenantId={tenantId} />
+        ) : null;
       case "aparencia":
         if (!canCustomize) {
           return (

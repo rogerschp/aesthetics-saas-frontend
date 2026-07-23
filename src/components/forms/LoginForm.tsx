@@ -13,17 +13,23 @@ import { signIn } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { TENANT_STORAGE_KEY } from "@/components/providers/TenantProvider";
 import { clearCachedIdToken } from "@/lib/api/client";
+import { FormErrorBanner } from "@/components/shared/FormBanner";
 
 export function LoginForm() {
   const t = useTranslations("LoginForm");
   const router = useRouter();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  const loginSchema = useMemo(() => z.object({
-    email: z.string().email(t("emailError")),
-    senha: z.string().min(1, t("passwordError")),
-  }), [t]);
+  const loginSchema = useMemo(
+    () =>
+      z.object({
+        email: z.string().email(t("emailError")),
+        senha: z.string().min(1, t("passwordError")),
+      }),
+    [t],
+  );
 
   type LoginData = z.infer<typeof loginSchema>;
 
@@ -37,9 +43,9 @@ export function LoginForm() {
 
   const onSubmit = async (data: LoginData) => {
     setIsLoading(true);
-    
+    setFormError(null);
+
     try {
-      // 1. Tentar via NextAuth
       const res = await signIn("credentials", {
         email: data.email,
         password: data.senha,
@@ -47,10 +53,10 @@ export function LoginForm() {
       });
 
       if (res?.error) {
-        throw new Error(res.error);
+        setFormError(t("errorMessage"));
+        return;
       }
 
-      // Garante que cache da conta anterior não vazará na navegação.
       queryClient.clear();
       clearCachedIdToken();
       if (typeof window !== "undefined") {
@@ -60,7 +66,7 @@ export function LoginForm() {
       router.push("/");
     } catch (error) {
       console.error("Falha no login (NextAuth)", error);
-      alert(t("errorMessage") || "Credenciais inválidas. Tente novamente.");
+      setFormError(t("errorMessage"));
     } finally {
       setIsLoading(false);
     }
@@ -68,28 +74,47 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {formError && <FormErrorBanner message={formError} />}
+
       <div className="space-y-1">
         <Label htmlFor="email">{t("emailLabel")}</Label>
-        <Input id="email" type="email" placeholder={t("emailPlaceholder")} {...register("email")} />
+        <Input
+          id="email"
+          type="email"
+          placeholder={t("emailPlaceholder")}
+          autoComplete="email"
+          {...register("email")}
+        />
         {errors.email && (
-          <p className="text-sm text-destructive">{errors.email.message as string}</p>
+          <p className="text-sm text-destructive">{errors.email.message}</p>
         )}
       </div>
 
       <div className="space-y-1">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <Label htmlFor="senha">{t("passwordLabel")}</Label>
-          <a href="#" className="font-semibold text-xs text-yellow-500 hover:text-yellow-400 focus:outline-none focus:underline">{t("forgotPassword")}</a>
+          <a
+            href="#"
+            className="text-xs font-semibold text-yellow-500 hover:text-yellow-400 focus:underline focus:outline-none"
+          >
+            {t("forgotPassword")}
+          </a>
         </div>
-        <Input id="senha" type="password" placeholder={t("passwordPlaceholder")} {...register("senha")} />
+        <Input
+          id="senha"
+          type="password"
+          placeholder={t("passwordPlaceholder")}
+          autoComplete="current-password"
+          {...register("senha")}
+        />
         {errors.senha && (
-          <p className="text-sm text-destructive">{errors.senha.message as string}</p>
+          <p className="text-sm text-destructive">{errors.senha.message}</p>
         )}
       </div>
 
       <Button
         type="submit"
-        className="w-full bg-yellow-500 text-black hover:bg-yellow-600 font-bold mt-4 h-12"
+        className="mt-4 h-12 w-full bg-yellow-500 font-bold text-black hover:bg-yellow-600"
         disabled={isLoading}
       >
         {isLoading ? t("submitLoading") : t("submitBtn")}
