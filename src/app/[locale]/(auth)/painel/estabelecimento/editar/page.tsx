@@ -12,7 +12,7 @@ import {
   EditarEstabelecimentoSidebar,
   type SecaoEdicao,
 } from "@/components/shared/estabelecimento/EditarEstabelecimentoSidebar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   ArrowLeft,
   Building2,
@@ -21,6 +21,8 @@ import {
   Loader2,
   Save,
   Check,
+  Palette,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -33,15 +35,25 @@ import { tenantsService } from "@/lib/api/services/tenants.service";
 import { catalogService } from "@/lib/api/services/catalog.service";
 import { tenantProfessionalsService } from "@/lib/api/services/tenant-professionals.service";
 import { themeService } from "@/lib/api/services/theme.service";
+import { subscriptionService } from "@/lib/api/services/subscription.service";
+import {
+  availabilityService,
+  defaultWeekHours,
+  workingHoursToForm,
+  type FormDayHours,
+} from "@/lib/api/services/availability.service";
 import { formatApiError } from "@/lib/api/errors";
+import { canCustomizeTheme } from "@/lib/plans";
 import { digitsOnly, maskCep, maskCnpj, maskPhoneBR, phoneToApiDigits } from "@/lib/masks";
 import { geocodeAddress } from "@/lib/geocode";
+import { cn } from "@/lib/utils";
 import {
   Address,
   ProfessionalType,
   Service,
   Tenant,
   TenantProfessional,
+  TenantProfessionalStatus,
   TenantThemeData,
 } from "@/lib/api/types";
 
@@ -117,12 +129,6 @@ const TYPE_LABEL: Record<ProfessionalType, string> = {
   [ProfessionalType.EYEBROW_DESIGNER]: "Designer de Sobrancelhas",
 };
 
-const DEFAULT_HORARIOS = Array(7).fill({
-  fechado: false,
-  inicio: "09:00",
-  fim: "18:00",
-});
-
 const EMPTY_ADDRESS: Address = {
   street: "",
   number: "",
@@ -137,6 +143,7 @@ function buildFormValues(
   tenant: Tenant,
   services: Service[],
   team: TenantProfessional[],
+  horarios: FormDayHours[],
 ): TenantFormValues {
   const ativos = services.filter((s) => s.isActive);
   return {
@@ -158,7 +165,7 @@ function buildFormValues(
       instagram: tenant.socialMedia?.instagram ?? "",
       facebook: tenant.socialMedia?.facebook ?? "",
     },
-    horarios: DEFAULT_HORARIOS,
+    horarios,
     servicos:
       ativos.length > 0
         ? [
@@ -183,6 +190,7 @@ function buildFormValues(
 
 export default function TenantEditPage() {
   const t = useTranslations("EstabelecimentoForm");
+  const tAparencia = useTranslations("Aparencia");
   const { current, isLoading: tenantLoading, refetch: refetchTenants } =
     useTenantContext();
   const tenantId = current?.tenant.id;
@@ -208,17 +216,41 @@ export default function TenantEditPage() {
     queryFn: () => tenantProfessionalsService.list(tenantId!, false),
     enabled: !!tenantId,
   });
+
+  const subQuery = useQuery({
+    queryKey: ["subscription", tenantId],
+    queryFn: () => subscriptionService.get(tenantId!),
+    enabled: !!tenantId,
+  });
+  const canCustomize = canCustomizeTheme(subQuery.data?.plan.features);
+
+  /** Expediente fica na agenda do 1º profissional ativo (em geral o owner). */
+  const hoursTpId = useMemo(() => {
+    const team = teamQuery.data ?? [];
+    const active =
+      team.find((tp) => tp.status === TenantProfessionalStatus.ACTIVE) ??
+      team[0];
+    return active?.id ?? null;
+  }, [teamQuery.data]);
+
+  const hoursQuery = useQuery({
+    queryKey: ["tenant-edit-hours", tenantId, hoursTpId],
+    queryFn: () => availabilityService.listWorkingHours(tenantId!, hoursTpId!),
+    enabled: !!tenantId && !!hoursTpId,
+    retry: false,
+  });
+
   const themeQuery = useQuery({
     queryKey: ["tenant-edit-theme", tenantId],
     queryFn: () => themeService.get(tenantId!),
-    enabled: !!tenantId,
+    enabled: !!tenantId && canCustomize,
     retry: false,
   });
 
   const methods = useForm<TenantFormValues>({
     resolver: zodResolver(tenantSchema),
     defaultValues: {
-      horarios: DEFAULT_HORARIOS,
+      horarios: defaultWeekHours(),
       servicos: [],
       time: [],
       endereco: EMPTY_ADDRESS,
@@ -230,12 +262,26 @@ export default function TenantEditPage() {
 
   const realData = useMemo(() => {
     if (!tenantQuery.data) return null;
+    // Espera hours carregar quando há profissional; sem TP usa default.
+    if (hoursTpId && hoursQuery.isLoading) return null;
+    const horarios =
+      hoursQuery.data != null
+        ? workingHoursToForm(hoursQuery.data)
+        : defaultWeekHours();
     return buildFormValues(
       tenantQuery.data,
       servicesQuery.data ?? [],
       teamQuery.data ?? [],
+      horarios,
     );
-  }, [tenantQuery.data, servicesQuery.data, teamQuery.data]);
+  }, [
+    tenantQuery.data,
+    servicesQuery.data,
+    teamQuery.data,
+    hoursTpId,
+    hoursQuery.isLoading,
+    hoursQuery.data,
+  ]);
 
   useEffect(() => {
     if (realData) methods.reset(realData);
@@ -248,7 +294,10 @@ export default function TenantEditPage() {
 
   const loading =
     tenantLoading ||
-    (!!tenantId && (tenantQuery.isLoading || servicesQuery.isLoading));
+    (!!tenantId &&
+      (tenantQuery.isLoading ||
+        servicesQuery.isLoading ||
+        (!!hoursTpId && hoursQuery.isLoading)));
 
   const saveMutation = useMutation({
     mutationFn: async (data: TenantFormValues) => {
@@ -287,7 +336,25 @@ export default function TenantEditPage() {
           : {}),
       });
 
-      if (tema && secaoAtiva === "aparencia") {
+      // Persiste expediente na agenda do profissional.
+      let tpId = hoursTpId;
+      if (!tpId) {
+        try {
+          const bound = await tenantProfessionalsService.bindMe(tenantId);
+          tpId = bound.id;
+        } catch {
+          // Sem profissional vinculado — segue sem expediente.
+        }
+      }
+      if (tpId) {
+        await availabilityService.syncWeekFromForm(
+          tenantId,
+          tpId,
+          data.horarios,
+        );
+      }
+
+      if (canCustomize && tema && secaoAtiva === "aparencia") {
         try {
           await themeService.upsert(tenantId, tema as unknown as TenantThemeData);
         } catch {
@@ -299,6 +366,9 @@ export default function TenantEditPage() {
       setSaveError(null);
       setSaveMsg(t("saveSuccess"));
       queryClient.invalidateQueries({ queryKey: ["tenant-edit", tenantId] });
+      queryClient.invalidateQueries({
+        queryKey: ["tenant-edit-hours", tenantId],
+      });
       refetchTenants();
       setTimeout(() => setSaveMsg(null), 2500);
     },
@@ -319,6 +389,23 @@ export default function TenantEditPage() {
       case "equipe":
         return <TeamBuilder />;
       case "aparencia":
+        if (!canCustomize) {
+          return (
+            <div className="mx-auto max-w-md py-10 text-center">
+              <Palette className="mx-auto mb-4 h-10 w-10 text-zinc-500" />
+              <h3 className="mb-2 text-xl font-bold text-white">
+                {tAparencia("lockedTitle")}
+              </h3>
+              <p className="mb-6 text-sm text-zinc-400">
+                {tAparencia("lockedDesc")}
+              </p>
+              <Link href="/planos" className={cn(buttonVariants())}>
+                <Sparkles className="mr-2 h-4 w-4" />
+                {tAparencia("lockedCta")}
+              </Link>
+            </div>
+          );
+        }
         return <AparenciaEditor tema={tema} onTemaChange={setTema} />;
       default:
         return <StoreProfileForm />;
@@ -414,6 +501,7 @@ export default function TenantEditPage() {
                 <EditarEstabelecimentoSidebar
                   secaoAtiva={secaoAtiva}
                   onMudarSecao={setSecaoAtiva}
+                  canCustomize={canCustomize}
                 />
 
                 <div className="min-w-0 flex-1">

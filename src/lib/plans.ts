@@ -105,3 +105,11 @@ export function planDisplayName(name: PlanName | string): string {
 export function isPaidPlan(plan: Plan): boolean {
   return Number(plan.price) > 0;
 }
+
+/** Free = NONE. Standard+ libera customização da vitrine. */
+export function canCustomizeTheme(
+  features: PlanFeatures | null | undefined,
+): boolean {
+  const level = features?.customization;
+  return !!level && level !== "NONE";
+}

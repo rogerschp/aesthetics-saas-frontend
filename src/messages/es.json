@@ -220,11 +220,15 @@
     "expediente": "Horario",
     "servicos": "Servicios y Precios",
     "equipe": "Equipo",
-    "aparencia": "Apariencia"
+    "aparencia": "Apariencia",
+    "badgePlan": "Standard+"
   },
   "Aparencia": {
     "titulo": "Personalizar Apariencia",
     "subtitulo": "Personaliza colores, fuentes y la organización de la página de tu establecimiento.",
+    "lockedTitle": "Haz que tu vitrina tenga la cara de tu marca",
+    "lockedDesc": "En Free la página usa el tema por defecto. Desde Standard puedes personalizar colores, tipografía y el layout de la vitrina.",
+    "lockedCta": "Conocer los planes",
     "cores": "Colores",
     "corPrimaria": "Color Primario",
     "corSecundaria": "Color Secundario",
@@ -418,9 +422,9 @@
     "colCancelRate": "Cancel. %",
     "emptyServices": "Ningún servicio con citas en el período.",
     "emptyPros": "Ningún profesional con citas en el período.",
-    "lockedTitle": "Informes en plan de pago",
-    "lockedDesc": "El plan Free no incluye el panel gerencial. Mejora a Standard o superior para ver KPIs, top servicios y más.",
-    "lockedCta": "Ver planes y presupuestar",
+    "lockedTitle": "Sigue el rendimiento de tu negocio",
+    "lockedDesc": "En Free ya gestionas el día a día. Desde Standard liberamos informes con ingresos, cancelaciones, top servicios y visión del período — cuando quieras dar el siguiente paso.",
+    "lockedCta": "Conocer los planes",
     "forbiddenTitle": "Acceso restringido",
     "forbiddenDesc": "Los informes están disponibles para dueño, admin y recepción del establecimiento."
   },

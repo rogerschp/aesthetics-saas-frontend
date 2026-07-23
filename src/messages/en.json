@@ -220,11 +220,15 @@
     "expediente": "Working Hours",
     "servicos": "Services & Pricing",
     "equipe": "Team",
-    "aparencia": "Appearance"
+    "aparencia": "Appearance",
+    "badgePlan": "Standard+"
   },
   "Aparencia": {
     "titulo": "Customize Appearance",
     "subtitulo": "Customize colors, fonts, and section layout of your establishment's page.",
+    "lockedTitle": "Make your storefront look like your brand",
+    "lockedDesc": "On Free your page uses the default theme. From Standard up you can customize colors, typography and storefront layout.",
+    "lockedCta": "Explore plans",
     "cores": "Colors",
     "corPrimaria": "Primary Color",
     "corSecundaria": "Secondary Color",
@@ -418,9 +422,9 @@
     "colCancelRate": "Cancel %",
     "emptyServices": "No services with appointments in this period.",
     "emptyPros": "No professionals with appointments in this period.",
-    "lockedTitle": "Reports require a paid plan",
-    "lockedDesc": "The Free plan does not include the management dashboard. Upgrade to Standard or higher for KPIs, top services and more.",
-    "lockedCta": "View plans & quote",
+    "lockedTitle": "Track how your shop is doing",
+    "lockedDesc": "On Free you can already run day-to-day operations. From Standard up we unlock reports with revenue, cancellations, top services and period insights — whenever you’re ready to grow.",
+    "lockedCta": "Explore plans",
     "forbiddenTitle": "Restricted access",
     "forbiddenDesc": "Reports are available to the owner, admin and front desk of the establishment."
   },

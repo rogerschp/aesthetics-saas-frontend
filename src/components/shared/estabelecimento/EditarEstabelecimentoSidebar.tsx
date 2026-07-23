@@ -7,6 +7,7 @@ import {
   Scissors,
   Users,
   Palette,
+  Lock,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -24,6 +25,8 @@ export type SecaoEdicao =
 interface EditarEstabelecimentoSidebarProps {
   secaoAtiva: SecaoEdicao;
   onMudarSecao: (secao: SecaoEdicao) => void;
+  /** Free = false. Standard+ libera Aparência. */
+  canCustomize?: boolean;
 }
 
 /** Definição de um item no menu lateral */
@@ -31,7 +34,7 @@ interface ItemMenu {
   id: SecaoEdicao;
   icone: React.ReactNode;
   chaveI18n: string;
-  badge?: string;
+  locked?: boolean;
 }
 
 const TAMANHO_ICONE = "h-5 w-5";
@@ -46,6 +49,7 @@ const TAMANHO_ICONE = "h-5 w-5";
 export function EditarEstabelecimentoSidebar({
   secaoAtiva,
   onMudarSecao,
+  canCustomize = true,
 }: EditarEstabelecimentoSidebarProps) {
   const t = useTranslations("EditarSidebar");
 
@@ -74,7 +78,7 @@ export function EditarEstabelecimentoSidebar({
       id: "aparencia",
       icone: <Palette className={TAMANHO_ICONE} />,
       chaveI18n: "aparencia",
-      badge: "PRO",
+      locked: !canCustomize,
     },
   ];
 
@@ -94,21 +98,22 @@ export function EditarEstabelecimentoSidebar({
                   "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                   ativo
                     ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20"
-                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/60 border border-transparent"
+                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/60 border border-transparent",
                 )}
               >
                 <span
                   className={cn(
                     "transition-colors",
-                    ativo ? "text-yellow-500" : "text-zinc-500"
+                    ativo ? "text-yellow-500" : "text-zinc-500",
                   )}
                 >
                   {item.icone}
                 </span>
                 <span className="truncate">{t(item.chaveI18n)}</span>
-                {item.badge && (
-                  <span className="ml-auto text-[10px] font-bold tracking-widest uppercase bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full">
-                    {item.badge}
+                {item.locked && (
+                  <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full">
+                    <Lock className="h-3 w-3" />
+                    {t("badgePlan")}
                   </span>
                 )}
               </button>
@@ -131,14 +136,15 @@ export function EditarEstabelecimentoSidebar({
                   "flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200",
                   ativo
                     ? "bg-yellow-500/10 text-yellow-500"
-                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/60"
+                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/60",
                 )}
               >
                 {item.icone}
                 <span>{t(item.chaveI18n)}</span>
-                {item.badge && (
-                  <span className="text-[9px] font-bold tracking-widest uppercase bg-yellow-500/20 text-yellow-500 px-1.5 py-0.5 rounded-full">
-                    {item.badge}
+                {item.locked && (
+                  <span className="inline-flex items-center gap-1 text-[9px] font-bold tracking-widest uppercase bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded-full">
+                    <Lock className="h-2.5 w-2.5" />
+                    {t("badgePlan")}
                   </span>
                 )}
               </button>

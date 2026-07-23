@@ -220,11 +220,15 @@
     "expediente": "Expediente",
     "servicos": "Serviços e Preços",
     "equipe": "Equipe",
-    "aparencia": "Aparência"
+    "aparencia": "Aparência",
+    "badgePlan": "Standard+"
   },
   "Aparencia": {
     "titulo": "Personalizar Aparência",
     "subtitulo": "Customize cores, fontes e organização da página do seu estabelecimento.",
+    "lockedTitle": "Deixe a vitrine com a cara do seu negócio",
+    "lockedDesc": "No Free a página usa o tema padrão. Nos planos Standard em diante você personaliza cores, tipografia e o layout da vitrine.",
+    "lockedCta": "Conhecer os planos",
     "cores": "Cores",
     "corPrimaria": "Cor Primária",
     "corSecundaria": "Cor Secundária",
@@ -418,9 +422,9 @@
     "colCancelRate": "Cancel. %",
     "emptyServices": "Nenhum serviço com atendimento no período.",
     "emptyPros": "Nenhum profissional com atendimento no período.",
-    "lockedTitle": "Relatórios no plano pago",
-    "lockedDesc": "O plano Free não inclui o painel gerencial. Faça um upgrade (Standard ou superior) para ver KPIs, top serviços e mais.",
-    "lockedCta": "Ver planos e orçar",
+    "lockedTitle": "Acompanhe o desempenho da sua loja",
+    "lockedDesc": "No Free você já cuida da operação. Nos planos Standard em diante liberamos relatórios com receita, cancelamentos, top serviços e visão do período — quando fizer sentido evoluir.",
+    "lockedCta": "Conhecer os planos",
     "forbiddenTitle": "Acesso restrito",
     "forbiddenDesc": "Relatórios estão disponíveis para dono, admin e recepção do estabelecimento."
   },
