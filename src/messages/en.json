@@ -19,7 +19,10 @@
     "reports": "Reports",
     "manageEstablishment": "Manage Establishment",
     "createEstablishment": "Create establishment",
-    "welcome": "Welcome,"
+    "welcome": "Welcome,",
+    "logout": "Log out",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "Home": {
     "highlights": "Highlights in your Region",
@@ -385,7 +388,11 @@
     "createTenant": "Create establishment",
     "editStore": "Edit store",
     "new": "New",
-    "reports": "Reports"
+    "reports": "Reports",
+    "loadErrorTitle": "Couldn't load your establishments",
+    "loadErrorDesc": "Your session may have expired or the connection failed. Please try again.",
+    "retry": "Try again",
+    "slowLoadHint": "The server is waking up (free tier). This can take a few seconds…"
   },
   "Reports": {
     "title": "Reports",

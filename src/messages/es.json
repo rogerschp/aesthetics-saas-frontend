@@ -19,7 +19,10 @@
     "reports": "Informes",
     "manageEstablishment": "Gestionar Establecimiento",
     "createEstablishment": "Crear establecimiento",
-    "welcome": "Bienvenido,"
+    "welcome": "Bienvenido,",
+    "logout": "Salir",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú"
   },
   "Home": {
     "highlights": "Destacados en tu Región",
@@ -385,7 +388,11 @@
     "createTenant": "Crear establecimiento",
     "editStore": "Editar tienda",
     "new": "Nuevo",
-    "reports": "Informes"
+    "reports": "Informes",
+    "loadErrorTitle": "No se pudieron cargar tus establecimientos",
+    "loadErrorDesc": "Tu sesión puede haber expirado o falló la conexión. Inténtalo de nuevo.",
+    "retry": "Reintentar",
+    "slowLoadHint": "El servidor se está despertando (plan free). Puede tardar unos segundos…"
   },
   "Reports": {
     "title": "Informes",

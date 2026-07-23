@@ -1,17 +1,33 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut, Home, Calendar, LayoutDashboard, Store, Sparkles, BarChart3 } from "lucide-react";
+import {
+  LogOut,
+  Home,
+  Calendar,
+  LayoutDashboard,
+  Store,
+  Sparkles,
+  BarChart3,
+  Menu,
+  X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useSession, signOut } from "next-auth/react";
 import { usersService } from "@/lib/api/services/users.service";
-import { useTenantContext } from "@/components/providers/TenantProvider";
+import {
+  useTenantContext,
+  TENANT_STORAGE_KEY,
+} from "@/components/providers/TenantProvider";
 import { TenantUserRole } from "@/lib/api/types";
+import { clearCachedIdToken } from "@/lib/api/client";
+import { cn } from "@/lib/utils";
 
 export function Header() {
   const t = useTranslations("Header");
@@ -20,6 +36,7 @@ export function Header() {
   const queryClient = useQueryClient();
   const isAuthenticated = status === "authenticated";
   const userId = session?.user?.id;
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const { data: me } = useQuery({
     queryKey: ["me", userId],
@@ -27,17 +44,28 @@ export function Header() {
     enabled: isAuthenticated && !!userId,
   });
 
-  const { memberships, role } = useTenantContext();
-  const hasPanel = memberships.length > 0;
+  const { memberships, role, isLoading } = useTenantContext();
+  const hasPanel = !isLoading && memberships.length > 0;
   const canSeeReports =
     role === TenantUserRole.OWNER ||
     role === TenantUserRole.ADMIN ||
     role === TenantUserRole.STAFF;
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
+
   const handleLogout = async () => {
+    setMenuOpen(false);
     queryClient.clear();
+    clearCachedIdToken();
     if (typeof window !== "undefined") {
-      window.localStorage.removeItem("@barbershop:tenant");
+      window.localStorage.removeItem(TENANT_STORAGE_KEY);
     }
     await signOut({ redirect: false });
     router.push("/");
@@ -46,84 +74,77 @@ export function Header() {
   const profileName = me?.name ?? me?.email ?? "";
   const avatarLetter = profileName.charAt(0).toUpperCase() || "U";
 
+  const navLinkClass =
+    "flex items-center gap-2 text-sm font-medium text-zinc-300 transition-colors hover:text-yellow-500";
+
+  const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
+    <>
+      <Link href="/" className={navLinkClass} onClick={onNavigate}>
+        <Home className="h-4 w-4" />
+        {t("home")}
+      </Link>
+      <Link href="/planos" className={navLinkClass} onClick={onNavigate}>
+        <Sparkles className="h-4 w-4" />
+        {t("plans")}
+      </Link>
+      {isAuthenticated && (
+        <Link href="/perfil/me" className={navLinkClass} onClick={onNavigate}>
+          <Calendar className="h-4 w-4" />
+          {t("myAppointments")}
+        </Link>
+      )}
+      {isAuthenticated && hasPanel && (
+        <Link href="/painel" className={navLinkClass} onClick={onNavigate}>
+          <LayoutDashboard className="h-4 w-4" />
+          {t("myDashboard")}
+        </Link>
+      )}
+      {isAuthenticated && hasPanel && canSeeReports && (
+        <Link
+          href="/painel/relatorios"
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
+          <BarChart3 className="h-4 w-4" />
+          {t("reports")}
+        </Link>
+      )}
+      {isAuthenticated && !hasPanel && (
+        <Link
+          href="/painel/estabelecimento/criar"
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
+          <Store className="h-4 w-4" />
+          {t("createEstablishment")}
+        </Link>
+      )}
+    </>
+  );
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/40 backdrop-blur-lg">
-      <div className="container mx-auto flex h-16 max-w-screen-2xl items-center justify-between px-4">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold tracking-tight text-primary">
-              BarberShop
-            </span>
-          </Link>
+      <div className="container mx-auto flex h-14 max-w-screen-2xl items-center justify-between gap-2 px-3 sm:h-16 sm:px-4">
+        <Link href="/" className="min-w-0 shrink">
+          <span className="text-xl font-bold tracking-tight text-primary sm:text-2xl">
+            BarberShop
+          </span>
+        </Link>
 
-          <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-zinc-300 transition-colors hover:text-yellow-500"
-            >
-              <Home className="h-4 w-4" />
-              {t("home")}
-            </Link>
+        <nav className="hidden items-center gap-6 md:flex">
+          <NavLinks />
+        </nav>
 
-            <Link
-              href="/planos"
-              className="flex items-center gap-2 text-zinc-300 transition-colors hover:text-yellow-500"
-            >
-              <Sparkles className="h-4 w-4" />
-              {t("plans")}
-            </Link>
-
-            {isAuthenticated && (
-              <Link
-                href="/perfil/me"
-                className="flex items-center gap-2 text-zinc-300 transition-colors hover:text-yellow-500"
-              >
-                <Calendar className="h-4 w-4" />
-                {t("myAppointments")}
-              </Link>
-            )}
-
-            {isAuthenticated && hasPanel && (
-              <Link
-                href="/painel"
-                className="flex items-center gap-2 text-zinc-300 transition-colors hover:text-yellow-500"
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                {t("myDashboard")}
-              </Link>
-            )}
-
-            {isAuthenticated && hasPanel && canSeeReports && (
-              <Link
-                href="/painel/relatorios"
-                className="flex items-center gap-2 text-zinc-300 transition-colors hover:text-yellow-500"
-              >
-                <BarChart3 className="h-4 w-4" />
-                {t("reports")}
-              </Link>
-            )}
-
-            {isAuthenticated && !hasPanel && (
-              <Link
-                href="/painel/estabelecimento/criar"
-                className="flex items-center gap-2 text-zinc-300 transition-colors hover:text-yellow-500"
-              >
-                <Store className="h-4 w-4" />
-                {t("createEstablishment")}
-              </Link>
-            )}
-          </nav>
-        </div>
-
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           <LanguageSwitcher />
+
           {isAuthenticated ? (
-            <div className="flex items-center gap-5">
-              <div className="mr-1 hidden flex-col items-end sm:flex">
+            <div className="hidden items-center gap-3 sm:flex">
+              <div className="mr-1 hidden flex-col items-end lg:flex">
                 <span className="text-xs font-medium text-muted-foreground">
                   {t("welcome")}
                 </span>
-                <span className="text-sm font-bold text-foreground">
+                <span className="max-w-[140px] truncate text-sm font-bold text-foreground">
                   {profileName}
                 </span>
               </div>
@@ -148,20 +169,88 @@ export function Header() {
               </Button>
             </div>
           ) : (
-            <>
+            <div className="hidden items-center gap-2 sm:flex">
               <Link href="/login">
-                <Button variant="ghost" className="text-foreground hover:text-primary">
+                <Button
+                  variant="ghost"
+                  className="text-foreground hover:text-primary"
+                >
                   {t("login")}
                 </Button>
               </Link>
               <Link href="/cadastro">
-                <Button className="px-6 font-semibold shadow-[0_0_15px_rgba(212,175,55,0.3)] transition-all hover:-translate-y-0.5 hover:shadow-[0_0_25px_rgba(212,175,55,0.5)]">
+                <Button className="px-5 font-semibold">
                   {t("register")}
                 </Button>
               </Link>
-            </>
+            </div>
           )}
+
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? t("closeMenu") : t("openMenu")}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
+      </div>
+
+      {/* Menu mobile */}
+      <div
+        className={cn(
+          "border-t border-white/5 bg-black/95 md:hidden",
+          menuOpen ? "block" : "hidden",
+        )}
+      >
+        <nav className="container mx-auto flex max-w-screen-2xl flex-col gap-4 px-4 py-4">
+          <NavLinks onNavigate={() => setMenuOpen(false)} />
+
+          <div className="h-px w-full bg-white/10" />
+
+          {isAuthenticated ? (
+            <div className="flex items-center justify-between gap-3">
+              <Link
+                href="/perfil/me"
+                className="flex min-w-0 items-center gap-3"
+                onClick={() => setMenuOpen(false)}
+              >
+                <Avatar className="h-9 w-9 border border-primary/50">
+                  <AvatarFallback className="bg-primary/20 font-bold text-primary">
+                    {avatarLetter}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="truncate text-sm font-medium text-foreground">
+                  {profileName || t("myAppointments")}
+                </span>
+              </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="text-muted-foreground hover:text-destructive"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                {t("logout")}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <Link href="/login" onClick={() => setMenuOpen(false)}>
+                <Button variant="outline" className="w-full">
+                  {t("login")}
+                </Button>
+              </Link>
+              <Link href="/cadastro" onClick={() => setMenuOpen(false)}>
+                <Button className="w-full font-semibold">{t("register")}</Button>
+              </Link>
+            </div>
+          )}
+        </nav>
       </div>
     </header>
   );

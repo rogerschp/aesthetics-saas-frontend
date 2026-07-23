@@ -19,7 +19,10 @@
     "reports": "Relatórios",
     "manageEstablishment": "Gerenciar Estabelecimento",
     "createEstablishment": "Criar estabelecimento",
-    "welcome": "Bem-vindo,"
+    "welcome": "Bem-vindo,",
+    "logout": "Sair",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu"
   },
   "Home": {
     "highlights": "Destaques na sua Região",
@@ -385,7 +388,11 @@
     "createTenant": "Criar estabelecimento",
     "editStore": "Editar loja",
     "new": "Novo",
-    "reports": "Relatórios"
+    "reports": "Relatórios",
+    "loadErrorTitle": "Não foi possível carregar seus estabelecimentos",
+    "loadErrorDesc": "Sua sessão pode ter expirado ou a conexão falhou. Tente novamente.",
+    "retry": "Tentar de novo",
+    "slowLoadHint": "O servidor está acordando (plano free). Isso pode levar alguns segundos…"
   },
   "Reports": {
     "title": "Relatórios",

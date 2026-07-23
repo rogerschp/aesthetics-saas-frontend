@@ -11,6 +11,8 @@ import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
+import { TENANT_STORAGE_KEY } from "@/components/providers/TenantProvider";
+import { clearCachedIdToken } from "@/lib/api/client";
 
 export function LoginForm() {
   const t = useTranslations("LoginForm");
@@ -50,8 +52,9 @@ export function LoginForm() {
 
       // Garante que cache da conta anterior não vazará na navegação.
       queryClient.clear();
+      clearCachedIdToken();
       if (typeof window !== "undefined") {
-        window.localStorage.removeItem("@barbershop:tenant");
+        window.localStorage.removeItem(TENANT_STORAGE_KEY);
       }
 
       router.push("/");

@@ -7,6 +7,7 @@ import { Loader2, SearchX } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SearchBar } from "./SearchBar";
 import { TenantSearchCard } from "./TenantSearchCard";
+import { HeroSection } from "./HeroSection";
 import { searchService } from "@/lib/api/services/search.service";
 import { formatApiError } from "@/lib/api/errors";
 
@@ -178,8 +179,8 @@ export function HomeTenantSearch() {
   const results = searchQuery.data?.data ?? [];
 
   return (
-    <div className="flex flex-col gap-8">
-      <div className="flex justify-center">
+    <div className="flex flex-col">
+      <HeroSection>
         <SearchBar
           q={q}
           onQChange={setQ}
@@ -191,11 +192,11 @@ export function HomeTenantSearch() {
           loading={searchQuery.isFetching}
           geoLoading={geoLoading}
         />
-      </div>
+      </HeroSection>
 
-      <div>
-        <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+      <div className="container mx-auto max-w-screen-2xl px-4 py-10 sm:py-16">
+        <div className="mb-6 flex items-center justify-between sm:mb-8">
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl md:text-3xl">
             {hasFilter ? t("results") : t("highlights")}
           </h2>
         </div>

@@ -1,9 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Loader2, Pencil, Plus, Store, BarChart3 } from "lucide-react";
+import {
+  Loader2,
+  Pencil,
+  Plus,
+  Store,
+  BarChart3,
+  RefreshCw,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useTenantContext } from "@/components/providers/TenantProvider";
 import { TenantSwitcher } from "@/components/shared/TenantSwitcher";
 import { SubscriptionCard } from "@/components/shared/SubscriptionCard";
@@ -12,14 +20,45 @@ import { CancellationSettingsForm } from "@/components/forms/tenant/Cancellation
 import { TenantUserRole } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
+function PainelLoading() {
+  const t = useTranslations("PainelHome");
+  const [slow, setSlow] = useState(false);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => setSlow(true), 2500);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 px-4 text-center">
+      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      {slow ? (
+        <p className="max-w-sm text-sm text-muted-foreground">
+          {t("slowLoadHint")}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 export default function PainelPage() {
   const t = useTranslations("PainelHome");
-  const { memberships, current, role, isLoading, refetch } = useTenantContext();
+  const { memberships, current, role, isLoading, isError, refetch } =
+    useTenantContext();
 
   if (isLoading) {
+    return <PainelLoading />;
+  }
+
+  if (isError) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="container mx-auto max-w-2xl px-4 py-32 text-center">
+        <h1 className="mb-2 text-2xl font-bold">{t("loadErrorTitle")}</h1>
+        <p className="mb-6 text-muted-foreground">{t("loadErrorDesc")}</p>
+        <Button type="button" onClick={() => refetch()}>
+          <RefreshCw className="mr-2 h-4 w-4" />
+          {t("retry")}
+        </Button>
       </div>
     );
   }
@@ -32,18 +71,32 @@ export default function PainelPage() {
         </div>
         <h1 className="mb-2 text-2xl font-bold">{t("noTenantTitle")}</h1>
         <p className="mb-6 text-muted-foreground">{t("noTenantDesc")}</p>
-        <Link
-          href="/painel/estabelecimento/criar"
-          className={cn(buttonVariants({ size: "lg" }))}
-        >
-          <Plus className="mr-2 h-5 w-5" />
-          {t("createTenant")}
-        </Link>
+        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link
+            href="/painel/estabelecimento/criar"
+            className={cn(buttonVariants({ size: "lg" }))}
+          >
+            <Plus className="mr-2 h-5 w-5" />
+            {t("createTenant")}
+          </Link>
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={() => refetch()}
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            {t("retry")}
+          </Button>
+        </div>
       </div>
     );
   }
 
-  if (!current) return null;
+  // Memberships chegaram, mas o tenant atual ainda está sendo resolvido.
+  if (!current) {
+    return <PainelLoading />;
+  }
 
   const isOwnerOrAdmin =
     role === TenantUserRole.OWNER || role === TenantUserRole.ADMIN;
@@ -78,7 +131,9 @@ export default function PainelPage() {
             <CancellationSettingsForm
               tenantId={current.tenant.id}
               initialEnabled={current.tenant.clientCanCancelConfirmed}
-              initialLeadMinutes={current.tenant.clientCancelConfirmedMinLeadMinutes}
+              initialLeadMinutes={
+                current.tenant.clientCancelConfirmedMinLeadMinutes
+              }
               onSaved={refetch}
             />
           )}

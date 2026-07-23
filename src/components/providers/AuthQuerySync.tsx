@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 
-const TENANT_STORAGE_KEY = "@barbershop:tenant";
+import { TENANT_STORAGE_KEY } from "@/components/providers/TenantProvider";
+import { clearCachedIdToken } from "@/lib/api/client";
 
 /**
  * Limpa o cache do React Query (e o tenant selecionado) sempre que
@@ -27,6 +28,7 @@ export function AuthQuerySync() {
 
     if (prevUserId.current !== userId) {
       queryClient.clear();
+      clearCachedIdToken();
       if (typeof window !== "undefined") {
         window.localStorage.removeItem(TENANT_STORAGE_KEY);
       }

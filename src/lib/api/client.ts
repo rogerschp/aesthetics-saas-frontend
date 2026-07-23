@@ -12,6 +12,53 @@ function resolveApiBaseURL(): string {
   return "http://127.0.0.1:3000";
 }
 
+/**
+ * Cache em memória do idToken.
+ * `getSession()` SEMPRE bate em GET /api/auth/session — não usa o React Context.
+ * Por isso o interceptor NÃO deve chamá-lo a cada request.
+ */
+let cachedIdToken: string | undefined;
+let cachedAt = 0;
+let inflightSession: Promise<string | undefined> | null = null;
+
+/** TTL curto; o bridge do SessionProvider atualiza o cache em tempo real. */
+const TOKEN_CACHE_TTL_MS = 60_000;
+
+export function setCachedIdToken(token: string | undefined) {
+  cachedIdToken = token;
+  cachedAt = Date.now();
+}
+
+export function clearCachedIdToken() {
+  cachedIdToken = undefined;
+  cachedAt = 0;
+  inflightSession = null;
+}
+
+async function resolveIdToken(): Promise<string | undefined> {
+  if (typeof window === "undefined") return undefined;
+
+  if (cachedIdToken && Date.now() - cachedAt < TOKEN_CACHE_TTL_MS) {
+    return cachedIdToken;
+  }
+
+  // Deduplica chamadas paralelas (várias APIs no mount).
+  if (!inflightSession) {
+    inflightSession = getSession()
+      .then((session) => {
+        const token = session?.idToken;
+        setCachedIdToken(token);
+        return token;
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        inflightSession = null;
+      });
+  }
+
+  return inflightSession;
+}
+
 export const api = axios.create({
   baseURL: resolveApiBaseURL(),
   headers: {
@@ -21,16 +68,14 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
-    // getSession() do next-auth/react só funciona no browser.
-    // Em RSC/SSR ele tenta GET /api/auth/session com URL inválida → CLIENT_FETCH_ERROR.
     if (typeof window === "undefined") {
       return config;
     }
 
     try {
-      const session = await getSession();
-      if (session?.idToken && config.headers) {
-        config.headers.Authorization = `Bearer ${session.idToken}`;
+      const idToken = await resolveIdToken();
+      if (idToken && config.headers) {
+        config.headers.Authorization = `Bearer ${idToken}`;
       }
     } catch {
       // Sem sessão — segue como público
@@ -45,19 +90,14 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
-    // O axios por padrão envelopa a resposta em um objeto { data, status, headers, ... }
-    // Podemos retornar direto o data para facilitar a vida nos services
     return response.data;
   },
   (error) => {
-    // Tratar erro retornado pela API padronizada do Cyacsys
-    // { statusCode, requestId, timestamp, code, message }
     if (error.response?.status === 401 && typeof window !== "undefined") {
-      // Se for um unauthorized real, limpa a sessão local por segurança e força login
-      // TODO: Aqui também poderiamos integrar o signOut do next-auth depois e o refresh token (POST /auth/refresh)
+      // Token pode ter expirado — força refresh na próxima request.
+      clearCachedIdToken();
     }
 
-    // Retorna o payload de erro para o hook/service tratar (ex: BusinessRuleException)
     return Promise.reject(error.response?.data || error);
   },
 );

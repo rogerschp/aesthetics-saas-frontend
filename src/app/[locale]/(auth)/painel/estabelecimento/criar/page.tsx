@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { useQueryClient } from "@tanstack/react-query";
 import { tenantsService } from "@/lib/api/services/tenants.service";
 import { catalogService } from "@/lib/api/services/catalog.service";
 import { usersService } from "@/lib/api/services/users.service";
@@ -26,6 +27,7 @@ import {
   phoneToApiDigits,
 } from "@/lib/masks";
 import { geocodeAddress } from "@/lib/geocode";
+import { TENANT_STORAGE_KEY } from "@/components/providers/TenantProvider";
 
 const addressSchema = z.object({
   street: z.string().min(1, "Rua obrigatória"),
@@ -167,6 +169,7 @@ function flattenErrors(
 export default function TenantCreatePage() {
   const t = useTranslations("EstabelecimentoForm");
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("perfil");
   const [formError, setFormError] = useState<string | null>(null);
@@ -284,7 +287,8 @@ export default function TenantCreatePage() {
         overwriteExisting: true,
       });
 
-      localStorage.setItem("@barbershop:tenant", tenant.slug);
+      localStorage.setItem(TENANT_STORAGE_KEY, tenant.id);
+      await queryClient.invalidateQueries({ queryKey: ["me-tenants"] });
       router.push("/painel");
     } catch (error: unknown) {
       console.error("Erro na orquestração do Tenant", error);
@@ -372,29 +376,29 @@ export default function TenantCreatePage() {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <div className="border-b border-zinc-800/80 mb-6 overflow-x-auto scrollbar-hide">
-                <TabsList className="bg-transparent h-auto p-0 flex justify-start space-x-6 w-max">
+              <div className="mb-6 border-b border-zinc-800/80">
+                <TabsList className="flex h-auto w-full flex-wrap justify-start gap-x-6 gap-y-2 rounded-none bg-transparent p-0">
                   <TabsTrigger
                     value="perfil"
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 data-[state=active]:text-yellow-500 data-[state=active]:shadow-none rounded-none px-1 pb-3 text-zinc-400 font-medium text-base h-auto"
+                    className="h-auto rounded-none border-0 border-b-2 border-transparent bg-transparent px-1 py-3 text-base font-medium text-zinc-400 shadow-none after:hidden data-active:border-yellow-500 data-active:bg-transparent data-active:text-yellow-500 data-active:shadow-none"
                   >
                     {t("step1")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="expediente"
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 data-[state=active]:text-yellow-500 data-[state=active]:shadow-none rounded-none px-1 pb-3 text-zinc-400 font-medium text-base h-auto"
+                    className="h-auto rounded-none border-0 border-b-2 border-transparent bg-transparent px-1 py-3 text-base font-medium text-zinc-400 shadow-none after:hidden data-active:border-yellow-500 data-active:bg-transparent data-active:text-yellow-500 data-active:shadow-none"
                   >
                     {t("step2")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="servicos"
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 data-[state=active]:text-yellow-500 data-[state=active]:shadow-none rounded-none px-1 pb-3 text-zinc-400 font-medium text-base h-auto"
+                    className="h-auto rounded-none border-0 border-b-2 border-transparent bg-transparent px-1 py-3 text-base font-medium text-zinc-400 shadow-none after:hidden data-active:border-yellow-500 data-active:bg-transparent data-active:text-yellow-500 data-active:shadow-none"
                   >
                     {t("step3")}
                   </TabsTrigger>
                   <TabsTrigger
                     value="equipe"
-                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 data-[state=active]:text-yellow-500 data-[state=active]:shadow-none rounded-none px-1 pb-3 text-zinc-400 font-medium text-base h-auto"
+                    className="h-auto rounded-none border-0 border-b-2 border-transparent bg-transparent px-1 py-3 text-base font-medium text-zinc-400 shadow-none after:hidden data-active:border-yellow-500 data-active:bg-transparent data-active:text-yellow-500 data-active:shadow-none"
                   >
                     {t("step4")}
                   </TabsTrigger>
