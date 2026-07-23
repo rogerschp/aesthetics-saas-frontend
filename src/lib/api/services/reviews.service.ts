@@ -46,4 +46,45 @@ export const reviewsService = {
     );
     return response as any;
   },
+
+  /** POST /users/:userId/professional-profile/reviews — Bearer. */
+  createProfessional: async (
+    userId: string,
+    payload: CreateReviewDto,
+  ): Promise<Review> => {
+    const response = await api.post(
+      `/users/${userId}/professional-profile/reviews`,
+      payload,
+    );
+    return response as any;
+  },
+
+  /** PATCH /users/me/professional-profile/reviews/:id/reply — próprio profissional. */
+  replyMyProfessional: async (
+    reviewId: string,
+    payload: ReplyReviewDto,
+  ): Promise<Review> => {
+    const response = await api.patch(
+      `/users/me/professional-profile/reviews/${reviewId}/reply`,
+      payload,
+    );
+    return response as any;
+  },
+
+  /** PATCH /users/me/professional-profile/reviews/:id — autor. */
+  updateMyProfessional: async (
+    reviewId: string,
+    payload: CreateReviewDto,
+  ): Promise<Review> => {
+    const response = await api.patch(
+      `/users/me/professional-profile/reviews/${reviewId}`,
+      payload,
+    );
+    return response as any;
+  },
+
+  /** DELETE /users/me/professional-profile/reviews/:id — autor ou profissional. */
+  deleteMyProfessional: async (reviewId: string): Promise<void> => {
+    await api.delete(`/users/me/professional-profile/reviews/${reviewId}`);
+  },
 };

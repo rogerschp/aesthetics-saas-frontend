@@ -19,6 +19,7 @@ import { reviewsService } from "@/lib/api/services/reviews.service";
 import { tenantProfessionalsService } from "@/lib/api/services/tenant-professionals.service";
 import { bookingService } from "@/lib/api/services/booking.service";
 import { useTenantContext } from "@/components/providers/TenantProvider";
+import { ProfessionalReviewsWall } from "@/components/shared/ProfessionalReviewsWall";
 import {
   BookingStatus,
   OpsBooking,
@@ -249,30 +250,13 @@ export default function ProfissionalDashboardPage() {
           )}
         </section>
 
-        {reviews && reviews.reviews.length > 0 && (
+        {userId && (
           <section>
-            <h2 className="mb-4 text-xl font-bold">{t("latestReviews")}</h2>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {reviews.reviews.slice(0, 6).map((r) => (
-                <div
-                  key={r.id}
-                  className="rounded-xl border border-border/50 bg-card p-4"
-                >
-                  <div className="mb-1 flex items-center justify-between">
-                    <span className="text-sm font-medium">{r.reviewerName}</span>
-                    <span className="flex items-center gap-1 text-sm text-primary">
-                      <Star className="h-3.5 w-3.5 fill-primary" />
-                      {r.rating}
-                    </span>
-                  </div>
-                  {r.comment && (
-                    <p className="text-sm italic text-muted-foreground">
-                      &quot;{r.comment}&quot;
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+            <ProfessionalReviewsWall
+              professionalUserId={userId}
+              canReply
+              title={t("latestReviews")}
+            />
           </section>
         )}
       </div>

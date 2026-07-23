@@ -305,6 +305,8 @@ export interface PublicProfessional {
   /** tenantProfessionalId — usar na URL de agenda/booking. */
   id: string;
   tenantId: string;
+  /** UUID do usuário dono do perfil — necessário para avaliações. */
+  userId?: string;
   displayName: string;
   bio: string | null;
   avatarUrl: string;
@@ -523,6 +525,8 @@ export interface MyBooking {
   professional: {
     tenantProfessionalId: string;
     displayName: string;
+    /** Se a API enviar — usado para link de avaliação. */
+    userId?: string;
   };
   service: {
     id: string;

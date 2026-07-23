@@ -39,6 +39,7 @@ const PROFESSIONAL_TYPE_LABEL: Record<ProfessionalType, string> = {
 function mapProfessionals(professionals: PublicProfessional[]): Membro[] {
   return professionals.map((p) => ({
     id: p.id,
+    userId: p.userId,
     nome: p.displayName,
     foto: p.avatarUrl || undefined,
     role: PROFESSIONAL_TYPE_LABEL[p.professionalType] ?? "Profissional",

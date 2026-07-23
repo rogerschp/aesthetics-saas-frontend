@@ -11,6 +11,7 @@ import {
   History,
   X,
   Check,
+  Star,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import { bookingService } from "@/lib/api/services/booking.service";
 import { BookingStatus, MyBooking } from "@/lib/api/types";
 import { formatApiError } from "@/lib/api/errors";
 import { formatAddressLine } from "@/lib/utils";
+import { Link } from "@/i18n/routing";
 
 const STATUS_KEY: Record<BookingStatus, string> = {
   [BookingStatus.DRAFT]: "statusDraft",
@@ -213,8 +215,20 @@ function BookingItem({
         </div>
       </div>
 
-      {(canCancel || onConfirm) && (
-        <div className="flex shrink-0 gap-2">
+      {(canCancel || onConfirm || booking.professional.userId) && (
+        <div className="flex shrink-0 flex-wrap gap-2">
+          {booking.professional.userId &&
+            booking.status === BookingStatus.CONFIRMED && (
+              <Link
+                href={`/profissional/${booking.professional.userId}`}
+                className="inline-flex"
+              >
+                <Button size="sm" variant="outline" type="button">
+                  <Star className="mr-1.5 h-4 w-4" />
+                  {t("review")}
+                </Button>
+              </Link>
+            )}
           {onConfirm && (
             <Button size="sm" disabled={pending} onClick={onConfirm}>
               <Check className="mr-1.5 h-4 w-4" />

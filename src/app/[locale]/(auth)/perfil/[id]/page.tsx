@@ -6,6 +6,7 @@ import { ProfileBookings } from "@/components/shared/ProfileBookings";
 import { ProfileEditForm } from "@/components/shared/ProfileEditForm";
 import { ProfessionalProfileCard } from "@/components/shared/ProfessionalProfileCard";
 import { CreateEstablishmentCard } from "@/components/shared/CreateEstablishmentCard";
+import { DeactivateAccountCard } from "@/components/shared/DeactivateAccountCard";
 
 export const metadata = {
   title: "Meu Perfil | Cyacsys",
@@ -41,6 +42,7 @@ export default async function PerfilPage() {
           <CreateEstablishmentCard />
           <ProfessionalProfileCard />
           <ProfileBookings />
+          <DeactivateAccountCard />
         </div>
       </div>
     </div>

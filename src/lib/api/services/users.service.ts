@@ -68,5 +68,14 @@ export const usersService = {
 
   deactivateProfessionalProfile: async (): Promise<ProfessionalProfile> => {
     return api.patch('/users/me/professional-profile/deactivate');
-  }
+  },
+
+  activateProfessionalProfile: async (): Promise<ProfessionalProfile> => {
+    return api.patch('/users/me/professional-profile/activate');
+  },
+
+  /** PATCH /users/me/deactivate — status INACTIVE + desabilita no Firebase. */
+  deactivateMe: async (): Promise<User> => {
+    return api.patch('/users/me/deactivate');
+  },
 };

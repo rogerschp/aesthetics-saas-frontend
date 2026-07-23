@@ -1,5 +1,7 @@
 export interface Membro {
   id: string;
+  /** userId do perfil profissional — se a API pública enviar. */
+  userId?: string;
   nome: string;
   foto?: string;
   role: string; // ex: "Tatuador", "Barbeiro Chefe" (sem RBAC)
