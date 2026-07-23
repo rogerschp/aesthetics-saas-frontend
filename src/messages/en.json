@@ -28,6 +28,7 @@
     "highlights": "Highlights in your Region",
     "results": "Results",
     "noResults": "No establishments found.",
+    "noHighlights": "No regional highlights right now. Use search to find establishments.",
     "footer": "© {year} BarberShop SaaS. All rights reserved."
   },
   "Planos": {

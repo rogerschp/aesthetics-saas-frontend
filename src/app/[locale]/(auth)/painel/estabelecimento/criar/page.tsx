@@ -214,7 +214,7 @@ export default function TenantCreatePage() {
         address,
       });
 
-      // coords no PATCH; logo só via POST /media/upload + PATCH /tenants/:id/logo
+      // coords via PATCH; segment/description só no update (editar).
       if (geo) {
         try {
           await tenantsService.update(tenant.id, {

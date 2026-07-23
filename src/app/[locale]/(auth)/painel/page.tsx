@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Loader2,
   Pencil,
   Plus,
   Store,
@@ -17,6 +16,7 @@ import { TenantSwitcher } from "@/components/shared/TenantSwitcher";
 import { SubscriptionCard } from "@/components/shared/SubscriptionCard";
 import { OpsBookingPanel } from "@/components/booking/OpsBookingPanel";
 import { CancellationSettingsForm } from "@/components/forms/tenant/CancellationSettingsForm";
+import { PanelPageSkeleton } from "@/components/shared/PanelPageSkeleton";
 import { TenantUserRole } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
@@ -30,10 +30,10 @@ function PainelLoading() {
   }, []);
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 px-4 text-center">
-      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+    <div>
+      <PanelPageSkeleton />
       {slow ? (
-        <p className="max-w-sm text-sm text-muted-foreground">
+        <p className="mx-auto max-w-sm px-4 pb-10 text-center text-sm text-muted-foreground">
           {t("slowLoadHint")}
         </p>
       ) : null}

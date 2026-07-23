@@ -32,12 +32,11 @@ export function EstabelecimentoBanner({ estabelecimento }: EstabelecimentoBanner
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="flex flex-col gap-2">
             <h1 className="text-3xl md:text-5xl font-bold text-foreground">{estabelecimento.nome}</h1>
-            <p className="max-w-2xl text-sm text-muted-foreground md:text-base">
-              {estabelecimento.descricao ||
-                (estabelecimento.telefone
-                  ? `Contato: ${estabelecimento.telefone}`
-                  : null)}
-            </p>
+            {estabelecimento.segmentoLabel && (
+              <p className="max-w-2xl text-sm text-muted-foreground md:text-base">
+                {estabelecimento.segmentoLabel}
+              </p>
+            )}
 
             <div className="mt-2 flex flex-wrap items-center gap-4">
               <div className="flex items-center font-medium text-primary">

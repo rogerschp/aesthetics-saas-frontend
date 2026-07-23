@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { Loader2 } from "lucide-react";
 import { HomeTenantSearch } from "@/components/shared/HomeTenantSearch";
+import { HomePageSkeleton } from "@/components/shared/HomePageSkeleton";
 import { getTranslations } from "next-intl/server";
 
 export default async function Home() {
@@ -9,13 +9,7 @@ export default async function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
-        <Suspense
-          fallback={
-            <div className="flex justify-center py-24">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </div>
-          }
-        >
+        <Suspense fallback={<HomePageSkeleton />}>
           <HomeTenantSearch />
         </Suspense>
       </main>

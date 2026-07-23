@@ -3,11 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, SearchX } from "lucide-react";
+import { SearchX, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SearchBar } from "./SearchBar";
 import { TenantSearchCard } from "./TenantSearchCard";
 import { HeroSection } from "./HeroSection";
+import { HomeHighlightsCarousel } from "./HomeHighlightsCarousel";
+import {
+  TenantSearchCarouselSkeleton,
+  TenantSearchGridSkeleton,
+} from "./TenantSearchCardSkeleton";
 import { searchService } from "@/lib/api/services/search.service";
 import { formatApiError } from "@/lib/api/errors";
 
@@ -29,8 +34,8 @@ function parseLocation(raw: string): { city?: string; state?: string } {
 
 /**
  * Listagem da home.
- * Filtros vivem na URL (`?q=&city=&state=&lat=&lng=`).
- * Clicar em Início (rota sem query) → lista completa da região, não a última busca.
+ * Sem filtro → carrossel só com `regionalHighlight`.
+ * Com filtro → grid de resultados da busca.
  */
 export function HomeTenantSearch() {
   const t = useTranslations("Home");
@@ -64,7 +69,6 @@ export function HomeTenantSearch() {
   const [coords, setCoords] = useState<Coords | null>(applied.coords);
   const [geoLoading, setGeoLoading] = useState(false);
 
-  // Ao voltar para Início sem query (ou limpar URL), reseta o formulário.
   useEffect(() => {
     setQ(applied.q);
     if (applied.city && applied.state) {
@@ -78,6 +82,16 @@ export function HomeTenantSearch() {
 
   const hasFilter =
     !!applied.q || !!applied.city || !!applied.state || !!applied.coords;
+
+  const highlightsQuery = useQuery({
+    queryKey: ["search-tenants-highlights"],
+    queryFn: () =>
+      searchService.searchTenants({
+        regionalHighlight: true,
+        limit: 10,
+      }),
+    enabled: !hasFilter,
+  });
 
   const searchQuery = useQuery({
     queryKey: [
@@ -94,10 +108,10 @@ export function HomeTenantSearch() {
         state: applied.state,
         lat: applied.coords?.lat,
         lng: applied.coords?.lng,
-        // Default do back é 10 km; com “perto de mim” ampliamos um pouco.
         radius: applied.coords ? 25 : undefined,
         limit: 24,
       }),
+    enabled: hasFilter,
   });
 
   function pushFilters(next: {
@@ -127,7 +141,6 @@ export function HomeTenantSearch() {
     if (useGeo) {
       setUseGeo(false);
       setCoords(null);
-      // Desliga e aplica na hora (remove lat/lng da URL).
       const loc = parseLocation(location);
       pushFilters({
         q: q.trim(),
@@ -149,7 +162,6 @@ export function HomeTenantSearch() {
         setUseGeo(true);
         setLocation("");
         setGeoLoading(false);
-        // Aplica na hora — não exige clicar em Buscar.
         pushFilters({
           q: q.trim(),
           city: undefined,
@@ -176,7 +188,10 @@ export function HomeTenantSearch() {
     });
   }
 
-  const results = searchQuery.data?.data ?? [];
+  const activeQuery = hasFilter ? searchQuery : highlightsQuery;
+  const results = activeQuery.data?.data ?? [];
+  const listLoading = activeQuery.isLoading;
+  const listError = activeQuery.isError;
 
   return (
     <div className="flex flex-col">
@@ -189,7 +204,7 @@ export function HomeTenantSearch() {
           useGeo={useGeo}
           onToggleGeo={toggleGeo}
           onSubmit={submit}
-          loading={searchQuery.isFetching}
+          loading={activeQuery.isFetching}
           geoLoading={geoLoading}
         />
       </HeroSection>
@@ -201,34 +216,42 @@ export function HomeTenantSearch() {
           </h2>
         </div>
 
-        {searchQuery.isLoading && (
-          <div className="flex justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        )}
+        {listLoading &&
+          (hasFilter ? (
+            <TenantSearchGridSkeleton />
+          ) : (
+            <TenantSearchCarouselSkeleton />
+          ))}
 
-        {searchQuery.isError && (
+        {listError && (
           <p className="py-8 text-center text-sm text-destructive">
-            {formatApiError(searchQuery.error)}
+            {formatApiError(activeQuery.error)}
           </p>
         )}
 
-        {!searchQuery.isLoading &&
-          !searchQuery.isError &&
-          results.length === 0 && (
-            <div className="flex flex-col items-center gap-3 py-16 text-center text-muted-foreground">
+        {!listLoading && !listError && results.length === 0 && (
+          <div className="flex flex-col items-center gap-3 py-16 text-center text-muted-foreground">
+            {hasFilter ? (
               <SearchX className="h-10 w-10" />
-              <p>{t("noResults")}</p>
-            </div>
-          )}
-
-        {results.length > 0 && (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {results.map((tenant) => (
-              <TenantSearchCard key={tenant.id} tenant={tenant} />
-            ))}
+            ) : (
+              <Sparkles className="h-10 w-10" />
+            )}
+            <p>{hasFilter ? t("noResults") : t("noHighlights")}</p>
           </div>
         )}
+
+        {!listLoading &&
+          !listError &&
+          results.length > 0 &&
+          (hasFilter ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {results.map((tenant) => (
+                <TenantSearchCard key={tenant.id} tenant={tenant} />
+              ))}
+            </div>
+          ) : (
+            <HomeHighlightsCarousel tenants={results} />
+          ))}
       </div>
     </div>
   );

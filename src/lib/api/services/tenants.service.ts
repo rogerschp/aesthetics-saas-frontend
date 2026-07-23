@@ -1,5 +1,5 @@
 import { api } from "../client";
-import { Tenant, TenantStatus } from "../types";
+import { Tenant, TenantSegment, TenantStatus } from "../types";
 
 export interface CreateTenantDto {
   name: string;
@@ -13,7 +13,7 @@ export interface CreateTenantDto {
 export interface UpdateTenantDto extends Partial<CreateTenantDto> {
   status?: TenantStatus;
   timezone?: string;
-  segment?: string | null;
+  segment?: TenantSegment | null;
   latitude?: number | null;
   longitude?: number | null;
   /** Política de cancelamento de confirmado pelo cliente (OWNER/ADMIN). */

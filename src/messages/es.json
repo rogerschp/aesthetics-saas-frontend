@@ -28,6 +28,7 @@
     "highlights": "Destacados en tu Región",
     "results": "Resultados",
     "noResults": "No se encontraron establecimientos.",
+    "noHighlights": "No hay destacados en la región por ahora. Usa la búsqueda para encontrar establecimientos.",
     "footer": "© {year} BarberShop SaaS. Todos los derechos reservados."
   },
   "Planos": {

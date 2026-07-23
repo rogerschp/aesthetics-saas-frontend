@@ -56,6 +56,7 @@ import {
   Tenant,
   TenantProfessional,
   TenantProfessionalStatus,
+  TenantSegment,
   TenantThemeData,
   TenantUserRole,
 } from "@/lib/api/types";
@@ -84,6 +85,9 @@ const tenantSchema = z.object({
       const d = phoneToApiDigits(v);
       return d.length >= 12 && d.length <= 13;
     }, "Telefone inválido. Use DDD + número."),
+  segment: z.nativeEnum(TenantSegment, {
+    message: "Selecione o segmento",
+  }),
   cnpj: z
     .string()
     .optional()
@@ -155,6 +159,7 @@ function buildFormValues(
     nome: tenant.name,
     slug: tenant.slug,
     telefone: maskPhoneBR(tenant.telephone ?? ""),
+    segment: tenant.segment ?? ("" as unknown as TenantSegment),
     cnpj: tenant.cnpj ? maskCnpj(tenant.cnpj) : "",
     banner: tenant.avatarUrl ?? "",
     bannerWide: tenant.socialMedia?.banner ?? "",
@@ -266,6 +271,7 @@ export default function TenantEditPage() {
       redesSociais: {},
       cnpj: "",
       telefone: "",
+      segment: "" as unknown as TenantSegment,
     },
   });
 
@@ -340,6 +346,7 @@ export default function TenantEditPage() {
       await tenantsService.update(tenantId, {
         name: data.nome.trim(),
         telephone: phoneToApiDigits(data.telefone),
+        segment: data.segment,
         ...(cnpjDigits.length === 14 ? { cnpj: cnpjDigits } : {}),
         socialMedia,
         address,
@@ -393,7 +400,7 @@ export default function TenantEditPage() {
   const renderizarConteudo = () => {
     switch (secaoAtiva) {
       case "informacoes":
-        return <StoreProfileForm tenantId={tenantId} />;
+        return <StoreProfileForm tenantId={tenantId} showSegment />;
       case "expediente":
         return <HoursInputRepeater />;
       case "servicos":
@@ -441,7 +448,7 @@ export default function TenantEditPage() {
           />
         );
       default:
-        return <StoreProfileForm />;
+        return <StoreProfileForm tenantId={tenantId} showSegment />;
     }
   };
 

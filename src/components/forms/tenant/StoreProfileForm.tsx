@@ -3,11 +3,12 @@
 import { useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Store, MapPin, Phone } from "lucide-react";
+import { Store, MapPin, Phone, Tags } from "lucide-react";
 import { maskCep, maskCnpj, maskPhoneBR } from "@/lib/masks";
 import { MediaImageField } from "@/components/shared/MediaImageField";
 import { MediaType } from "@/lib/api/types";
 import { tenantsService } from "@/lib/api/services/tenants.service";
+import { TENANT_SEGMENT_OPTIONS } from "@/lib/tenant-segments";
 import { useTranslations } from "next-intl";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -26,11 +27,14 @@ interface StoreProfileFormProps {
   slugLocked?: boolean;
   /** Necessário para POST /media/upload (LOGO/BANNER/COVER). */
   tenantId?: string;
+  /** Segmento só existe no PATCH /tenants/:id — ocultar na criação. */
+  showSegment?: boolean;
 }
 
 export function StoreProfileForm({
   slugLocked = true,
   tenantId,
+  showSegment = false,
 }: StoreProfileFormProps) {
   const t = useTranslations("MediaUpload");
   const queryClient = useQueryClient();
@@ -47,6 +51,7 @@ export function StoreProfileForm({
   const cnpjReg = register("cnpj");
   const nomeReg = register("nome");
   const slugReg = register("slug");
+  const segmentReg = register("segment");
 
   const logoUrl = watch("banner") as string | undefined;
   const bannerUrl = watch("bannerWide") as string | undefined;
@@ -156,6 +161,34 @@ export function StoreProfileForm({
             </p>
           )}
         </div>
+
+        {showSegment && (
+          <div className="space-y-2">
+            <Label htmlFor="segment" className="flex items-center gap-2">
+              <Tags className="h-3.5 w-3.5" />
+              Segmento *
+            </Label>
+            <select
+              id="segment"
+              {...segmentReg}
+              className="flex h-9 w-full rounded-lg border border-zinc-800 bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              <option value="">
+                Selecione o tipo do estabelecimento
+              </option>
+              {TENANT_SEGMENT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            {errors.segment && (
+              <p className="text-sm text-destructive">
+                {errors.segment.message as string}
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="space-y-2">
           <Label htmlFor="telefone" className="flex items-center gap-2">

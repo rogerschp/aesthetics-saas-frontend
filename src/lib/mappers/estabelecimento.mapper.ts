@@ -16,6 +16,7 @@ import type {
   ServicoTopico,
   TenantTema,
 } from "@/types";
+import { tenantSegmentLabel } from "@/lib/tenant-segments";
 
 const SEGMENT_TO_CATEGORIA: Record<TenantSegment, CategoriaEstabelecimento> = {
   [TenantSegment.BARBERSHOP]: "barbearia",
@@ -115,7 +116,8 @@ export function mapToEstabelecimento({
     categoria: tenant.segment
       ? SEGMENT_TO_CATEGORIA[tenant.segment]
       : "barbearia",
-    // API de tenant não tem description — vitrine monta bloco de contato/info.
+    segmentoLabel: tenantSegmentLabel(tenant.segment),
+    // description ainda não existe na API.
     descricao: "",
     banner:
       tenant.socialMedia?.cover ||

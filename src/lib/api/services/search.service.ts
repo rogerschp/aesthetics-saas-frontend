@@ -10,6 +10,8 @@ export interface SearchTenantsParams {
   city?: string;
   /** UF com 2 letras (ex.: SP). */
   state?: string;
+  /** Só planos com feature de destaque regional. */
+  regionalHighlight?: boolean;
   segment?: TenantSegment;
   page?: number;
   limit?: number;
@@ -20,7 +22,7 @@ export const searchService = {
   searchTenants: async (
     params: SearchTenantsParams = {},
   ): Promise<TenantSearchResponse> => {
-    const query: Record<string, string | number> = {};
+    const query: Record<string, string | number | boolean> = {};
     if (params.q && params.q.trim().length >= 2) query.q = params.q.trim();
     if (params.lat != null && params.lng != null) {
       query.lat = params.lat;
@@ -33,6 +35,7 @@ export const searchService = {
     if (params.state && params.state.trim().length === 2) {
       query.state = params.state.trim().toUpperCase();
     }
+    if (params.regionalHighlight === true) query.regionalHighlight = true;
     if (params.segment) query.segment = params.segment;
     if (params.page) query.page = params.page;
     if (params.limit) query.limit = params.limit;

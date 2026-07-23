@@ -92,6 +92,8 @@ export interface Estabelecimento {
   slug: string;
   nome: string;
   categoria: CategoriaEstabelecimento;
+  /** Label legível do segmento (ex.: Barbearia). */
+  segmentoLabel?: string;
   descricao: string;
   banner?: string;
   telefone?: string;
