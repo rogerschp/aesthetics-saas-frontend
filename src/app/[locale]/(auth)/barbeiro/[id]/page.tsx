@@ -158,7 +158,9 @@ export default function ProfissionalDashboardPage() {
       <div className="container mx-auto max-w-5xl px-4">
         <section className="mb-10 flex items-center gap-4">
           <Avatar className="h-16 w-16 rounded-2xl border-2 border-primary/50">
-            <AvatarImage src={profile.avatarUrl} alt={profile.displayName} />
+            {profile.avatarUrl && (
+              <AvatarImage src={profile.avatarUrl} alt={profile.displayName} />
+            )}
             <AvatarFallback className="rounded-2xl bg-primary/20 text-xl font-bold text-primary">
               {profile.displayName.charAt(0).toUpperCase()}
             </AvatarFallback>
