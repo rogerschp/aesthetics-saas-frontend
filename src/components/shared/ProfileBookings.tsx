@@ -22,6 +22,10 @@ import { BookingStatus, MyBooking } from "@/lib/api/types";
 import { formatApiError } from "@/lib/api/errors";
 import { formatAddressLine } from "@/lib/utils";
 import { Link } from "@/i18n/routing";
+import {
+  DateRangeFields,
+  defaultRange,
+} from "@/components/shared/DateRangeFields";
 
 const STATUS_KEY: Record<BookingStatus, string> = {
   [BookingStatus.DRAFT]: "statusDraft",
@@ -32,7 +36,8 @@ const STATUS_KEY: Record<BookingStatus, string> = {
 
 function statusVariant(status: BookingStatus): string {
   if (status === BookingStatus.CONFIRMED) return "bg-primary/15 text-primary";
-  if (status === BookingStatus.COMPLETED) return "bg-emerald-500/15 text-emerald-500";
+  if (status === BookingStatus.COMPLETED)
+    return "bg-emerald-500/15 text-emerald-500";
   if (status === BookingStatus.DRAFT) return "bg-amber-500/15 text-amber-500";
   return "bg-muted text-muted-foreground";
 }
@@ -51,6 +56,10 @@ export function ProfileBookings() {
   const userId = session?.user?.id;
   const queryClient = useQueryClient();
   const [actionError, setActionError] = useState<string | null>(null);
+
+  const initial = defaultRange(30, 30);
+  const [from, setFrom] = useState(initial.from);
+  const [to, setTo] = useState(initial.to);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["my-bookings", userId],
@@ -86,12 +95,21 @@ export function ProfileBookings() {
     onError: (err) => setActionError(formatApiError(err)),
   });
 
+  const filtered = useMemo(() => {
+    const all = data ?? [];
+    if (!from && !to) return all;
+    return all.filter((b) => {
+      if (from && b.date < from) return false;
+      if (to && b.date > to) return false;
+      return true;
+    });
+  }, [data, from, to]);
+
   const { upcoming, history } = useMemo(() => {
     const now = Date.now();
-    const all = data ?? [];
     const up: MyBooking[] = [];
     const hist: MyBooking[] = [];
-    for (const b of all) {
+    for (const b of filtered) {
       const isFuture = new Date(b.startsAt).getTime() >= now;
       if (b.status !== BookingStatus.CANCELLED && isFuture) up.push(b);
       else hist.push(b);
@@ -99,7 +117,7 @@ export function ProfileBookings() {
     up.sort((a, b) => a.startsAt.localeCompare(b.startsAt));
     hist.sort((a, b) => b.startsAt.localeCompare(a.startsAt));
     return { upcoming: up, history: hist };
-  }, [data]);
+  }, [filtered]);
 
   if (isLoading) {
     return (
@@ -126,6 +144,21 @@ export function ProfileBookings() {
           {actionError}
         </div>
       )}
+
+      <DateRangeFields
+        from={from}
+        to={to}
+        onFromChange={setFrom}
+        onToChange={setTo}
+        fromLabel={t("from")}
+        toLabel={t("to")}
+        onClear={() => {
+          setFrom("");
+          setTo("");
+        }}
+        clearLabel={t("clearRange")}
+        className="rounded-xl border border-border/50 bg-card/50 p-4"
+      />
 
       <section>
         <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold">

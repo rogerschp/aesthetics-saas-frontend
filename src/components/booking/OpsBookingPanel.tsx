@@ -15,6 +15,11 @@ import { bookingService } from "@/lib/api/services/booking.service";
 import { BookingStatus, OpsBooking } from "@/lib/api/types";
 import { formatApiError } from "@/lib/api/errors";
 import { maskPhoneBR } from "@/lib/masks";
+import {
+  DateRangeFields,
+  daysInclusive,
+  defaultRange,
+} from "@/components/shared/DateRangeFields";
 
 type Identity = "none" | "guest";
 
@@ -36,6 +41,8 @@ function customerLabel(b: OpsBooking, t: (k: string) => string): string {
   return t("walkIn");
 }
 
+const MAX_AGENDA_DAYS = 31;
+
 export function OpsBookingPanel({ tenantId }: { tenantId: string }) {
   const t = useTranslations("Ops");
   const queryClient = useQueryClient();
@@ -43,11 +50,22 @@ export function OpsBookingPanel({ tenantId }: { tenantId: string }) {
   const [professionalId, setProfessionalId] = useState("");
   const [serviceId, setServiceId] = useState("");
   const [date, setDate] = useState(todayISO());
-  const [agendaDate, setAgendaDate] = useState(todayISO());
+  const initialAgenda = defaultRange(0, 0);
+  const [agendaFrom, setAgendaFrom] = useState(initialAgenda.from);
+  const [agendaTo, setAgendaTo] = useState(initialAgenda.to);
   const [slot, setSlot] = useState<string | null>(null);
   const [identity, setIdentity] = useState<Identity>("none");
   const [guest, setGuest] = useState({ name: "", phone: "", email: "" });
   const [error, setError] = useState<string | null>(null);
+
+  const agendaRangeError =
+    agendaFrom && agendaTo
+      ? agendaFrom > agendaTo
+        ? t("rangeInvalid")
+        : daysInclusive(agendaFrom, agendaTo) > MAX_AGENDA_DAYS
+          ? t("rangeTooLarge", { max: MAX_AGENDA_DAYS })
+          : null
+      : t("rangeRequired");
 
   const professionalsQuery = useQuery({
     queryKey: ["ops-professionals", tenantId],
@@ -72,8 +90,13 @@ export function OpsBookingPanel({ tenantId }: { tenantId: string }) {
   });
 
   const agendaQuery = useQuery({
-    queryKey: ["ops-agenda", tenantId, agendaDate],
-    queryFn: () => bookingService.listTenant(tenantId, { date: agendaDate }),
+    queryKey: ["ops-agenda", tenantId, agendaFrom, agendaTo],
+    queryFn: () =>
+      bookingService.listTenant(tenantId, {
+        from: agendaFrom,
+        to: agendaTo,
+      }),
+    enabled: !agendaRangeError && !!agendaFrom && !!agendaTo,
   });
 
   function invalidateAgenda() {
@@ -102,8 +125,11 @@ export function OpsBookingPanel({ tenantId }: { tenantId: string }) {
       setSlot(null);
       setGuest({ name: "", phone: "", email: "" });
       slotsQuery.refetch();
-      if (date === agendaDate) invalidateAgenda();
-      else setAgendaDate(date);
+      if (date >= agendaFrom && date <= agendaTo) invalidateAgenda();
+      else {
+        setAgendaFrom(date);
+        setAgendaTo(date);
+      }
     },
     onError: (err) => setError(formatApiError(err)),
   });
@@ -317,13 +343,17 @@ export function OpsBookingPanel({ tenantId }: { tenantId: string }) {
       </div>
 
       <div className="rounded-2xl border border-border/50 bg-card p-6">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-4 space-y-3">
           <p className="text-sm font-medium text-foreground">{t("dayAgenda")}</p>
-          <Input
-            type="date"
-            value={agendaDate}
-            onChange={(e) => setAgendaDate(e.target.value)}
-            className="w-full sm:w-auto"
+          <DateRangeFields
+            from={agendaFrom}
+            to={agendaTo}
+            onFromChange={setAgendaFrom}
+            onToChange={setAgendaTo}
+            fromLabel={t("from")}
+            toLabel={t("to")}
+            maxDays={MAX_AGENDA_DAYS}
+            rangeError={agendaRangeError}
           />
         </div>
 
@@ -337,9 +367,12 @@ export function OpsBookingPanel({ tenantId }: { tenantId: string }) {
             {formatApiError(agendaQuery.error)}
           </p>
         )}
-        {!agendaQuery.isLoading && !agendaQuery.isError && agenda.length === 0 && (
-          <p className="text-sm text-muted-foreground">{t("emptyAgenda")}</p>
-        )}
+        {!agendaRangeError &&
+          !agendaQuery.isLoading &&
+          !agendaQuery.isError &&
+          agenda.length === 0 && (
+            <p className="text-sm text-muted-foreground">{t("emptyAgenda")}</p>
+          )}
 
         <div className="space-y-2">
           {agenda.map((booking) => (
@@ -349,7 +382,9 @@ export function OpsBookingPanel({ tenantId }: { tenantId: string }) {
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-medium tabular-nums">{booking.startTime}</span>
+                  <span className="font-medium tabular-nums">
+                    {booking.date} · {booking.startTime}
+                  </span>
                   <span className="truncate text-sm">
                     {booking.service.name} • {booking.professional.displayName} •{" "}
                     {customerLabel(booking, t)}

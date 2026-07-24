@@ -102,7 +102,8 @@
     "nextLevel": "Faltam 6 serviços para o próximo nível (Prata)",
     "discover": "Descubra em sua região",
     "explore": "Explore novos estilos e estabelecimentos próximos de você.",
-    "viewAll": "Ver todos os estabelecimentos →"
+    "viewAll": "Ver todos os estabelecimentos →",
+    "moreOptions": "Mais opções"
   },
   "PerfilEdit": {
     "editBtn": "Editar perfil",
@@ -174,12 +175,12 @@
   "BarbeiroDashboard": {
     "hello": "Olá,",
     "proBadge": "Pro",
-    "dailySummary": "Seu resumo diário para hoje.",
-    "inQueueToday": "Na Fila Hoje",
-    "completedToday": "Concluídos Hoje",
+    "dailySummary": "Sua agenda e perfil profissional.",
+    "inQueueToday": "Na fila",
+    "completedToday": "Concluídos",
     "totalCuts": "Cortes Totais",
     "fiveStarReviews": "Avaliações 5 Estrelas",
-    "activeSchedule": "Agenda Ativa",
+    "activeSchedule": "Agenda",
     "today": "Hoje",
     "reviews": "Avaliações",
     "experienceYears": "Anos de experiência",
@@ -187,8 +188,17 @@
     "noProfileDesc": "Crie um perfil profissional para aparecer na vitrine e receber agendamentos.",
     "scheduleGap": "Você ainda não está vinculado a um estabelecimento como profissional. Peça ao dono para adicionar você à equipe.",
     "latestReviews": "Últimas avaliações",
-    "emptyAgenda": "Nenhum agendamento para hoje.",
-    "agendaCustomer": "Cliente"
+    "emptyAgenda": "Nenhum agendamento no período.",
+    "agendaCustomer": "Cliente",
+    "profileSection": "Meu perfil profissional",
+    "from": "De",
+    "to": "Até",
+    "rangeToday": "Hoje",
+    "rangeOrderError": "A data inicial deve ser anterior ou igual à final.",
+    "rangeMaxError": "O intervalo máximo é de {max} dias.",
+    "statusConfirmed": "Confirmado",
+    "statusCompleted": "Concluído",
+    "statusDraft": "Rascunho"
   },
   "Painel": {
     "overview": "Visão Geral",
@@ -355,7 +365,10 @@
     "confirm": "Confirmar",
     "cancel": "Cancelar",
     "review": "Avaliar profissional",
-    "reviewTenant": "Avaliar estabelecimento"
+    "reviewTenant": "Avaliar estabelecimento",
+    "from": "De",
+    "to": "Até",
+    "clearRange": "Ver todos"
   },
   "ProfessionalReviews": {
     "pageTitle": "Profissional",
@@ -461,8 +474,13 @@
     "availableSlots": "Horários disponíveis",
     "noSlots": "Sem horários para esta data.",
     "createDraft": "Criar rascunho",
-    "dayAgenda": "Agenda do dia",
-    "emptyAgenda": "Nenhum agendamento neste dia.",
+    "dayAgenda": "Agenda",
+    "from": "De",
+    "to": "Até",
+    "rangeRequired": "Informe o início e o fim do período.",
+    "rangeInvalid": "A data inicial não pode ser depois da final.",
+    "rangeTooLarge": "Intervalo máximo de {max} dias.",
+    "emptyAgenda": "Nenhum agendamento neste período.",
     "sessionBookings": "Reservas desta sessão",
     "confirm": "Confirmar",
     "cancel": "Cancelar",

@@ -100,7 +100,14 @@ function buildPayload(form: FormState, fallbackName: string) {
   };
 }
 
-export function ProfessionalProfileCard() {
+type ProfessionalProfileCardProps = {
+  /** Quando já estamos em /barbeiro, esconde o atalho “Ver minha agenda”. */
+  hideDashboardLink?: boolean;
+};
+
+export function ProfessionalProfileCard({
+  hideDashboardLink = false,
+}: ProfessionalProfileCardProps = {}) {
   const t = useTranslations("PerfilPro");
   const tMedia = useTranslations("MediaUpload");
   const { data: session } = useSession();
@@ -410,13 +417,15 @@ export function ProfessionalProfileCard() {
             <Pencil className="mr-2 h-4 w-4" />
             {t("editBtn")}
           </Button>
-          <Link
-            href={`/barbeiro/${meQuery.data?.id ?? "me"}`}
-            className={cn(buttonVariants({ variant: "outline" }))}
-          >
-            <Scissors className="mr-2 h-4 w-4" />
-            {t("goDashboard")}
-          </Link>
+          {!hideDashboardLink && (
+            <Link
+              href={`/barbeiro/${meQuery.data?.id ?? "me"}`}
+              className={cn(buttonVariants({ variant: "outline" }))}
+            >
+              <Scissors className="mr-2 h-4 w-4" />
+              {t("goDashboard")}
+            </Link>
+          )}
           {profile.isActive ? (
             <Button
               variant="ghost"

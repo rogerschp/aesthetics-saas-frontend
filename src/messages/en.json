@@ -102,7 +102,8 @@
     "nextLevel": "6 more services for the next level (Silver)",
     "discover": "Discover in your region",
     "explore": "Explore new styles and establishments near you.",
-    "viewAll": "View all establishments →"
+    "viewAll": "View all establishments →",
+    "moreOptions": "More options"
   },
   "PerfilEdit": {
     "editBtn": "Edit profile",
@@ -174,12 +175,12 @@
   "BarbeiroDashboard": {
     "hello": "Hello,",
     "proBadge": "Pro",
-    "dailySummary": "Your daily summary for today.",
-    "inQueueToday": "In Queue Today",
-    "completedToday": "Completed Today",
+    "dailySummary": "Your schedule and professional profile.",
+    "inQueueToday": "In queue",
+    "completedToday": "Completed",
     "totalCuts": "Total Services",
     "fiveStarReviews": "5-Star Reviews",
-    "activeSchedule": "Active Schedule",
+    "activeSchedule": "Schedule",
     "today": "Today",
     "reviews": "Reviews",
     "experienceYears": "Years of experience",
@@ -187,8 +188,17 @@
     "noProfileDesc": "Create a professional profile to appear in the storefront and receive bookings.",
     "scheduleGap": "You are not yet linked to an establishment as a professional. Ask the owner to add you to the team.",
     "latestReviews": "Latest reviews",
-    "emptyAgenda": "No bookings for today.",
-    "agendaCustomer": "Client"
+    "emptyAgenda": "No bookings in this period.",
+    "agendaCustomer": "Client",
+    "profileSection": "My professional profile",
+    "from": "From",
+    "to": "To",
+    "rangeToday": "Today",
+    "rangeOrderError": "Start date must be on or before the end date.",
+    "rangeMaxError": "Maximum range is {max} days.",
+    "statusConfirmed": "Confirmed",
+    "statusCompleted": "Completed",
+    "statusDraft": "Draft"
   },
   "Painel": {
     "overview": "Overview",
@@ -355,7 +365,10 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "review": "Review professional",
-    "reviewTenant": "Review establishment"
+    "reviewTenant": "Review establishment",
+    "from": "From",
+    "to": "To",
+    "clearRange": "Show all"
   },
   "ProfessionalReviews": {
     "pageTitle": "Professional",
@@ -461,8 +474,13 @@
     "availableSlots": "Available times",
     "noSlots": "No times for this date.",
     "createDraft": "Create draft",
-    "dayAgenda": "Day schedule",
-    "emptyAgenda": "No bookings on this day.",
+    "dayAgenda": "Schedule",
+    "from": "From",
+    "to": "To",
+    "rangeRequired": "Enter the start and end of the period.",
+    "rangeInvalid": "Start date cannot be after end date.",
+    "rangeTooLarge": "Maximum range is {max} days.",
+    "emptyAgenda": "No bookings in this period.",
     "sessionBookings": "Bookings this session",
     "confirm": "Confirm",
     "cancel": "Cancel",

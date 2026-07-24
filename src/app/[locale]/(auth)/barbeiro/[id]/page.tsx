@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import {
@@ -20,6 +20,12 @@ import { tenantProfessionalsService } from "@/lib/api/services/tenant-profession
 import { bookingService } from "@/lib/api/services/booking.service";
 import { useTenantContext } from "@/components/providers/TenantProvider";
 import { ProfessionalReviewsWall } from "@/components/shared/ProfessionalReviewsWall";
+import { ProfessionalProfileCard } from "@/components/shared/ProfessionalProfileCard";
+import {
+  DateRangeFields,
+  daysInclusive,
+  defaultRange,
+} from "@/components/shared/DateRangeFields";
 import {
   BookingStatus,
   OpsBooking,
@@ -37,9 +43,7 @@ const TYPE_LABEL: Record<ProfessionalType, string> = {
   [ProfessionalType.EYEBROW_DESIGNER]: "Designer de Sobrancelhas",
 };
 
-function todayISO(): string {
-  return new Date().toISOString().slice(0, 10);
-}
+const MAX_RANGE_DAYS = 31;
 
 function customerName(b: OpsBooking): string {
   if (b.customer.kind === "GUEST") {
@@ -54,6 +58,16 @@ export default function ProfissionalDashboardPage() {
   const sessionUserId = session?.user?.id;
   const { current, isLoading: tenantLoading } = useTenantContext();
   const tenantId = current?.tenant.id;
+  const [range, setRange] = useState(() => defaultRange(0, 0));
+
+  const rangeError =
+    range.from && range.to && range.from > range.to
+      ? t("rangeOrderError")
+      : range.from &&
+          range.to &&
+          daysInclusive(range.from, range.to) > MAX_RANGE_DAYS
+        ? t("rangeMaxError", { max: MAX_RANGE_DAYS })
+        : null;
 
   const meQuery = useQuery({
     queryKey: ["me", sessionUserId],
@@ -103,12 +117,26 @@ export default function ProfissionalDashboardPage() {
   });
 
   const agendaQuery = useQuery({
-    queryKey: ["barbeiro-agenda", sessionUserId, tenantId, myTp?.id, todayISO()],
+    queryKey: [
+      "barbeiro-agenda",
+      sessionUserId,
+      tenantId,
+      myTp?.id,
+      range.from,
+      range.to,
+    ],
     queryFn: () =>
       bookingService.listByProfessional(tenantId!, myTp!.id, {
-        date: todayISO(),
+        from: range.from,
+        to: range.to,
       }),
-    enabled: !!tenantId && !!myTp?.id && !!sessionUserId,
+    enabled:
+      !!tenantId &&
+      !!myTp?.id &&
+      !!sessionUserId &&
+      !!range.from &&
+      !!range.to &&
+      !rangeError,
   });
 
   if (
@@ -128,12 +156,15 @@ export default function ProfissionalDashboardPage() {
 
   if (!profile) {
     return (
-      <div className="container mx-auto max-w-2xl px-4 py-32 text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/15 text-primary">
-          <UserCircle2 className="h-8 w-8" />
+      <div className="container mx-auto max-w-2xl px-4 py-28">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+            <UserCircle2 className="h-8 w-8" />
+          </div>
+          <h1 className="mb-2 text-2xl font-bold">{t("noProfileTitle")}</h1>
+          <p className="text-muted-foreground">{t("noProfileDesc")}</p>
         </div>
-        <h1 className="mb-2 text-2xl font-bold">{t("noProfileTitle")}</h1>
-        <p className="text-muted-foreground">{t("noProfileDesc")}</p>
+        <ProfessionalProfileCard hideDashboardLink />
       </div>
     );
   }
@@ -145,12 +176,14 @@ export default function ProfissionalDashboardPage() {
       : "—";
 
   const agenda = agendaQuery.data ?? [];
-  const activeToday = agenda.filter((b) => b.status !== BookingStatus.CANCELLED);
-  const confirmedToday = activeToday.filter(
-    (b) => b.status === BookingStatus.CONFIRMED,
+  const active = agenda.filter((b) => b.status !== BookingStatus.CANCELLED);
+  const completedCount = active.filter(
+    (b) => b.status === BookingStatus.COMPLETED,
   ).length;
-  const draftToday = activeToday.filter(
-    (b) => b.status === BookingStatus.DRAFT,
+  const inQueueCount = active.filter(
+    (b) =>
+      b.status === BookingStatus.DRAFT ||
+      b.status === BookingStatus.CONFIRMED,
   ).length;
 
   return (
@@ -189,18 +222,32 @@ export default function ProfissionalDashboardPage() {
           />
           <KpiCard
             icon={<Award className="h-5 w-5 text-emerald-500" />}
-            value={String(confirmedToday)}
+            value={String(completedCount)}
             label={t("completedToday")}
           />
           <KpiCard
             icon={<CalendarClock className="h-5 w-5 text-purple-500" />}
-            value={String(draftToday + confirmedToday)}
+            value={String(inQueueCount)}
             label={t("inQueueToday")}
           />
         </section>
 
         <section className="mb-10">
-          <h2 className="mb-4 text-xl font-bold">{t("activeSchedule")}</h2>
+          <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 className="text-xl font-bold">{t("activeSchedule")}</h2>
+            <DateRangeFields
+              from={range.from}
+              to={range.to}
+              onFromChange={(from) => setRange((r) => ({ ...r, from }))}
+              onToChange={(to) => setRange((r) => ({ ...r, to }))}
+              fromLabel={t("from")}
+              toLabel={t("to")}
+              maxDays={MAX_RANGE_DAYS}
+              rangeError={rangeError}
+              onClear={() => setRange(defaultRange(0, 0))}
+              clearLabel={t("rangeToday")}
+            />
+          </div>
 
           {!tenantId || !myTp ? (
             <p className="text-sm text-muted-foreground">{t("scheduleGap")}</p>
@@ -212,11 +259,11 @@ export default function ProfissionalDashboardPage() {
             <p className="text-sm text-destructive">
               {formatApiError(agendaQuery.error)}
             </p>
-          ) : activeToday.length === 0 ? (
+          ) : active.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t("emptyAgenda")}</p>
           ) : (
             <div className="space-y-2">
-              {activeToday.map((b) => (
+              {active.map((b) => (
                 <div
                   key={b.id}
                   className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-card p-4"
@@ -237,14 +284,14 @@ export default function ProfissionalDashboardPage() {
                         }
                       >
                         {b.status === BookingStatus.CONFIRMED
-                          ? "Confirmado"
+                          ? t("statusConfirmed")
                           : b.status === BookingStatus.COMPLETED
-                            ? "Concluído"
-                            : "Rascunho"}
+                            ? t("statusCompleted")
+                            : t("statusDraft")}
                       </Badge>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {t("agendaCustomer")}: {customerName(b)}
+                      {b.date} · {t("agendaCustomer")}: {customerName(b)}
                     </p>
                   </div>
                   <span className="shrink-0 text-xs text-muted-foreground">
@@ -254,6 +301,11 @@ export default function ProfissionalDashboardPage() {
               ))}
             </div>
           )}
+        </section>
+
+        <section className="mb-10">
+          <h2 className="mb-4 text-xl font-bold">{t("profileSection")}</h2>
+          <ProfessionalProfileCard hideDashboardLink />
         </section>
 
         {userId && (

@@ -1,16 +1,16 @@
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ProfileHeader } from "@/components/shared/ProfileHeader";
 import { ProfileBookings } from "@/components/shared/ProfileBookings";
 import { ProfileEditForm } from "@/components/shared/ProfileEditForm";
-import { ProfessionalProfileCard } from "@/components/shared/ProfessionalProfileCard";
+import { ProfessionalProfileShortcut } from "@/components/shared/ProfessionalProfileShortcut";
 import { CreateEstablishmentCard } from "@/components/shared/CreateEstablishmentCard";
 import { DeactivateAccountCard } from "@/components/shared/DeactivateAccountCard";
 
 export const metadata = {
   title: "Meu Perfil | Cyacsys",
-  description: "Seus agendamentos e histórico.",
+  description: "Conta e agendamentos como cliente.",
 };
 
 export default async function PerfilPage() {
@@ -39,10 +39,16 @@ export default async function PerfilPage() {
             <ProfileEditForm />
           </div>
 
-          <CreateEstablishmentCard />
-          <ProfessionalProfileCard />
           <ProfileBookings />
-          <DeactivateAccountCard />
+
+          <div className="space-y-4 border-t border-border/40 pt-8">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              {t("moreOptions")}
+            </h2>
+            <ProfessionalProfileShortcut />
+            <CreateEstablishmentCard />
+            <DeactivateAccountCard />
+          </div>
         </div>
       </div>
     </div>

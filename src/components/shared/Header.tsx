@@ -8,6 +8,7 @@ import {
   LogOut,
   Home,
   Calendar,
+  CalendarClock,
   LayoutDashboard,
   Store,
   Sparkles,
@@ -46,6 +47,7 @@ export function Header() {
 
   const { memberships, role, isLoading } = useTenantContext();
   const hasPanel = !isLoading && memberships.length > 0;
+  const hasProProfile = !!me?.professionalProfile;
   const canSeeReports =
     role === TenantUserRole.OWNER ||
     role === TenantUserRole.ADMIN ||
@@ -106,6 +108,17 @@ export function Header() {
         >
           <Calendar className="h-4 w-4" />
           {t("myAppointments")}
+        </Link>
+      )}
+      {isAuthenticated && hasProProfile && (
+        <Link
+          href={`/barbeiro/${me?.id ?? "me"}`}
+          prefetch={false}
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
+          <CalendarClock className="h-4 w-4" />
+          {t("mySchedule")}
         </Link>
       )}
       {isAuthenticated && hasPanel && (
