@@ -144,6 +144,13 @@ const CODE_MESSAGES: Record<string, string> = {
   MEDIA_EMPTY_FILE: "Arquivo vazio não é permitido.",
   MEDIA_FILE_TOO_LARGE: "Arquivo excede o limite permitido (imagens: 5 MB).",
   MEDIA_NOT_OWNED: "Esta mídia não pertence a você ou ao estabelecimento.",
+  // Team / convites
+  TEAM_INVITATION_ALREADY_PENDING:
+    "Já existe um convite pendente para este e-mail.",
+  TEAM_MEMBER_ALREADY_EXISTS:
+    "Este usuário já é membro do estabelecimento.",
+  TEAM_INVITATION_NOT_PENDING:
+    "Só é possível cancelar convites com status pendente.",
 };
 
 export function formatApiError(error: unknown): string {

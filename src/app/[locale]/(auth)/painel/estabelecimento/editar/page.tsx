@@ -7,7 +7,7 @@ import { StoreProfileForm } from "@/components/forms/tenant/StoreProfileForm";
 import { HoursInputRepeater } from "@/components/forms/tenant/HoursInputRepeater";
 import { ServiceHierarchyBuilder } from "@/components/forms/tenant/ServiceHierarchyBuilder";
 import { TenantServicesImages } from "@/components/forms/tenant/TenantServicesImages";
-import { TeamBuilder } from "@/components/forms/tenant/TeamBuilder";
+import { TeamManager } from "@/components/forms/tenant/TeamManager";
 import { AparenciaEditor } from "@/components/forms/tenant/AparenciaEditor";
 import { TenantDangerZone } from "@/components/forms/tenant/TenantDangerZone";
 import { ReviewsWall } from "@/components/shared/estabelecimento/ReviewsWall";
@@ -412,7 +412,9 @@ export default function TenantEditPage() {
           </div>
         );
       case "equipe":
-        return <TeamBuilder />;
+        return tenantId ? (
+          <TeamManager tenantId={tenantId} canManage={canManageTenant} />
+        ) : null;
       case "avaliacoes":
         return tenantId ? (
           <ReviewsWall tenantId={tenantId} />
@@ -505,7 +507,7 @@ export default function TenantEditPage() {
                   </p>
                 </div>
 
-                {secaoAtiva !== "desativar" && (
+                {secaoAtiva !== "desativar" && secaoAtiva !== "equipe" && (
                   <Button
                     type="submit"
                     disabled={saveMutation.isPending}

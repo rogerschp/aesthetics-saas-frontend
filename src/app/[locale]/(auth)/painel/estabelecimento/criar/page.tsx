@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StoreProfileForm } from "@/components/forms/tenant/StoreProfileForm";
 import { HoursInputRepeater } from "@/components/forms/tenant/HoursInputRepeater";
 import { ServiceHierarchyBuilder } from "@/components/forms/tenant/ServiceHierarchyBuilder";
-import { TeamBuilder } from "@/components/forms/tenant/TeamBuilder";
+import { TeamSetupHint } from "@/components/forms/tenant/TeamManager";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Save, Building2, AlertTriangle } from "lucide-react";
 import Link from "next/link";
@@ -472,7 +472,7 @@ export default function TenantCreatePage() {
                   value="equipe"
                   className="m-0 focus-visible:outline-none focus-visible:ring-0"
                 >
-                  <TeamBuilder />
+                  <TeamSetupHint />
                   <div className="mt-8 flex justify-start">
                     <Button
                       type="button"

@@ -219,6 +219,72 @@ export interface TenantMember {
   createdAt: string;
 }
 
+/** Membro na lista `GET /tenants/:id/team`. */
+export interface TeamMember {
+  membershipId: string;
+  userId: string;
+  email: string;
+  name: string;
+  role: TenantUserRole;
+  status: TenantUserStatus;
+}
+
+export enum TenantInvitationStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  EXPIRED = 'EXPIRED',
+  CANCELLED = 'CANCELLED',
+}
+
+export interface TeamInvitation {
+  id: string;
+  tenantId: string;
+  email: string;
+  role: TenantUserRole;
+  status: TenantInvitationStatus;
+  expiresAt: string;
+  acceptedAt: string | null;
+  createdByUserId: string;
+  createdAt: string;
+}
+
+export type OnboardTeamMemberDto = {
+  email: string;
+  role: TenantUserRole;
+};
+
+export type OnboardTeamMemberResponse =
+  | {
+      kind: 'MEMBER_ADDED';
+      member: TeamMember;
+      tenantProfessionalId?: string;
+    }
+  | {
+      kind: 'INVITATION_CREATED';
+      invitation: TeamInvitation;
+    };
+
+/**
+ * Eventos do pipeline de notificação no back (dispatch mock no MVP).
+ * Sem inbox HTTP ainda — tipos preparados para integração futura.
+ */
+export enum NotificationEvent {
+  TEAM_INVITATION = 'TEAM_INVITATION',
+  BOOKING_CREATED = 'BOOKING_CREATED',
+  BOOKING_CONFIRMED = 'BOOKING_CONFIRMED',
+  BOOKING_CANCELLED = 'BOOKING_CANCELLED',
+  REVIEW_CREATED = 'REVIEW_CREATED',
+  PASSWORD_RESET = 'PASSWORD_RESET',
+  SUBSCRIPTION_EXPIRED = 'SUBSCRIPTION_EXPIRED',
+}
+
+export enum NotificationChannel {
+  EMAIL = 'EMAIL',
+  TELEGRAM = 'TELEGRAM',
+  WHATSAPP = 'WHATSAPP',
+  PUSH = 'PUSH',
+}
+
 // ============ Tenant Professional ============
 export interface TenantProfessional {
   id: string;
