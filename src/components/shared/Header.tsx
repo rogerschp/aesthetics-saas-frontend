@@ -30,6 +30,107 @@ import { TenantUserRole } from "@/lib/api/types";
 import { clearCachedIdToken } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 
+const navLinkClass =
+  "flex items-center gap-2 text-sm font-medium text-zinc-300 transition-colors hover:text-yellow-500";
+
+type HeaderNavLinksProps = {
+  isAuthenticated: boolean;
+  hasProProfile: boolean;
+  hasPanel: boolean;
+  canSeeReports: boolean;
+  proUserId?: string;
+  onNavigate?: () => void;
+};
+
+function HeaderNavLinks({
+  isAuthenticated,
+  hasProProfile,
+  hasPanel,
+  canSeeReports,
+  proUserId,
+  onNavigate,
+}: HeaderNavLinksProps) {
+  const t = useTranslations("Header");
+
+  return (
+    <>
+      <Link
+        href="/"
+        prefetch={false}
+        className={navLinkClass}
+        onClick={onNavigate}
+      >
+        <Home className="h-4 w-4" />
+        {t("home")}
+      </Link>
+      <Link
+        href="/planos"
+        prefetch={false}
+        className={navLinkClass}
+        onClick={onNavigate}
+      >
+        <Sparkles className="h-4 w-4" />
+        {t("plans")}
+      </Link>
+      {isAuthenticated && (
+        <Link
+          href="/perfil/me"
+          prefetch={false}
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
+          <Calendar className="h-4 w-4" />
+          {t("myAppointments")}
+        </Link>
+      )}
+      {isAuthenticated && hasProProfile && (
+        <Link
+          href={`/barbeiro/${proUserId ?? "me"}`}
+          prefetch={false}
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
+          <CalendarClock className="h-4 w-4" />
+          {t("mySchedule")}
+        </Link>
+      )}
+      {isAuthenticated && hasPanel && (
+        <Link
+          href="/painel"
+          prefetch={false}
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
+          <LayoutDashboard className="h-4 w-4" />
+          {t("myDashboard")}
+        </Link>
+      )}
+      {isAuthenticated && hasPanel && canSeeReports && (
+        <Link
+          href="/painel/relatorios"
+          prefetch={false}
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
+          <BarChart3 className="h-4 w-4" />
+          {t("reports")}
+        </Link>
+      )}
+      {isAuthenticated && !hasPanel && (
+        <Link
+          href="/painel/estabelecimento/criar"
+          prefetch={false}
+          className={navLinkClass}
+          onClick={onNavigate}
+        >
+          <Store className="h-4 w-4" />
+          {t("createEstablishment")}
+        </Link>
+      )}
+    </>
+  );
+}
+
 export function Header() {
   const t = useTranslations("Header");
   const { data: session, status } = useSession();
@@ -76,86 +177,13 @@ export function Header() {
   const profileName = me?.name ?? me?.email ?? "";
   const avatarLetter = profileName.charAt(0).toUpperCase() || "U";
 
-  const navLinkClass =
-    "flex items-center gap-2 text-sm font-medium text-zinc-300 transition-colors hover:text-yellow-500";
-
-  const NavLinks = ({ onNavigate }: { onNavigate?: () => void }) => (
-    <>
-      <Link
-        href="/"
-        prefetch={false}
-        className={navLinkClass}
-        onClick={onNavigate}
-      >
-        <Home className="h-4 w-4" />
-        {t("home")}
-      </Link>
-      <Link
-        href="/planos"
-        prefetch={false}
-        className={navLinkClass}
-        onClick={onNavigate}
-      >
-        <Sparkles className="h-4 w-4" />
-        {t("plans")}
-      </Link>
-      {isAuthenticated && (
-        <Link
-          href="/perfil/me"
-          prefetch={false}
-          className={navLinkClass}
-          onClick={onNavigate}
-        >
-          <Calendar className="h-4 w-4" />
-          {t("myAppointments")}
-        </Link>
-      )}
-      {isAuthenticated && hasProProfile && (
-        <Link
-          href={`/barbeiro/${me?.id ?? "me"}`}
-          prefetch={false}
-          className={navLinkClass}
-          onClick={onNavigate}
-        >
-          <CalendarClock className="h-4 w-4" />
-          {t("mySchedule")}
-        </Link>
-      )}
-      {isAuthenticated && hasPanel && (
-        <Link
-          href="/painel"
-          prefetch={false}
-          className={navLinkClass}
-          onClick={onNavigate}
-        >
-          <LayoutDashboard className="h-4 w-4" />
-          {t("myDashboard")}
-        </Link>
-      )}
-      {isAuthenticated && hasPanel && canSeeReports && (
-        <Link
-          href="/painel/relatorios"
-          prefetch={false}
-          className={navLinkClass}
-          onClick={onNavigate}
-        >
-          <BarChart3 className="h-4 w-4" />
-          {t("reports")}
-        </Link>
-      )}
-      {isAuthenticated && !hasPanel && (
-        <Link
-          href="/painel/estabelecimento/criar"
-          prefetch={false}
-          className={navLinkClass}
-          onClick={onNavigate}
-        >
-          <Store className="h-4 w-4" />
-          {t("createEstablishment")}
-        </Link>
-      )}
-    </>
-  );
+  const navProps: HeaderNavLinksProps = {
+    isAuthenticated,
+    hasProProfile,
+    hasPanel,
+    canSeeReports,
+    proUserId: me?.id,
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/40 backdrop-blur-lg">
@@ -167,7 +195,7 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          <NavLinks />
+          <HeaderNavLinks {...navProps} />
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-3">
@@ -222,9 +250,7 @@ export function Header() {
                 </Button>
               </Link>
               <Link href="/cadastro" prefetch={false}>
-                <Button className="px-5 font-semibold">
-                  {t("register")}
-                </Button>
+                <Button className="px-5 font-semibold">{t("register")}</Button>
               </Link>
             </div>
           )}
@@ -250,7 +276,10 @@ export function Header() {
         )}
       >
         <nav className="container mx-auto flex max-w-screen-2xl flex-col gap-4 px-4 py-4">
-          <NavLinks onNavigate={() => setMenuOpen(false)} />
+          <HeaderNavLinks
+            {...navProps}
+            onNavigate={() => setMenuOpen(false)}
+          />
 
           <div className="h-px w-full bg-white/10" />
 

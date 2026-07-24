@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { SearchX, Sparkles } from "lucide-react";
@@ -69,16 +69,23 @@ export function HomeTenantSearch() {
   const [coords, setCoords] = useState<Coords | null>(applied.coords);
   const [geoLoading, setGeoLoading] = useState(false);
 
-  useEffect(() => {
+  // Sync draft fields when URL (applied) changes — adjust state during render (React docs).
+  const [prevAppliedKey, setPrevAppliedKey] = useState(
+    () =>
+      `${applied.q}|${applied.city ?? ""}|${applied.state ?? ""}|${appliedLat}|${appliedLng}`,
+  );
+  const appliedKey = `${applied.q}|${applied.city ?? ""}|${applied.state ?? ""}|${appliedLat}|${appliedLng}`;
+  if (appliedKey !== prevAppliedKey) {
+    setPrevAppliedKey(appliedKey);
     setQ(applied.q);
-    if (applied.city && applied.state) {
-      setLocation(`${applied.city}, ${applied.state}`);
-    } else {
-      setLocation(applied.city ?? "");
-    }
+    setLocation(
+      applied.city && applied.state
+        ? `${applied.city}, ${applied.state}`
+        : (applied.city ?? ""),
+    );
     setUseGeo(!!applied.coords);
     setCoords(applied.coords);
-  }, [applied.q, applied.city, applied.state, appliedLat, appliedLng]);
+  }
 
   const hasFilter =
     !!applied.q || !!applied.city || !!applied.state || !!applied.coords;

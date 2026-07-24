@@ -53,9 +53,8 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   const isAuthenticated = status === "authenticated";
   const userId = session?.user?.id;
 
-  const [currentTenantId, setCurrentTenantIdState] = useState<string | null>(
-    null,
-  );
+  /** Escolha manual do switcher; se inválida, cai no storage/primeiro. */
+  const [manualTenantId, setManualTenantId] = useState<string | null>(null);
 
   const {
     data,
@@ -77,30 +76,26 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
   const memberships = useMemo(() => data ?? [], [data]);
   const hasResolved = data !== undefined;
 
-  useEffect(() => {
-    if (!userId) {
-      setCurrentTenantIdState(null);
+  const currentTenantId = useMemo(() => {
+    if (!userId || memberships.length === 0) return null;
+    if (
+      manualTenantId &&
+      memberships.some((m) => m.tenant.id === manualTenantId)
+    ) {
+      return manualTenantId;
     }
-  }, [userId]);
-
-  useEffect(() => {
-    if (memberships.length === 0) {
-      setCurrentTenantIdState(null);
-      return;
-    }
-
     const stored = readStoredTenantKey();
     const matched = resolveStoredMembership(memberships, stored);
-    const nextId = matched?.tenant.id ?? memberships[0].tenant.id;
-    setCurrentTenantIdState(nextId);
+    return matched?.tenant.id ?? memberships[0].tenant.id;
+  }, [userId, memberships, manualTenantId]);
 
-    if (typeof window !== "undefined" && stored !== nextId) {
-      window.localStorage.setItem(TENANT_STORAGE_KEY, nextId);
-    }
-  }, [memberships, userId]);
+  useEffect(() => {
+    if (!currentTenantId || typeof window === "undefined") return;
+    window.localStorage.setItem(TENANT_STORAGE_KEY, currentTenantId);
+  }, [currentTenantId]);
 
   const setCurrentTenantId = useCallback((tenantId: string) => {
-    setCurrentTenantIdState(tenantId);
+    setManualTenantId(tenantId);
     if (typeof window !== "undefined") {
       window.localStorage.setItem(TENANT_STORAGE_KEY, tenantId);
     }
@@ -116,7 +111,7 @@ export function TenantProvider({ children }: { children: React.ReactNode }) {
    */
   const waitingForMemberships =
     isAuthenticated &&
-    (!!userId) &&
+    !!userId &&
     (!hasResolved || (isFetching && memberships.length === 0));
 
   const value: TenantContextValue = {

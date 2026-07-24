@@ -5,6 +5,7 @@ export function HeroSection({ children }: { children?: React.ReactNode }) {
   const t = useTranslations("Hero");
   return (
     <section className="relative flex w-full flex-col items-center justify-center overflow-hidden py-12 sm:py-20 md:py-28">
+      {/* eslint-disable-next-line @next/next/no-img-element -- hero remoto Unsplash (decorative) */}
       <img
         src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=2074&auto=format&fit=crop"
         alt=""

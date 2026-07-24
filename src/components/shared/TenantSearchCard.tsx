@@ -16,6 +16,7 @@ export function TenantSearchCard({ tenant }: { tenant: TenantSearchResult }) {
       <Card className="group flex h-full cursor-pointer flex-col gap-0 overflow-hidden rounded-xl border-border bg-card p-0 transition-all duration-300 hover:border-primary/60 hover:shadow-[0_0_30px_rgba(212,175,55,0.15)]">
         <div className="relative h-40 w-full transform-gpu overflow-hidden bg-muted">
           {tenant.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- URL dinâmica do tenant (CDN/API)
             <img
               src={tenant.avatarUrl}
               alt={tenant.name}

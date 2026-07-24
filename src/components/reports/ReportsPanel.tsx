@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -252,17 +252,12 @@ export function ReportsPanel({ tenantId }: { tenantId: string }) {
   const monthChoices = reportMonthOptions(tier);
 
   // Ao mudar de plano (ex.: Pro → Elite), ajusta default/limites do seletor.
-  useEffect(() => {
-    if (!canPickMonths) return;
-    const fallback = defaultReportMonths(tier);
-    const max =
-      tier === "ADVANCED"
-        ? 6
-        : tier === "INTERMEDIATE"
-          ? 3
-          : fallback;
-    setMonths((prev) => (prev >= 1 && prev <= max ? prev : fallback));
-  }, [tier, canPickMonths]);
+  const monthsMax =
+    tier === "ADVANCED" ? 6 : tier === "INTERMEDIATE" ? 3 : defaultReportMonths(tier);
+  const monthsFallback = defaultReportMonths(tier);
+  if (canPickMonths && (months < 1 || months > monthsMax)) {
+    setMonths(monthsFallback);
+  }
 
   const reportQuery = useQuery({
     queryKey: ["tenant-report", tenantId, tier, canPickMonths ? months : null],

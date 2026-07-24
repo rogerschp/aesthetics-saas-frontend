@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Script one-off (não faz parte do app):
+    "update_dicts.js",
   ]),
 ]);
 

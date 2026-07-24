@@ -33,7 +33,7 @@ export function maskPhoneBR(value: string): string {
  * Já com DDI → mantém até 13 dígitos.
  */
 export function phoneToApiDigits(value: string, country = "55"): string {
-  let d = digitsOnly(value);
+  const d = digitsOnly(value);
   if (d.startsWith(country) && d.length >= 12) return d.slice(0, 13);
   if (d.length >= 10 && d.length <= 11) return `${country}${d}`;
   return d.slice(0, 15);

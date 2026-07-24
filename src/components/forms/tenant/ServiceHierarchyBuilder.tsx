@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function ServiceHierarchyBuilder() {
-  const { control, register, formState: { errors } } = useFormContext();
+  const { control, register } = useFormContext();
   
   const { fields: topics, append: appendTopic, remove: removeTopic } = useFieldArray({
     control,

@@ -303,10 +303,13 @@ export default function TenantEditPage() {
     if (realData) methods.reset(realData);
   }, [realData, methods]);
 
-  useEffect(() => {
-    const apiTheme = themeQuery.data?.theme;
-    if (apiTheme) setTema(apiTheme as unknown as TenantTema);
-  }, [themeQuery.data]);
+  const [prevThemeKey, setPrevThemeKey] = useState<string | null>(null);
+  const apiTheme = themeQuery.data?.theme;
+  const themeKey = apiTheme ? JSON.stringify(apiTheme) : null;
+  if (themeKey && themeKey !== prevThemeKey) {
+    setPrevThemeKey(themeKey);
+    setTema(apiTheme as unknown as TenantTema);
+  }
 
   const loading =
     tenantLoading ||

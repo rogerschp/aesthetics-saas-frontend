@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { Check, Loader2, Pencil } from "lucide-react";
@@ -46,7 +46,7 @@ export function ProfileEditForm() {
     enabled: !!userId,
   });
 
-  useEffect(() => {
+  function hydrateFromMe() {
     if (!me) return;
     setName(me.name ?? "");
     setTelephone(maskPhoneBR(me.telephone ?? ""));
@@ -57,7 +57,10 @@ export function ProfileEditForm() {
       country: me.address?.country || "Brazil",
       zipCode: me.address?.zipCode ? maskCep(me.address.zipCode) : "",
     });
-  }, [me]);
+    setPassword("");
+    setError(null);
+    setSaved(false);
+  }
 
   function patchAddress<K extends keyof Address>(key: K, value: Address[K]) {
     setAddress((prev) => ({ ...prev, [key]: value }));
@@ -113,7 +116,14 @@ export function ProfileEditForm() {
 
   if (!open) {
     return (
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          hydrateFromMe();
+          setOpen(true);
+        }}
+      >
         <Pencil className="mr-2 h-4 w-4" />
         {t("editBtn")}
       </Button>

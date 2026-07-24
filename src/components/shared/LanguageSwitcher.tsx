@@ -26,7 +26,8 @@ export function LanguageSwitcher() {
     router.replace(pathname, { locale: newLocale });
   };
 
-  const currentLang = languages.find(l => l.code === locale) || languages[0];
+  const currentLang =
+    languages.find((l) => l.code === locale)?.label ?? languages[0].label;
 
   return (
     <DropdownMenu>
@@ -34,7 +35,7 @@ export function LanguageSwitcher() {
         render={
           <Button variant="ghost" size="icon" className="h-9 w-9">
             <Globe className="h-4 w-4" />
-            <span className="sr-only">Toggle language</span>
+            <span className="sr-only">Language: {currentLang}</span>
           </Button>
         }
       />

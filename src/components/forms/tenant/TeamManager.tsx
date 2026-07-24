@@ -128,11 +128,12 @@ export function TeamManager({ tenantId, canManage }: TeamManagerProps) {
     onSettled: () => setRemovingUserId(null),
   });
 
-  const members = membersQuery.data ?? [];
+  const members = membersQuery.data;
   const invitations = invitationsQuery.data ?? [];
 
   const ownerCount = useMemo(
-    () => members.filter((m) => m.role === TenantUserRole.OWNER).length,
+    () =>
+      (members ?? []).filter((m) => m.role === TenantUserRole.OWNER).length,
     [members],
   );
 
@@ -278,7 +279,7 @@ export function TeamManager({ tenantId, canManage }: TeamManagerProps) {
           <p className="text-sm text-destructive">
             {formatApiError(membersQuery.error)}
           </p>
-        ) : members.length === 0 ? (
+        ) : !members || members.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-border/60 p-6 text-center text-sm text-muted-foreground">
             {t("membersEmpty")}
           </p>

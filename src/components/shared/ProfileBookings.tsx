@@ -105,19 +105,20 @@ export function ProfileBookings() {
     });
   }, [data, from, to]);
 
+  const [nowMs] = useState(() => Date.now());
+
   const { upcoming, history } = useMemo(() => {
-    const now = Date.now();
     const up: MyBooking[] = [];
     const hist: MyBooking[] = [];
     for (const b of filtered) {
-      const isFuture = new Date(b.startsAt).getTime() >= now;
+      const isFuture = new Date(b.startsAt).getTime() >= nowMs;
       if (b.status !== BookingStatus.CANCELLED && isFuture) up.push(b);
       else hist.push(b);
     }
     up.sort((a, b) => a.startsAt.localeCompare(b.startsAt));
     hist.sort((a, b) => b.startsAt.localeCompare(a.startsAt));
     return { upcoming: up, history: hist };
-  }, [filtered]);
+  }, [filtered, nowMs]);
 
   if (isLoading) {
     return (

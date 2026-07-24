@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn, formatPriceBRL } from "@/lib/utils";
+import { Link } from "@/i18n/routing";
 import {
   BookingMode,
   Booking,
@@ -474,9 +475,9 @@ export function BookingWizard({
                   {!isLogged && (
                     <p className="text-center text-xs text-muted-foreground">
                       {t("haveAccount")}{" "}
-                      <a href="/login" className="text-primary underline">
+                      <Link href="/login" className="text-primary underline">
                         {t("signIn")}
-                      </a>{" "}
+                      </Link>{" "}
                       {t("toConfirmNow")}
                     </p>
                   )}
@@ -497,12 +498,12 @@ export function BookingWizard({
                       <p className="text-sm text-muted-foreground">
                         {t("confirmedDesc")}
                       </p>
-                      <a
+                      <Link
                         href="/perfil/me"
                         className={cn(buttonVariants({ size: "lg" }), "mt-2 w-full")}
                       >
                         {t("viewMyBookings")}
-                      </a>
+                      </Link>
                     </>
                   ) : (
                     <>

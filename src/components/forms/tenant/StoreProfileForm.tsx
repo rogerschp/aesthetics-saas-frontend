@@ -46,11 +46,45 @@ export function StoreProfileForm({
     formState: { errors },
   } = useFormContext();
 
-  const telefoneReg = register("telefone");
-  const cepReg = register("endereco.zipCode");
-  const cnpjReg = register("cnpj");
-  const nomeReg = register("nome");
-  const slugReg = register("slug");
+  const telefoneReg = register("telefone", {
+    onChange: (e) => {
+      const masked = maskPhoneBR(e.target.value);
+      e.target.value = masked;
+      setValue("telefone", masked, { shouldValidate: true });
+    },
+  });
+  const cepReg = register("endereco.zipCode", {
+    onChange: (e) => {
+      const masked = maskCep(e.target.value);
+      e.target.value = masked;
+      setValue("endereco.zipCode", masked, { shouldValidate: true });
+    },
+  });
+  const cnpjReg = register("cnpj", {
+    onChange: (e) => {
+      const masked = maskCnpj(e.target.value);
+      e.target.value = masked;
+      setValue("cnpj", masked, { shouldValidate: true });
+    },
+  });
+  const nomeReg = register("nome", {
+    onChange: (e) => {
+      if (!slugLocked) {
+        const previousSuggestion = slugify(String(getValues("nome") ?? ""));
+        const currentSlug = String(getValues("slug") ?? "");
+        if (!currentSlug || currentSlug === previousSuggestion) {
+          setValue("slug", slugify(e.target.value), { shouldValidate: true });
+        }
+      }
+    },
+  });
+  const slugReg = register("slug", {
+    onChange: (e) => {
+      const next = slugify(e.target.value);
+      e.target.value = next;
+      setValue("slug", next, { shouldValidate: true });
+    },
+  });
   const segmentReg = register("segment");
 
   const logoUrl = watch("banner") as string | undefined;
@@ -101,25 +135,7 @@ export function StoreProfileForm({
           <Input
             id="nome"
             placeholder="Ex: Classic Barber"
-            name={nomeReg.name}
-            ref={nomeReg.ref}
-            onBlur={nomeReg.onBlur}
-            onChange={(e) => {
-              if (!slugLocked) {
-                const previousSuggestion = slugify(
-                  String(getValues("nome") ?? ""),
-                );
-                const currentSlug = String(getValues("slug") ?? "");
-                void nomeReg.onChange(e);
-                if (!currentSlug || currentSlug === previousSuggestion) {
-                  setValue("slug", slugify(e.target.value), {
-                    shouldValidate: true,
-                  });
-                }
-              } else {
-                void nomeReg.onChange(e);
-              }
-            }}
+            {...nomeReg}
             className="border-zinc-800 focus-visible:ring-yellow-500/50"
           />
           {errors.nome && (
@@ -138,15 +154,7 @@ export function StoreProfileForm({
             <Input
               id="slug"
               disabled={slugLocked}
-              name={slugReg.name}
-              ref={slugReg.ref}
-              onBlur={slugReg.onBlur}
-              onChange={(e) => {
-                const next = slugify(e.target.value);
-                e.target.value = next;
-                void slugReg.onChange(e);
-                setValue("slug", next, { shouldValidate: true });
-              }}
+              {...slugReg}
               className={`rounded-l-none border-zinc-800 ${slugLocked ? "opacity-70" : "focus-visible:ring-yellow-500/50"}`}
             />
           </div>
@@ -198,15 +206,7 @@ export function StoreProfileForm({
           <Input
             id="telefone"
             placeholder="(11) 99999-9999"
-            name={telefoneReg.name}
-            ref={telefoneReg.ref}
-            onBlur={telefoneReg.onBlur}
-            onChange={(e) => {
-              const masked = maskPhoneBR(e.target.value);
-              e.target.value = masked;
-              void telefoneReg.onChange(e);
-              setValue("telefone", masked, { shouldValidate: true });
-            }}
+            {...telefoneReg}
             inputMode="tel"
             className="border-zinc-800 focus-visible:ring-yellow-500/50"
           />
@@ -222,15 +222,7 @@ export function StoreProfileForm({
           <Input
             id="cnpj"
             placeholder="00.000.000/0000-00"
-            name={cnpjReg.name}
-            ref={cnpjReg.ref}
-            onBlur={cnpjReg.onBlur}
-            onChange={(e) => {
-              const masked = maskCnpj(e.target.value);
-              e.target.value = masked;
-              void cnpjReg.onChange(e);
-              setValue("cnpj", masked, { shouldValidate: true });
-            }}
+            {...cnpjReg}
             inputMode="numeric"
             className="border-zinc-800 focus-visible:ring-yellow-500/50"
           />
@@ -351,15 +343,7 @@ export function StoreProfileForm({
               <Label htmlFor="zip">CEP *</Label>
               <Input
                 id="zip"
-                name={cepReg.name}
-                ref={cepReg.ref}
-                onBlur={cepReg.onBlur}
-                onChange={(e) => {
-                  const masked = maskCep(e.target.value);
-                  e.target.value = masked;
-                  void cepReg.onChange(e);
-                  setValue("endereco.zipCode", masked, { shouldValidate: true });
-                }}
+                {...cepReg}
                 placeholder="00000-000"
                 inputMode="numeric"
                 className="border-zinc-800"
