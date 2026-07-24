@@ -53,8 +53,7 @@ export const bookingService = {
     tpId: string,
     payload: GuestBookingDraftDto,
   ): Promise<Booking> => {
-    const response = await api.post(`${base(tenantId, tpId)}/guest/draft`, payload);
-    return response as any;
+    return api.post(`${base(tenantId, tpId)}/guest/draft`, payload);
   },
 
   // ---------- Cliente logado (sem membership) ----------
@@ -64,8 +63,7 @@ export const bookingService = {
     tpId: string,
     payload: BookingSlotDraftDto,
   ): Promise<Booking> => {
-    const response = await api.post(`${base(tenantId, tpId)}/public/draft`, payload);
-    return response as any;
+    return api.post(`${base(tenantId, tpId)}/public/draft`, payload);
   },
 
   /** PATCH .../bookings/public/:id/confirm — Bearer + dono. */
@@ -74,10 +72,9 @@ export const bookingService = {
     tpId: string,
     bookingId: string,
   ): Promise<Booking> => {
-    const response = await api.patch(
+    return api.patch(
       `${base(tenantId, tpId)}/public/${bookingId}/confirm`,
     );
-    return response as any;
   },
 
   /** PATCH .../bookings/public/:id/cancel — Bearer + dono (política p/ CONFIRMED). */
@@ -86,10 +83,9 @@ export const bookingService = {
     tpId: string,
     bookingId: string,
   ): Promise<Booking> => {
-    const response = await api.patch(
+    return api.patch(
       `${base(tenantId, tpId)}/public/${bookingId}/cancel`,
     );
-    return response as any;
   },
 
   // ---------- Ops (equipe / membership) ----------
@@ -98,10 +94,9 @@ export const bookingService = {
     tenantId: string,
     params: ListOpsBookingsParams = {},
   ): Promise<OpsBooking[]> => {
-    const response = await api.get(`/tenants/${tenantId}/bookings`, {
+    return api.get(`/tenants/${tenantId}/bookings`, {
       params: opsListParams(params),
     });
-    return response as any;
   },
 
   /** GET .../tenant-professionals/:tpId/bookings?date=|from=&to=&status=. */
@@ -110,10 +105,9 @@ export const bookingService = {
     tpId: string,
     params: ListOpsBookingsParams = {},
   ): Promise<OpsBooking[]> => {
-    const response = await api.get(base(tenantId, tpId), {
+    return api.get(base(tenantId, tpId), {
       params: opsListParams(params),
     });
-    return response as any;
   },
 
   createOpsDraft: async (
@@ -121,8 +115,7 @@ export const bookingService = {
     tpId: string,
     payload: OpsBookingDraftDto,
   ): Promise<Booking> => {
-    const response = await api.post(`${base(tenantId, tpId)}/draft`, payload);
-    return response as any;
+    return api.post(`${base(tenantId, tpId)}/draft`, payload);
   },
 
   confirmOps: async (
@@ -130,8 +123,7 @@ export const bookingService = {
     tpId: string,
     bookingId: string,
   ): Promise<Booking> => {
-    const response = await api.patch(`${base(tenantId, tpId)}/${bookingId}/confirm`);
-    return response as any;
+    return api.patch(`${base(tenantId, tpId)}/${bookingId}/confirm`);
   },
 
   cancelOps: async (
@@ -139,8 +131,7 @@ export const bookingService = {
     tpId: string,
     bookingId: string,
   ): Promise<Booking> => {
-    const response = await api.patch(`${base(tenantId, tpId)}/${bookingId}/cancel`);
-    return response as any;
+    return api.patch(`${base(tenantId, tpId)}/${bookingId}/cancel`);
   },
 
   /** PATCH .../bookings/:id/complete — CONFIRMED → COMPLETED. */
@@ -149,9 +140,8 @@ export const bookingService = {
     tpId: string,
     bookingId: string,
   ): Promise<Booking> => {
-    const response = await api.patch(
+    return api.patch(
       `${base(tenantId, tpId)}/${bookingId}/complete`,
     );
-    return response as any;
   },
 };

@@ -9,28 +9,24 @@ export interface CreateServiceDto {
   isActive?: boolean;
 }
 
-export interface UpdateServiceDto extends Partial<CreateServiceDto> {}
+export type UpdateServiceDto = Partial<CreateServiceDto>;
 
 export const catalogService = {
   /** GET /tenants/:tenantId/public/services — público (vitrine). */
   listPublic: async (tenantId: string): Promise<Service[]> => {
-    const response = await api.get(`/tenants/${tenantId}/public/services`);
-    return response as any;
+    return api.get(`/tenants/${tenantId}/public/services`);
   },
 
   list: async (tenantId: string): Promise<Service[]> => {
-    const response = await api.get(`/tenants/${tenantId}/services`);
-    return response as any;
+    return api.get(`/tenants/${tenantId}/services`);
   },
 
   create: async (tenantId: string, payload: CreateServiceDto): Promise<Service> => {
-    const response = await api.post(`/tenants/${tenantId}/services`, payload);
-    return response as any;
+    return api.post(`/tenants/${tenantId}/services`, payload);
   },
 
   update: async (tenantId: string, serviceId: string, payload: UpdateServiceDto): Promise<Service> => {
-    const response = await api.patch(`/tenants/${tenantId}/services/${serviceId}`, payload);
-    return response as any;
+    return api.patch(`/tenants/${tenantId}/services/${serviceId}`, payload);
   },
 
   delete: async (tenantId: string, serviceId: string): Promise<void> => {

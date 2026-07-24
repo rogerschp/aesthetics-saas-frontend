@@ -69,11 +69,10 @@ export const availabilityService = {
     serviceId: string,
     date: string,
   ): Promise<AvailableSlotsResponse> => {
-    const response = await api.get(
+    return api.get(
       `/tenants/${tenantId}/tenant-professionals/${tpId}/available-slots`,
       { params: { serviceId, date } },
     );
-    return response as any;
   },
 
   /** GET .../available-slots/public — SEM Bearer (vitrine/guest/cliente). */
@@ -83,21 +82,19 @@ export const availabilityService = {
     serviceId: string,
     date: string,
   ): Promise<AvailableSlotsResponse> => {
-    const response = await api.get(
+    return api.get(
       `/tenants/${tenantId}/tenant-professionals/${tpId}/available-slots/public`,
       { params: { serviceId, date } },
     );
-    return response as any;
   },
 
   listWorkingHours: async (
     tenantId: string,
     tpId: string,
   ): Promise<WorkingHours[]> => {
-    const response = await api.get(
+    return api.get(
       `/tenants/${tenantId}/tenant-professionals/${tpId}/working-hours`,
     );
-    return response as any;
   },
 
   bootstrapWeek: async (
@@ -105,11 +102,10 @@ export const availabilityService = {
     tpId: string,
     payload: BootstrapWorkingWeekDto,
   ): Promise<unknown> => {
-    const response = await api.post(
+    return api.post(
       `/tenants/${tenantId}/tenant-professionals/${tpId}/working-hours/bootstrap-week`,
       payload,
     );
-    return response as any;
   },
 
   createWorkingHours: async (
@@ -121,11 +117,10 @@ export const availabilityService = {
       periods?: Array<{ startTime: string; endTime: string }>;
     },
   ): Promise<WorkingHours> => {
-    const response = await api.post(
+    return api.post(
       `/tenants/${tenantId}/tenant-professionals/${tpId}/working-hours`,
       payload,
     );
-    return response as any;
   },
 
   updateWorkingHours: async (
@@ -134,11 +129,10 @@ export const availabilityService = {
     workingHoursId: string,
     payload: { isActive?: boolean; dayOfWeek?: DayOfWeek },
   ): Promise<WorkingHours> => {
-    const response = await api.patch(
+    return api.patch(
       `/tenants/${tenantId}/tenant-professionals/${tpId}/working-hours/${workingHoursId}`,
       payload,
     );
-    return response as any;
   },
 
   createPeriod: async (
@@ -147,11 +141,10 @@ export const availabilityService = {
     workingHoursId: string,
     payload: { startTime: string; endTime: string },
   ): Promise<unknown> => {
-    const response = await api.post(
+    return api.post(
       `/tenants/${tenantId}/tenant-professionals/${tpId}/working-hours/${workingHoursId}/periods`,
       payload,
     );
-    return response as any;
   },
 
   updatePeriod: async (
@@ -161,11 +154,10 @@ export const availabilityService = {
     periodId: string,
     payload: { startTime?: string; endTime?: string },
   ): Promise<unknown> => {
-    const response = await api.patch(
+    return api.patch(
       `/tenants/${tenantId}/tenant-professionals/${tpId}/working-hours/${workingHoursId}/periods/${periodId}`,
       payload,
     );
-    return response as any;
   },
 
   /**

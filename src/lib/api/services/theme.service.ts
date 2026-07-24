@@ -4,8 +4,7 @@ import { TenantThemeData, TenantThemeResponse } from "../types";
 export const themeService = {
   /** GET /tenants/:tenantId/theme — público. theme null → usar defaults do front. */
   get: async (tenantId: string): Promise<TenantThemeResponse> => {
-    const response = await api.get(`/tenants/${tenantId}/theme`);
-    return response as any;
+    return api.get(`/tenants/${tenantId}/theme`);
   },
 
   /** PUT /tenants/:tenantId/theme — OWNER/ADMIN; limites por plano. */
@@ -13,13 +12,11 @@ export const themeService = {
     tenantId: string,
     payload: TenantThemeData,
   ): Promise<TenantThemeResponse> => {
-    const response = await api.put(`/tenants/${tenantId}/theme`, payload);
-    return response as any;
+    return api.put(`/tenants/${tenantId}/theme`, payload);
   },
 
   /** DELETE /tenants/:tenantId/theme — restaura defaults. */
   delete: async (tenantId: string): Promise<{ message: string }> => {
-    const response = await api.delete(`/tenants/${tenantId}/theme`);
-    return response as any;
+    return api.delete(`/tenants/${tenantId}/theme`);
   },
 };

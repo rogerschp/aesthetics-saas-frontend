@@ -61,8 +61,7 @@ function downloadBlob(blob: Blob, filename: string) {
 export const reportsService = {
   /** GET /tenants/:tenantId/reports/standard — STANDARD+ */
   getStandard: async (tenantId: string): Promise<StandardReport> => {
-    const response = await api.get(`/tenants/${tenantId}/reports/standard`);
-    return response as any;
+    return api.get(`/tenants/${tenantId}/reports/standard`);
   },
 
   /** GET /tenants/:tenantId/reports/pro?months= — PRO+ (1–3, default 3) */
@@ -70,10 +69,9 @@ export const reportsService = {
     tenantId: string,
     months: number = PRO_REPORT_DEFAULT_MONTHS,
   ): Promise<ProReport> => {
-    const response = await api.get(`/tenants/${tenantId}/reports/pro`, {
+    return api.get(`/tenants/${tenantId}/reports/pro`, {
       params: { months },
     });
-    return response as any;
   },
 
   /** GET /tenants/:tenantId/reports/elite?months= — ELITE (1–6, default 6) */
@@ -81,10 +79,9 @@ export const reportsService = {
     tenantId: string,
     months: number = ELITE_REPORT_DEFAULT_MONTHS,
   ): Promise<EliteReport> => {
-    const response = await api.get(`/tenants/${tenantId}/reports/elite`, {
+    return api.get(`/tenants/${tenantId}/reports/elite`, {
       params: { months },
     });
-    return response as any;
   },
 
   /**

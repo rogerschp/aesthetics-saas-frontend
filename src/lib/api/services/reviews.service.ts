@@ -17,8 +17,7 @@ export interface CreateReviewCommentDto {
 export const reviewsService = {
   /** GET /tenants/:tenantId/reviews — público. */
   listTenant: async (tenantId: string): Promise<ReviewList> => {
-    const response = await api.get(`/tenants/${tenantId}/reviews`);
-    return response as any;
+    return api.get(`/tenants/${tenantId}/reviews`);
   },
 
   /** POST /tenants/:tenantId/reviews — Bearer; UPSERT (201 create / 200 update). */
@@ -26,8 +25,7 @@ export const reviewsService = {
     tenantId: string,
     payload: CreateReviewDto,
   ): Promise<Review> => {
-    const response = await api.post(`/tenants/${tenantId}/reviews`, payload);
-    return response as any;
+    return api.post(`/tenants/${tenantId}/reviews`, payload);
   },
 
   /** @deprecated use upsertTenant */
@@ -42,11 +40,10 @@ export const reviewsService = {
     reviewId: string,
     payload: ReplyReviewDto,
   ): Promise<Review> => {
-    const response = await api.patch(
+    return api.patch(
       `/tenants/${tenantId}/reviews/${reviewId}/reply`,
       payload,
     );
-    return response as any;
   },
 
   /** POST /tenants/:tenantId/reviews/:id/comments — autor da review. */
@@ -55,11 +52,10 @@ export const reviewsService = {
     reviewId: string,
     payload: CreateReviewCommentDto,
   ): Promise<ReviewComment> => {
-    const response = await api.post(
+    return api.post(
       `/tenants/${tenantId}/reviews/${reviewId}/comments`,
       payload,
     );
-    return response as any;
   },
 
   /** DELETE /tenants/:tenantId/reviews/:id/comments/:commentId — autor. */
@@ -75,10 +71,9 @@ export const reviewsService = {
 
   /** GET /users/:userId/professional-profile/reviews — público. */
   listProfessional: async (userId: string): Promise<ReviewList> => {
-    const response = await api.get(
+    return api.get(
       `/users/${userId}/professional-profile/reviews`,
     );
-    return response as any;
   },
 
   /** POST /users/:userId/professional-profile/reviews — Bearer; UPSERT. */
@@ -86,11 +81,10 @@ export const reviewsService = {
     userId: string,
     payload: CreateReviewDto,
   ): Promise<Review> => {
-    const response = await api.post(
+    return api.post(
       `/users/${userId}/professional-profile/reviews`,
       payload,
     );
-    return response as any;
   },
 
   /** @deprecated use upsertProfessional */
@@ -104,11 +98,10 @@ export const reviewsService = {
     reviewId: string,
     payload: ReplyReviewDto,
   ): Promise<Review> => {
-    const response = await api.patch(
+    return api.patch(
       `/users/me/professional-profile/reviews/${reviewId}/reply`,
       payload,
     );
-    return response as any;
   },
 
   /** PATCH /users/me/professional-profile/reviews/:id — autor. */
@@ -116,11 +109,10 @@ export const reviewsService = {
     reviewId: string,
     payload: CreateReviewDto,
   ): Promise<Review> => {
-    const response = await api.patch(
+    return api.patch(
       `/users/me/professional-profile/reviews/${reviewId}`,
       payload,
     );
-    return response as any;
   },
 
   /** POST /users/:userId/professional-profile/reviews/:id/comments — autor. */
@@ -129,11 +121,10 @@ export const reviewsService = {
     reviewId: string,
     payload: CreateReviewCommentDto,
   ): Promise<ReviewComment> => {
-    const response = await api.post(
+    return api.post(
       `/users/${userId}/professional-profile/reviews/${reviewId}/comments`,
       payload,
     );
-    return response as any;
   },
 
   /** DELETE /users/:userId/professional-profile/reviews/:id/comments/:commentId. */

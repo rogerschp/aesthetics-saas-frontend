@@ -17,17 +17,15 @@ export const teamService = {
     tenantId: string,
     payload: OnboardTeamMemberDto,
   ): Promise<OnboardTeamMemberResponse> => {
-    const response = await api.post(`${base(tenantId)}/onboard`, {
+    return api.post(`${base(tenantId)}/onboard`, {
       email: payload.email.trim().toLowerCase(),
       role: payload.role,
     });
-    return response as any;
   },
 
   /** GET /tenants/:tenantId/team */
   listMembers: async (tenantId: string): Promise<TeamMember[]> => {
-    const response = await api.get(base(tenantId));
-    return response as any;
+    return api.get(base(tenantId));
   },
 
   /** GET /tenants/:tenantId/team/invitations?status= */
@@ -35,10 +33,9 @@ export const teamService = {
     tenantId: string,
     status?: TenantInvitationStatus,
   ): Promise<TeamInvitation[]> => {
-    const response = await api.get(`${base(tenantId)}/invitations`, {
+    return api.get(`${base(tenantId)}/invitations`, {
       params: status ? { status } : undefined,
     });
-    return response as any;
   },
 
   /** DELETE /tenants/:tenantId/team/invitations/:id — cancela PENDING. */
@@ -46,10 +43,9 @@ export const teamService = {
     tenantId: string,
     invitationId: string,
   ): Promise<TeamInvitation> => {
-    const response = await api.delete(
+    return api.delete(
       `${base(tenantId)}/invitations/${invitationId}`,
     );
-    return response as any;
   },
 
   /** DELETE /tenants/:tenantId/members/:userId — remove vínculo (não apaga o User). */

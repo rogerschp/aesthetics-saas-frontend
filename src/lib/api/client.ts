@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import { getSession } from "next-auth/react";
 
 /**
@@ -59,14 +59,14 @@ async function resolveIdToken(): Promise<string | undefined> {
   return inflightSession;
 }
 
-export const api = axios.create({
+const axiosInstance = axios.create({
   baseURL: resolveApiBaseURL(),
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-api.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   async (config) => {
     if (typeof window === "undefined") {
       return config;
@@ -101,7 +101,7 @@ api.interceptors.request.use(
   },
 );
 
-api.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   (response) => {
     return response.data;
   },
@@ -114,3 +114,29 @@ api.interceptors.response.use(
     return Promise.reject(error.response?.data || error);
   },
 );
+
+/**
+ * Cliente tipado: o interceptor devolve `response.data`, não `AxiosResponse`.
+ * Assim `api.get<T>()` vira `Promise<T>` sem `as any` nos services.
+ */
+export type ApiClient = {
+  get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T>;
+  delete<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T>;
+  post<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<T>;
+  put<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<T>;
+  patch<T = unknown>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<T>;
+};
+
+export const api = axiosInstance as unknown as ApiClient;

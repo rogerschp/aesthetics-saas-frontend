@@ -40,7 +40,6 @@ export const searchService = {
     if (params.page) query.page = params.page;
     if (params.limit) query.limit = params.limit;
 
-    const response = await api.get(`/search/tenants`, { params: query });
-    return response as any;
+    return api.get(`/search/tenants`, { params: query });
   },
 };
