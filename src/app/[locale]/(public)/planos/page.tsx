@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { PlansCatalog } from "@/components/shared/PlansCatalog";
+import { PlansCatalog } from "@/features/plans/components/PlansCatalog";
 
 export default async function PlanosPage() {
   const t = await getTranslations("Planos");

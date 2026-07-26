@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { authService } from "@/lib/api/services/auth.service";
+import { authService } from "@/features/auth/api/auth.service";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3000";
 

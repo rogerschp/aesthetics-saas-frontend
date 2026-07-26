@@ -4,9 +4,9 @@ import "../globals.css";
 import {getMessages} from 'next-intl/server';
 import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
-import { IntlProvider } from "@/components/providers/IntlProvider";
-import { Header } from "@/components/shared/Header";
-import { Providers } from "@/components/providers";
+import { IntlProvider } from "@/shared/providers/IntlProvider";
+import { Header } from "@/shared/components/Header";
+import { Providers } from "@/shared/providers/Providers";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -16,6 +16,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "BarberShop SaaS",
   description: "A plataforma premium de agendamento para barbearias, salões de beleza e estúdios de tatuagem.",
+  // Site already uses a dark theme; stop Dark Reader from rewriting SVGs
+  // (injects data-darkreader-* / inline styles → React hydration mismatch overlay).
+  other: {
+    "darkreader-lock": "darkreader-lock",
+  },
 };
 
 export default async function RootLayout({
@@ -39,7 +44,7 @@ export default async function RootLayout({
       className={`dark ${inter.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <IntlProvider locale={locale} messages={messages}>
           <Providers>
             <Header />

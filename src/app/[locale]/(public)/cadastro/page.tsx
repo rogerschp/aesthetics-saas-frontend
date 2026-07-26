@@ -1,4 +1,4 @@
-import { RegistrationForm } from "@/components/forms/RegistrationForm";
+import { RegistrationForm } from "@/features/auth/components/RegistrationForm";
 import Link from "next/link";
 import { Scissors } from "lucide-react";
 import { getTranslations } from "next-intl/server";
