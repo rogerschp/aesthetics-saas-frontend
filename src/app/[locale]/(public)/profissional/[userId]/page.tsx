@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { ProfessionalPublicProfile } from "@/components/shared/ProfessionalPublicProfile";
+import { ProfessionalPublicProfileShell } from "./ProfessionalPublicProfileShell";
 
 export const metadata = {
   title: "Profissional | Cyacsys",
@@ -22,7 +22,7 @@ export default async function ProfissionalPublicPage({
           {t("pageTitle")}
         </h1>
         <p className="mb-8 text-sm text-muted-foreground">{t("pageSubtitle")}</p>
-        <ProfessionalPublicProfile userId={userId} />
+        <ProfessionalPublicProfileShell userId={userId} />
       </div>
     </div>
   );

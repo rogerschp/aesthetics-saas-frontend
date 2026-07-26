@@ -1,13 +1,13 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useTenantContext } from "@/components/providers/TenantProvider";
-import { ReportsPanel } from "@/components/reports/ReportsPanel";
-import { TenantUserRole } from "@/lib/api/types";
+import { useTenantContext } from "@/shared/providers/TenantProvider";
+import { ReportsPanel } from "@/features/reports/components/ReportsPanel";
+import { TenantUserRole } from "@/shared/lib/api/types";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/shared/ui/button";
+import { cn } from "@/shared/lib/utils";
 
 const ALLOWED: TenantUserRole[] = [
   TenantUserRole.OWNER,

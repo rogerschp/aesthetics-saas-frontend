@@ -1,4 +1,4 @@
-import { PanelPageSkeleton } from "@/components/shared/PanelPageSkeleton";
+import { PanelPageSkeleton } from "@/shared/components/PanelPageSkeleton";
 
 export default function Loading() {
   return <PanelPageSkeleton />;

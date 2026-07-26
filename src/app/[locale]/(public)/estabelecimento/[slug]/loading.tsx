@@ -1,4 +1,4 @@
-import { EstabelecimentoPageSkeleton } from "@/components/shared/EstabelecimentoPageSkeleton";
+import { EstabelecimentoPageSkeleton } from "@/shared/components/EstabelecimentoPageSkeleton";
 
 export default function Loading() {
   return <EstabelecimentoPageSkeleton />;

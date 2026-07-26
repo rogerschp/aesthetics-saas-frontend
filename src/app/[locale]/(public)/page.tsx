@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { HomeTenantSearch } from "@/components/shared/HomeTenantSearch";
-import { HomePageSkeleton } from "@/components/shared/HomePageSkeleton";
+import { HomeTenantSearch } from "@/features/search/components/HomeTenantSearch";
+import { HomePageSkeleton } from "@/features/search/components/HomePageSkeleton";
 import { getTranslations } from "next-intl/server";
 
 export default async function Home() {

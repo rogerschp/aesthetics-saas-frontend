@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Pencil,
@@ -10,36 +9,15 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { useTenantContext } from "@/components/providers/TenantProvider";
-import { TenantSwitcher } from "@/components/shared/TenantSwitcher";
-import { SubscriptionCard } from "@/components/shared/SubscriptionCard";
-import { OpsBookingPanel } from "@/components/booking/OpsBookingPanel";
-import { CancellationSettingsForm } from "@/components/forms/tenant/CancellationSettingsForm";
-import { PanelPageSkeleton } from "@/components/shared/PanelPageSkeleton";
-import { TenantUserRole } from "@/lib/api/types";
-import { cn } from "@/lib/utils";
-
-function PainelLoading() {
-  const t = useTranslations("PainelHome");
-  const [slow, setSlow] = useState(false);
-
-  useEffect(() => {
-    const id = window.setTimeout(() => setSlow(true), 2500);
-    return () => window.clearTimeout(id);
-  }, []);
-
-  return (
-    <div>
-      <PanelPageSkeleton />
-      {slow ? (
-        <p className="mx-auto max-w-sm px-4 pb-10 text-center text-sm text-muted-foreground">
-          {t("slowLoadHint")}
-        </p>
-      ) : null}
-    </div>
-  );
-}
+import { Button, buttonVariants } from "@/shared/ui/button";
+import { useTenantContext } from "@/shared/providers/TenantProvider";
+import { TenantSwitcher } from "@/features/tenant/components/TenantSwitcher";
+import { SubscriptionCard } from "@/features/plans/components/SubscriptionCard";
+import { OpsBookingPanel } from "@/features/booking/components/OpsBookingPanel";
+import { CancellationSettingsForm } from "@/features/tenant/components/CancellationSettingsForm";
+import { PanelPageLoading } from "@/shared/components/PanelPageLoading";
+import { TenantUserRole } from "@/shared/lib/api/types";
+import { cn } from "@/shared/lib/utils";
 
 export default function PainelPage() {
   const t = useTranslations("PainelHome");
@@ -47,7 +25,7 @@ export default function PainelPage() {
     useTenantContext();
 
   if (isLoading) {
-    return <PainelLoading />;
+    return <PanelPageLoading slowHint={t("slowLoadHint")} />;
   }
 
   if (isError) {
@@ -95,7 +73,7 @@ export default function PainelPage() {
 
   // Memberships chegaram, mas o tenant atual ainda está sendo resolvido.
   if (!current) {
-    return <PainelLoading />;
+    return <PanelPageLoading slowHint={t("slowLoadHint")} />;
   }
 
   const isOwnerOrAdmin =

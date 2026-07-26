@@ -1,12 +1,12 @@
 import { Link } from "@/i18n/routing";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { ProfileHeader } from "@/components/shared/ProfileHeader";
-import { ProfileBookings } from "@/components/shared/ProfileBookings";
-import { ProfileEditForm } from "@/components/shared/ProfileEditForm";
-import { ProfessionalProfileShortcut } from "@/components/shared/ProfessionalProfileShortcut";
-import { CreateEstablishmentCard } from "@/components/shared/CreateEstablishmentCard";
-import { DeactivateAccountCard } from "@/components/shared/DeactivateAccountCard";
+import { ProfileHeader } from "@/features/user/components/ProfileHeader";
+import { ProfileBookings } from "@/features/booking/components/ProfileBookings";
+import { ProfileEditForm } from "@/features/user/components/ProfileEditForm";
+import { ProfessionalProfileShortcut } from "@/features/professional/components/ProfessionalProfileShortcut";
+import { CreateEstablishmentCard } from "@/features/tenant/components/CreateEstablishmentCard";
+import { DeactivateAccountCard } from "@/features/user/components/DeactivateAccountCard";
 
 export const metadata = {
   title: "Meu Perfil | Cyacsys",

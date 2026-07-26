@@ -1,4 +1,4 @@
-import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequireAuth } from "@/features/auth/components/RequireAuth";
 
 export default function AuthGroupLayout({
   children,
