@@ -4,7 +4,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { searchService } from "@/features/search/api/search.service";
 import { searchKeys } from "@/features/search/api/search.keys";
 
-/** GET /tenants/search?regionalHighlight=true — usado por HomeTenantSearch (sem filtro). */
+/** GET /search/tenants?regionalHighlight=true — usado por HomeTenantSearch (sem filtro). */
 export function useTenantHighlights(enabled: boolean) {
   return useQuery({
     queryKey: searchKeys.highlights,
@@ -15,7 +15,7 @@ export function useTenantHighlights(enabled: boolean) {
   });
 }
 
-/** GET /tenants/search?... — usado por HomeTenantSearch (com filtro). */
+/** GET /search/tenants?... — usado por HomeTenantSearch (com filtro). */
 export function useTenantSearch(
   q: string,
   city: string | undefined,

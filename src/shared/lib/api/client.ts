@@ -2,13 +2,13 @@ import axios, { type AxiosRequestConfig } from "axios";
 import { getSession } from "next-auth/react";
 
 /**
- * Browser e SSR usam a URL absoluta da API quando `NEXT_PUBLIC_API_URL` está setada
- * (Vercel → Render). Localmente, sem env, o browser pode usar o rewrite `/api/backend`.
+ * Browser usa o rewrite same-origin `/api/backend` (ver `next.config.ts`) para
+ * evitar CORS ao falar com Nest/Render. SSR/Node continua com URL absoluta.
  */
 function resolveApiBaseURL(): string {
+  if (typeof window !== "undefined") return "/api/backend";
   const fromEnv = process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/$/, "");
   if (fromEnv) return fromEnv;
-  if (typeof window !== "undefined") return "/api/backend";
   return "http://127.0.0.1:3000";
 }
 
