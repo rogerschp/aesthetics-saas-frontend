@@ -1,3 +1,5 @@
+"use client";
+
 import { TenantEditPage } from "@/features/tenant/components/TenantEditPage";
 import { TeamManager } from "@/features/team/components/TeamManager";
 import { ReviewsWall } from "@/features/reviews/components/ReviewsWall";
