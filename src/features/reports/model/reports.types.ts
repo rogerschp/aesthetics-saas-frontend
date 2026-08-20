@@ -8,7 +8,7 @@ export interface ReportPeriod {
 
 export interface DashboardSummary {
   revenue: number;
-  confirmedBookings: number;
+  completedBookings: number;
   cancelledBookings: number;
   cancellationRate: number;
   averageTicket: number;
@@ -27,7 +27,7 @@ export interface MonthlyMetrics {
   year: number;
   month: number;
   revenue: number;
-  confirmedBookings: number;
+  completedBookings: number;
   cancelledBookings: number;
   revenueChangePercent: number | null;
 }
@@ -36,7 +36,7 @@ export interface ProfessionalMetrics {
   tenantProfessionalId: string;
   professionalName: string;
   revenue: number;
-  confirmedBookings: number;
+  completedBookings: number;
   cancelledBookings: number;
   averageTicket: number;
   cancellationRate: number;
@@ -46,7 +46,8 @@ export interface StandardReport {
   period: ReportPeriod;
   /** Compat: espelha dashboard.revenue */
   revenue: number;
-  confirmedBookings: number;
+  /** Compat: espelha dashboard.completedBookings */
+  completedBookings: number;
   cancelledBookings: number;
   dashboard: DashboardSummary;
   topServices: TopServiceMetrics[];

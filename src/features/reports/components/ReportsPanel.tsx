@@ -152,7 +152,7 @@ function MonthlyTable({
                 <td className="px-2 py-2.5 font-medium">
                   {formatPriceBRL(row.revenue)}
                 </td>
-                <td className="px-2 py-2.5">{row.confirmedBookings}</td>
+                <td className="px-2 py-2.5">{row.completedBookings}</td>
                 <td className="px-2 py-2.5">{row.cancelledBookings}</td>
                 <td className="px-2 py-2.5">
                   {change == null ? (
@@ -216,7 +216,7 @@ function ProfessionalsTable({
               <td className="px-2 py-2.5 font-medium">
                 {formatPriceBRL(row.revenue)}
               </td>
-              <td className="px-2 py-2.5">{row.confirmedBookings}</td>
+              <td className="px-2 py-2.5">{row.completedBookings}</td>
               <td className="px-2 py-2.5">{formatPriceBRL(row.averageTicket)}</td>
               <td className="px-2 py-2.5">
                 {row.cancellationRate.toFixed(1)}%
@@ -413,7 +413,7 @@ export function ReportsPanel({ tenantId }: { tenantId: string }) {
           <KpiCard label={t("kpiRevenue")} value={formatPriceBRL(d.revenue)} />
           <KpiCard
             label={t("kpiConfirmed")}
-            value={String(d.confirmedBookings)}
+            value={String(d.completedBookings ?? 0)}
           />
           <KpiCard
             label={t("kpiCancelled")}
