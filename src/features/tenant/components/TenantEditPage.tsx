@@ -33,6 +33,38 @@ export interface TenantEditPageProps {
   renderReviewsSection?: (tenantId: string) => ReactNode;
 }
 
+function SectionSaveButton({
+  label,
+  isSaving,
+  isSaved,
+  onClick,
+}: {
+  label: string;
+  isSaving: boolean;
+  isSaved: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <div className="mt-8 flex justify-end border-t border-zinc-800/60 pt-6">
+      <Button
+        type="button"
+        onClick={onClick}
+        disabled={isSaving}
+        className="px-8 font-bold"
+      >
+        {isSaving ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : isSaved ? (
+          <Check className="mr-2 h-4 w-4" />
+        ) : (
+          <Save className="mr-2 h-4 w-4" />
+        )}
+        {label}
+      </Button>
+    </div>
+  );
+}
+
 export function TenantEditPage({
   renderTeamSection,
   renderReviewsSection,
@@ -53,21 +85,63 @@ export function TenantEditPage({
     setTema,
     saveMsg,
     saveError,
-    isSaving,
-    submitTenantEdit,
+    savingSection,
+    savedSection,
+    saveInfo,
+    saveHours,
+    saveServices,
+    saveTheme,
     refetchTenants,
   } = useTenantEditForm();
+
+  const sectionSaveLabel = (
+    section: typeof secaoAtiva,
+    labelKey: "saveInfo" | "saveHours" | "saveServices" | "saveTheme",
+  ) =>
+    savingSection === section
+      ? t("saving")
+      : savedSection === section
+        ? t("saveSuccess")
+        : t(labelKey);
 
   const renderizarConteudo = () => {
     switch (secaoAtiva) {
       case "informacoes":
-        return <StoreProfileForm tenantId={tenantId} showSegment />;
+        return (
+          <>
+            <StoreProfileForm tenantId={tenantId} showSegment />
+            <SectionSaveButton
+              label={sectionSaveLabel("informacoes", "saveInfo")}
+              isSaving={savingSection === "informacoes"}
+              isSaved={savedSection === "informacoes"}
+              onClick={() => void saveInfo()}
+            />
+          </>
+        );
       case "expediente":
-        return <HoursInputRepeater />;
+        return (
+          <>
+            <HoursInputRepeater />
+            <SectionSaveButton
+              label={sectionSaveLabel("expediente", "saveHours")}
+              isSaving={savingSection === "expediente"}
+              isSaved={savedSection === "expediente"}
+              onClick={() => void saveHours()}
+            />
+          </>
+        );
       case "servicos":
         return (
           <div className="space-y-10">
-            <ServiceHierarchyBuilder />
+            <div>
+              <ServiceHierarchyBuilder />
+              <SectionSaveButton
+                label={sectionSaveLabel("servicos", "saveServices")}
+                isSaving={savingSection === "servicos"}
+                isSaved={savedSection === "servicos"}
+                onClick={() => void saveServices()}
+              />
+            </div>
             {tenantId && <TenantServicesImages tenantId={tenantId} />}
           </div>
         );
@@ -95,7 +169,17 @@ export function TenantEditPage({
             </div>
           );
         }
-        return <AparenciaEditor tema={tema} onTemaChange={setTema} />;
+        return (
+          <>
+            <AparenciaEditor tema={tema} onTemaChange={setTema} />
+            <SectionSaveButton
+              label={sectionSaveLabel("aparencia", "saveTheme")}
+              isSaving={savingSection === "aparencia"}
+              isSaved={savedSection === "aparencia"}
+              onClick={() => void saveTheme()}
+            />
+          </>
+        );
       case "desativar":
         if (!canManageTenant || !tenantQuery.data || !tenantId) {
           return null;
@@ -150,9 +234,7 @@ export function TenantEditPage({
           <FormProvider {...methods}>
             <form
               className="space-y-8"
-              onSubmit={methods.handleSubmit((data) =>
-                submitTenantEdit(data),
-              )}
+              onSubmit={(e) => e.preventDefault()}
             >
               <div className="mb-8 flex flex-col justify-between gap-6 md:flex-row md:items-end">
                 <div>
@@ -164,27 +246,6 @@ export function TenantEditPage({
                     {t("editSubtitle")}
                   </p>
                 </div>
-
-                {secaoAtiva !== "desativar" && secaoAtiva !== "equipe" && (
-                  <Button
-                    type="submit"
-                    disabled={isSaving}
-                    className="px-8 font-bold"
-                  >
-                    {isSaving ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : saveMsg ? (
-                      <Check className="mr-2 h-4 w-4" />
-                    ) : (
-                      <Save className="mr-2 h-4 w-4" />
-                    )}
-                    {saveMsg
-                      ? t("saveSuccess")
-                      : isSaving
-                        ? t("saving")
-                        : t("saveChanges")}
-                  </Button>
-                )}
               </div>
 
               {(saveError || saveMsg) && (

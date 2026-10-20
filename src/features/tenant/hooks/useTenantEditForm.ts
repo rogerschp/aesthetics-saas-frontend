@@ -1,6 +1,10 @@
 "use client";
 
-import { useForm, type UseFormReturn } from "react-hook-form";
+import {
+  useForm,
+  type FieldErrors,
+  type UseFormReturn,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useEffect, useMemo, useState } from "react";
@@ -12,8 +16,10 @@ import {
   useTenantEditHours,
   useTenantEditTheme,
   useTenantSubscription,
-  useSaveTenantEdit,
-  type SaveTenantEditInput,
+  useSaveTenantInfo,
+  useSaveWorkingHours,
+  useSaveTenantTheme,
+  useSaveTenantServices,
 } from "@/features/tenant/hooks/useTenantEdit";
 import { useTenantServices } from "@/features/tenant/hooks/useTenantServices";
 import {
@@ -191,9 +197,30 @@ export interface UseTenantEditFormResult {
   setTema: (tema: TenantTema) => void;
   saveMsg: string | null;
   saveError: string | null;
-  isSaving: boolean;
-  submitTenantEdit: (data: TenantEditFormValues) => void;
+  /** Aba cujo save está em andamento (ou null). */
+  savingSection: SecaoEdicao | null;
+  /** Última aba salva com sucesso (feedback no botão). */
+  savedSection: SecaoEdicao | null;
+  saveInfo: () => Promise<void>;
+  saveHours: () => Promise<void>;
+  saveServices: () => Promise<void>;
+  saveTheme: () => Promise<void>;
+  handleInvalid: (errors: FieldErrors<TenantEditFormValues>) => void;
   refetchTenants: () => void;
+}
+
+/** Extrai a primeira mensagem de erro (folha) da árvore de erros do RHF. */
+function firstErrorMessage(errors: unknown): string | null {
+  if (!errors || typeof errors !== "object") return null;
+  const record = errors as Record<string, unknown>;
+  if (typeof record.message === "string" && record.message) {
+    return record.message;
+  }
+  for (const value of Object.values(record)) {
+    const found = firstErrorMessage(value);
+    if (found) return found;
+  }
+  return null;
 }
 
 /** Orquestra todo o form da tela de edição do estabelecimento (`/painel/estabelecimento/editar`). */
@@ -206,7 +233,7 @@ export function useTenantEditForm(): UseTenantEditFormResult {
     role === TenantUserRole.OWNER || role === TenantUserRole.ADMIN;
 
   const [secaoAtiva, setSecaoAtiva] = useState<SecaoEdicao>("informacoes");
-  const [tema, setTema] = useState<TenantTema>(TEMA_PADRAO);
+  const [temaOverride, setTema] = useState<TenantTema | null>(null);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -271,13 +298,12 @@ export function useTenantEditForm(): UseTenantEditFormResult {
     if (realData) methods.reset(realData);
   }, [realData, methods]);
 
-  const [prevThemeKey, setPrevThemeKey] = useState<string | null>(null);
-  const apiTheme = themeQuery.data?.theme;
-  const themeKey = apiTheme ? JSON.stringify(apiTheme) : null;
-  if (themeKey && themeKey !== prevThemeKey) {
-    setPrevThemeKey(themeKey);
-    setTema(apiTheme as unknown as TenantTema);
-  }
+  // Tema exibido: edição local do usuário > tema da API > padrão.
+  // (Estado derivado — sem sincronizar via effect/render.)
+  const tema =
+    temaOverride ??
+    (themeQuery.data?.theme as unknown as TenantTema | undefined) ??
+    TEMA_PADRAO;
 
   const loading =
     tenantLoading ||
@@ -286,21 +312,86 @@ export function useTenantEditForm(): UseTenantEditFormResult {
         servicesQuery.isLoading ||
         (!!hoursTpId && hoursQuery.isLoading)));
 
-  const saveMutation = useSaveTenantEdit(tenantId, {
-    onSuccess: () => {
-      setSaveError(null);
-      setSaveMsg(t("saveSuccess"));
-      refetchTenants();
-      setTimeout(() => setSaveMsg(null), 2500);
-    },
-    onError: (err) => {
+  const [savedSection, setSavedSection] = useState<SecaoEdicao | null>(null);
+
+  function onSaveSuccess(section: SecaoEdicao) {
+    setSaveError(null);
+    setSaveMsg(t("saveSuccess"));
+    setSavedSection(section);
+    refetchTenants();
+    setTimeout(() => {
       setSaveMsg(null);
-      setSaveError(formatApiError(err) || t("saveError"));
-    },
+      setSavedSection(null);
+    }, 2500);
+  }
+
+  function onSaveError(err: unknown) {
+    setSaveMsg(null);
+    setSavedSection(null);
+    setSaveError(formatApiError(err) || t("saveError"));
+  }
+
+  const infoMutation = useSaveTenantInfo(tenantId, {
+    onSuccess: () => onSaveSuccess("informacoes"),
+    onError: onSaveError,
+  });
+  const hoursMutation = useSaveWorkingHours(tenantId, {
+    onSuccess: () => onSaveSuccess("expediente"),
+    onError: onSaveError,
+  });
+  const servicesMutation = useSaveTenantServices(tenantId, {
+    onSuccess: () => onSaveSuccess("servicos"),
+    onError: onSaveError,
+  });
+  const themeMutation = useSaveTenantTheme(tenantId, {
+    onSuccess: () => onSaveSuccess("aparencia"),
+    onError: onSaveError,
   });
 
-  function submitTenantEdit(data: TenantEditFormValues) {
-    const payload: SaveTenantEditInput = {
+  const savingSection: SecaoEdicao | null = infoMutation.isPending
+    ? "informacoes"
+    : hoursMutation.isPending
+      ? "expediente"
+      : servicesMutation.isPending
+        ? "servicos"
+        : themeMutation.isPending
+          ? "aparencia"
+          : null;
+
+  /**
+   * Validação falhou: mostra o erro e leva o usuário até a aba do campo.
+   * (Sem isso o submit abortava em silêncio — nenhum request/feedback.)
+   */
+  function handleInvalid(errors: FieldErrors<TenantEditFormValues>) {
+    const firstKey = Object.keys(errors)[0];
+    if (firstKey === "horarios") setSecaoAtiva("expediente");
+    else if (firstKey === "servicos") setSecaoAtiva("servicos");
+    else setSecaoAtiva("informacoes");
+
+    const detail = firstErrorMessage(errors);
+    setSaveMsg(null);
+    setSaveError(detail ? `${t("saveError")} ${detail}` : t("saveError"));
+  }
+
+  /** Aba Informações → PATCH /tenants/:id (valida só os campos da aba). */
+  async function saveInfo() {
+    const valid = await methods.trigger([
+      "nome",
+      "slug",
+      "telefone",
+      "segment",
+      "cnpj",
+      "endereco",
+      "redesSociais",
+      "bannerWide",
+      "cover",
+    ]);
+    if (!valid) {
+      handleInvalid(methods.formState.errors);
+      return;
+    }
+    const data = methods.getValues();
+    infoMutation.mutate({
       nome: data.nome,
       telefone: data.telefone,
       segment: data.segment,
@@ -309,13 +400,36 @@ export function useTenantEditForm(): UseTenantEditFormResult {
       bannerWide: data.bannerWide,
       cover: data.cover,
       endereco: data.endereco,
-      horarios: data.horarios,
-      hoursTpId,
-      canCustomize,
-      tema: tema as unknown as TenantThemeData,
-      shouldSaveTheme: secaoAtiva === "aparencia",
-    };
-    saveMutation.mutate(payload);
+    });
+  }
+
+  /** Aba Expediente → working-hours do profissional. */
+  async function saveHours() {
+    const valid = await methods.trigger("horarios");
+    if (!valid) {
+      handleInvalid(methods.formState.errors);
+      return;
+    }
+    hoursMutation.mutate({ horarios: methods.getValues("horarios"), hoursTpId });
+  }
+
+  /** Aba Serviços → POST/PATCH/DELETE /tenants/:id/services (diff). */
+  async function saveServices() {
+    const valid = await methods.trigger("servicos");
+    if (!valid) {
+      handleInvalid(methods.formState.errors);
+      return;
+    }
+    servicesMutation.mutate({
+      servicos: methods.getValues("servicos"),
+      existing: servicesQuery.data ?? [],
+    });
+  }
+
+  /** Aba Aparência → PUT /tenants/:id/theme. */
+  async function saveTheme() {
+    if (!canCustomize) return;
+    themeMutation.mutate(tema as unknown as TenantThemeData);
   }
 
   return {
@@ -331,8 +445,13 @@ export function useTenantEditForm(): UseTenantEditFormResult {
     setTema,
     saveMsg,
     saveError,
-    isSaving: saveMutation.isPending,
-    submitTenantEdit,
+    savingSection,
+    savedSection,
+    saveInfo,
+    saveHours,
+    saveServices,
+    saveTheme,
+    handleInvalid,
     refetchTenants,
   };
 }

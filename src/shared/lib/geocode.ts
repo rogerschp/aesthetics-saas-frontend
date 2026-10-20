@@ -21,7 +21,15 @@ export async function geocodeAddress(
   const q = addressToGeocodeQuery(address);
   if (q.length < 5) return null;
 
-  const res = await fetch(`/api/geocode?q=${encodeURIComponent(q)}`);
+  let res: Response;
+  try {
+    // Timeout curto: geocode é best-effort e nunca pode travar o save.
+    res = await fetch(`/api/geocode?q=${encodeURIComponent(q)}`, {
+      signal: AbortSignal.timeout(4000),
+    });
+  } catch {
+    return null;
+  }
   if (!res.ok) return null;
 
   const data = (await res.json()) as {
