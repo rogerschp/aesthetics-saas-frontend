@@ -13,7 +13,8 @@ import {
   tenantWorkingHoursService,
   type FormDayHours,
 } from "@/features/tenant/api/working-hours.service";
-import { Address, TenantSegment } from "@/shared/lib/api/types";
+import { Address, Service, TenantSegment } from "@/shared/lib/api/types";
+import { catalogService } from "@/features/tenant/api/catalog.service";
 import { Tenant } from "@/features/tenant/model/tenant.types";
 import { TenantThemeData } from "@/features/tenant/model/theme.types";
 import { tenantKeys } from "@/features/tenant/api/tenant.keys";
@@ -85,7 +86,7 @@ export interface SaveTenantEditAddress {
   complement?: string;
 }
 
-export interface SaveTenantEditInput {
+export interface SaveTenantInfoInput {
   nome: string;
   telefone: string;
   segment: TenantSegment;
@@ -94,28 +95,35 @@ export interface SaveTenantEditInput {
   bannerWide?: string;
   cover?: string;
   endereco: SaveTenantEditAddress;
-  horarios: FormDayHours[];
-  hoursTpId: string | null;
-  canCustomize: boolean;
-  tema: TenantThemeData | null;
-  shouldSaveTheme: boolean;
 }
 
-/**
- * Orquestra o save completo do TenantEditPage: dados do tenant, expediente e
- * (opcionalmente) tema. Mantém a mesma sequência/comportamento do form original.
- */
-export function useSaveTenantEdit(
+export interface SaveWorkingHoursInput {
+  horarios: FormDayHours[];
+  hoursTpId: string | null;
+}
+
+export interface SaveTenantServicesInput {
+  servicos: Array<{
+    titulo: string;
+    itens: Array<{ descricao: string; preco: number }>;
+  }>;
+  existing: Service[];
+}
+
+type SaveOptions<TInput> = Pick<
+  UseMutationOptions<void, unknown, TInput>,
+  "onSuccess" | "onError"
+>;
+
+/** PATCH /tenants/:id — aba Informações (nome, contato, endereço, redes). */
+export function useSaveTenantInfo(
   tenantId: string | undefined,
-  options?: Pick<
-    UseMutationOptions<void, unknown, SaveTenantEditInput>,
-    "onSuccess" | "onError"
-  >,
+  options?: SaveOptions<SaveTenantInfoInput>,
 ) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: SaveTenantEditInput) => {
+    mutationFn: async (data: SaveTenantInfoInput) => {
       if (!tenantId) throw new Error("no-tenant");
 
       const socialMedia: Record<string, string> = {};
@@ -152,6 +160,25 @@ export function useSaveTenantEdit(
         address,
         ...(geo ? { latitude: geo.latitude, longitude: geo.longitude } : {}),
       });
+    },
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: tenantKeys.edit(tenantId) });
+      options?.onSuccess?.(...args);
+    },
+    onError: options?.onError,
+  });
+}
+
+/** Working-hours do profissional — aba Expediente. */
+export function useSaveWorkingHours(
+  tenantId: string | undefined,
+  options?: SaveOptions<SaveWorkingHoursInput>,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: SaveWorkingHoursInput) => {
+      if (!tenantId) throw new Error("no-tenant");
 
       let tpId = data.hoursTpId;
       if (!tpId) {
@@ -169,18 +196,100 @@ export function useSaveTenantEdit(
           data.horarios,
         );
       }
+    },
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({
+        queryKey: tenantKeys.editHoursAll(tenantId),
+      });
+      options?.onSuccess?.(...args);
+    },
+    onError: options?.onError,
+  });
+}
 
-      if (data.canCustomize && data.tema && data.shouldSaveTheme) {
-        try {
-          await themeService.upsert(tenantId, data.tema);
-        } catch {
-          // Plano pode bloquear tema — não falha o save do tenant.
+/** PUT /tenants/:id/theme — aba Aparência. */
+export function useSaveTenantTheme(
+  tenantId: string | undefined,
+  options?: SaveOptions<TenantThemeData>,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (tema: TenantThemeData) => {
+      if (!tenantId) throw new Error("no-tenant");
+      await themeService.upsert(tenantId, tema);
+    },
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: tenantKeys.editTheme(tenantId) });
+      options?.onSuccess?.(...args);
+    },
+    onError: options?.onError,
+  });
+}
+
+/**
+ * Catálogo — aba Serviços. Faz diff por nome contra os serviços ativos:
+ * cria os novos, atualiza preço dos existentes e remove os que saíram
+ * do formulário (POST/PATCH/DELETE /tenants/:id/services).
+ */
+export function useSaveTenantServices(
+  tenantId: string | undefined,
+  options?: SaveOptions<SaveTenantServicesInput>,
+) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: SaveTenantServicesInput) => {
+      if (!tenantId) throw new Error("no-tenant");
+
+      const desired = data.servicos
+        .flatMap((cat) =>
+          cat.itens.map((item) => {
+            const titulo = cat.titulo.trim();
+            const descricao = item.descricao.trim();
+            // Na edição os serviços atuais vêm na categoria sintética
+            // "Serviços" com o nome completo em `descricao`.
+            const name =
+              !titulo || titulo === "Serviços"
+                ? descricao
+                : `${titulo} - ${descricao}`;
+            return { name, description: titulo || undefined, price: item.preco };
+          }),
+        )
+        .filter((d) => d.name);
+
+      const activeExisting = data.existing.filter((s) => s.isActive);
+      const existingByName = new Map(activeExisting.map((s) => [s.name, s]));
+      const desiredNames = new Set(desired.map((d) => d.name));
+
+      for (const item of desired) {
+        const match = existingByName.get(item.name);
+        if (match) {
+          if (Number(match.price) !== item.price) {
+            await catalogService.update(tenantId, match.id, {
+              price: item.price,
+            });
+          }
+        } else {
+          await catalogService.create(tenantId, {
+            name: item.name,
+            description: item.description,
+            price: item.price,
+            durationInMinutes: 30,
+          });
+        }
+      }
+
+      for (const service of activeExisting) {
+        if (!desiredNames.has(service.name)) {
+          await catalogService.delete(tenantId, service.id);
         }
       }
     },
     onSuccess: (...args) => {
-      queryClient.invalidateQueries({ queryKey: tenantKeys.edit(tenantId) });
-      queryClient.invalidateQueries({ queryKey: tenantKeys.editHoursAll(tenantId) });
+      queryClient.invalidateQueries({
+        queryKey: tenantKeys.editServices(tenantId),
+      });
       options?.onSuccess?.(...args);
     },
     onError: options?.onError,
