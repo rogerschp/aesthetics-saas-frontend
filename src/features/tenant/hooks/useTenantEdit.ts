@@ -105,7 +105,7 @@ export interface SaveWorkingHoursInput {
 export interface SaveTenantServicesInput {
   servicos: Array<{
     titulo: string;
-    itens: Array<{ descricao: string; preco: number }>;
+    itens: Array<{ descricao: string; preco: number; duracao: number }>;
   }>;
   existing: Service[];
 }
@@ -253,7 +253,12 @@ export function useSaveTenantServices(
               !titulo || titulo === "Serviços"
                 ? descricao
                 : `${titulo} - ${descricao}`;
-            return { name, description: titulo || undefined, price: item.preco };
+            return {
+              name,
+              description: titulo || undefined,
+              price: item.preco,
+              durationInMinutes: item.duracao || 30,
+            };
           }),
         )
         .filter((d) => d.name);
@@ -265,9 +270,13 @@ export function useSaveTenantServices(
       for (const item of desired) {
         const match = existingByName.get(item.name);
         if (match) {
-          if (Number(match.price) !== item.price) {
+          if (
+            Number(match.price) !== item.price ||
+            match.durationInMinutes !== item.durationInMinutes
+          ) {
             await catalogService.update(tenantId, match.id, {
               price: item.price,
+              durationInMinutes: item.durationInMinutes,
             });
           }
         } else {
@@ -275,7 +284,7 @@ export function useSaveTenantServices(
             name: item.name,
             description: item.description,
             price: item.price,
-            durationInMinutes: 30,
+            durationInMinutes: item.durationInMinutes,
           });
         }
       }

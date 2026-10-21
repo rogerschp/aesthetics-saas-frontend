@@ -97,6 +97,7 @@ const tenantEditSchema = z.object({
         z.object({
           descricao: z.string().min(1, "Obrigatório"),
           preco: z.number().min(0),
+          duracao: z.number().min(5, "Duração mínima de 5 min"),
         }),
       ),
     }),
@@ -170,6 +171,7 @@ function buildFormValues(
               itens: ativos.map((s) => ({
                 descricao: s.name,
                 preco: Number(s.price),
+                duracao: s.durationInMinutes ?? 30,
               })),
             },
           ]

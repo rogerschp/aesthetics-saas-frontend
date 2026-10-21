@@ -26,9 +26,9 @@ export function ServiceHierarchyBuilder() {
             Organize seus serviços por categorias (Ex: Corte, Barba) e adicione as variações com seus preços.
           </p>
         </div>
-        <Button 
-          type="button" 
-          onClick={() => appendTopic({ titulo: "", itens: [{ descricao: "", preco: 0 }] })}
+        <Button
+          type="button"
+          onClick={() => appendTopic({ titulo: "", itens: [{ descricao: "", preco: 0, duracao: 30 }] })}
           className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border border-yellow-500/20 shrink-0"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -68,9 +68,9 @@ export function ServiceHierarchyBuilder() {
             <CopyPlus className="h-10 w-10 text-zinc-700 mx-auto mb-3" />
             <p className="text-zinc-500">Nenhum serviço cadastrado.</p>
             <p className="text-sm text-zinc-600 mb-4">Comece adicionando a primeira categoria.</p>
-            <Button 
-              type="button" 
-              onClick={() => appendTopic({ titulo: "Cabelo", itens: [{ descricao: "Corte Simples", preco: 50 }] })}
+            <Button
+              type="button"
+              onClick={() => appendTopic({ titulo: "Cabelo", itens: [{ descricao: "Corte Simples", preco: 50, duracao: 30 }] })}
               className="bg-zinc-800 text-white hover:bg-zinc-700"
             >
               Adicionar Exemplo
@@ -110,6 +110,18 @@ function SubtopicList({ topicIndex }: { topicIndex: number }) {
               className="bg-zinc-900 border-zinc-800 pl-8 pr-3 focus-visible:ring-yellow-500/50 text-right font-medium"
             />
           </div>
+          <div className="w-28 relative space-y-1">
+            <Input
+              type="number"
+              step="5"
+              min="5"
+              placeholder="30"
+              aria-label="Duração em minutos"
+              {...register(`servicos.${topicIndex}.itens.${subIndex}.duracao`, { valueAsNumber: true })}
+              className="bg-zinc-900 border-zinc-800 pr-10 focus-visible:ring-yellow-500/50 text-right font-medium"
+            />
+            <span className="absolute right-3 top-2.5 text-zinc-500 text-sm">min</span>
+          </div>
           <Button
             type="button"
             variant="ghost"
@@ -125,7 +137,7 @@ function SubtopicList({ topicIndex }: { topicIndex: number }) {
       <Button
         type="button"
         variant="ghost"
-        onClick={() => appendSubtopic({ descricao: "", preco: 0 })}
+        onClick={() => appendSubtopic({ descricao: "", preco: 0, duracao: 30 })}
         className="text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10 w-fit h-auto py-2 px-3 text-sm"
       >
         <Plus className="h-3 w-3 mr-2" />

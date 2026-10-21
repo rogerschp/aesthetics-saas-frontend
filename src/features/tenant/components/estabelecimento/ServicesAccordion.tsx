@@ -46,7 +46,11 @@ export function ServicesAccordion({
       <div className="flex flex-col gap-4">
         <h3 className="text-lg font-semibold">Serviços e Preços</h3>
 
-        <Accordion className="w-full space-y-2">
+        <Accordion
+          multiple
+          defaultValue={servicos.map((categoria) => categoria.id)}
+          className="w-full space-y-2"
+        >
           {servicos.map((categoria) => (
             <AccordionItem
               key={categoria.id}

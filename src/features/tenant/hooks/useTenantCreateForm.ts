@@ -73,6 +73,7 @@ const tenantCreateSchema = z.object({
         z.object({
           descricao: z.string().min(1, "Obrigatório"),
           preco: z.number().min(0, "Deve ser maior ou igual a 0"),
+          duracao: z.number().min(5, "Duração mínima de 5 min"),
         }),
       ),
     }),
@@ -234,7 +235,7 @@ export function useTenantCreateForm(): UseTenantCreateFormResult {
             name: `${cat.titulo} - ${item.descricao}`,
             description: cat.titulo,
             price: item.preco,
-            durationInMinutes: 30,
+            durationInMinutes: item.duracao || 30,
           });
           createdServicesIds.push(service.id);
         }
