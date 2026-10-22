@@ -200,6 +200,22 @@
     "statusCompleted": "Concluído",
     "statusDraft": "Rascunho"
   },
+  "TelegramNotifications": {
+    "title": "Notificações no Telegram",
+    "description": "Receba um aviso no Telegram sempre que um cliente fizer um novo agendamento com você — com estabelecimento, serviço, cliente, dia, horário e local.",
+    "connect": "Conectar Telegram",
+    "connecting": "Gerando link...",
+    "awaitingTitle": "Quase lá!",
+    "awaitingDesc": "Abrimos o nosso bot no Telegram. Toque em Iniciar (/start) na conversa para concluir a conexão. Verificamos automaticamente a cada alguns segundos.",
+    "checkNow": "Já dei start — verificar",
+    "openAgain": "Abrir o Telegram novamente",
+    "linkedTitle": "Telegram conectado",
+    "linkedDesc": "Você receberá um aviso a cada novo agendamento feito com você.",
+    "linkedSince": "Conectado em {date}",
+    "botNotConfigured": "O bot do Telegram ainda não foi configurado no servidor. Avise o suporte para ativar as notificações.",
+    "loadError": "Não foi possível verificar seu Telegram. Tente novamente.",
+    "retry": "Tentar novamente"
+  },
   "Painel": {
     "overview": "Visão Geral",
     "mainHQ": "Sede Principal",
@@ -625,5 +641,13 @@
     "serviceImagesHint": "Capa por serviço (Cloudinary). A vitrine ainda não exibe até o back expor a URL no catálogo.",
     "serviceCover": "Capa — {name}",
     "noServices": "Nenhum serviço ativo. Cadastre serviços para enviar imagens."
+  },
+  "Pwa": {
+    "installTitle": "Instale o BarberShop",
+    "installDesc": "Acesso rápido pela tela inicial, em tela cheia — e receba avisos de novos agendamentos.",
+    "install": "Instalar",
+    "notNow": "Agora não",
+    "dismiss": "Dispensar",
+    "iosInstructions": "No iPhone: toque em Compartilhar e depois em \"Adicionar à Tela de Início\"."
   }
 }

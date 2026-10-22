@@ -200,6 +200,22 @@
     "statusCompleted": "Completado",
     "statusDraft": "Borrador"
   },
+  "TelegramNotifications": {
+    "title": "Notificaciones en Telegram",
+    "description": "Recibe un aviso en Telegram cada vez que un cliente reserve contigo — con establecimiento, servicio, cliente, día, hora y lugar.",
+    "connect": "Conectar Telegram",
+    "connecting": "Generando enlace...",
+    "awaitingTitle": "¡Casi listo!",
+    "awaitingDesc": "Abrimos nuestro bot en Telegram. Toca Iniciar (/start) en la conversación para completar la conexión. Lo verificamos automáticamente cada pocos segundos.",
+    "checkNow": "Ya di inicio — verificar",
+    "openAgain": "Abrir Telegram de nuevo",
+    "linkedTitle": "Telegram conectado",
+    "linkedDesc": "Recibirás un aviso por cada nueva reserva hecha contigo.",
+    "linkedSince": "Conectado el {date}",
+    "botNotConfigured": "El bot de Telegram aún no está configurado en el servidor. Avisa a soporte para activar las notificaciones.",
+    "loadError": "No fue posible verificar tu Telegram. Inténtalo de nuevo.",
+    "retry": "Reintentar"
+  },
   "Painel": {
     "overview": "Visión General",
     "mainHQ": "Sede Principal",
@@ -625,5 +641,13 @@
     "serviceImagesHint": "Portada por servicio (Cloudinary). La vitrina las mostrará cuando la API exponga la URL.",
     "serviceCover": "Portada — {name}",
     "noServices": "Ningún servicio activo. Crea servicios para subir imágenes."
+  },
+  "Pwa": {
+    "installTitle": "Instala BarberShop",
+    "installDesc": "Acceso rápido desde la pantalla de inicio, a pantalla completa — y recibe avisos de nuevas reservas.",
+    "install": "Instalar",
+    "notNow": "Ahora no",
+    "dismiss": "Descartar",
+    "iosInstructions": "En iPhone: toca Compartir y luego \"Añadir a pantalla de inicio\"."
   }
 }

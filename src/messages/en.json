@@ -200,6 +200,22 @@
     "statusCompleted": "Completed",
     "statusDraft": "Draft"
   },
+  "TelegramNotifications": {
+    "title": "Telegram notifications",
+    "description": "Get a Telegram message whenever a client books with you — with the establishment, service, client, day, time and location.",
+    "connect": "Connect Telegram",
+    "connecting": "Generating link...",
+    "awaitingTitle": "Almost there!",
+    "awaitingDesc": "We opened our bot in Telegram. Tap Start (/start) in the chat to finish connecting. We check automatically every few seconds.",
+    "checkNow": "I already pressed start — check",
+    "openAgain": "Open Telegram again",
+    "linkedTitle": "Telegram connected",
+    "linkedDesc": "You'll get a message for every new booking made with you.",
+    "linkedSince": "Connected on {date}",
+    "botNotConfigured": "The Telegram bot is not configured on the server yet. Contact support to enable notifications.",
+    "loadError": "Could not check your Telegram status. Please try again.",
+    "retry": "Try again"
+  },
   "Painel": {
     "overview": "Overview",
     "mainHQ": "Main HQ",
@@ -625,5 +641,13 @@
     "serviceImagesHint": "Cover per service (Cloudinary). Storefront will show them once the API exposes the URL.",
     "serviceCover": "Cover — {name}",
     "noServices": "No active services. Create services to upload images."
+  },
+  "Pwa": {
+    "installTitle": "Install BarberShop",
+    "installDesc": "Quick access from your home screen, full-screen — and get notified about new bookings.",
+    "install": "Install",
+    "notNow": "Not now",
+    "dismiss": "Dismiss",
+    "iosInstructions": "On iPhone: tap Share, then \"Add to Home Screen\"."
   }
 }
