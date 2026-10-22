@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useProfessionalDashboard } from "@/features/professional/hooks/useProfessionalDashboard";
 import { ProfessionalProfileCard } from "@/features/professional/components/ProfessionalProfileCard";
+import { TelegramConnectCard } from "@/features/professional/components/TelegramConnectCard";
 import { ProfessionalNoProfileState } from "@/features/professional/components/ProfessionalNoProfileState";
 import { ProfessionalDashboardHeader } from "@/features/professional/components/ProfessionalDashboardHeader";
 import { ProfessionalDashboardKpis } from "@/features/professional/components/ProfessionalDashboardKpis";
@@ -71,6 +72,10 @@ export default function ProfissionalDashboardPage() {
           isError={agendaQuery.isError}
           error={agendaQuery.error}
         />
+
+        <section className="mb-10">
+          <TelegramConnectCard />
+        </section>
 
         <section className="mb-10">
           <h2 className="mb-4 text-xl font-bold">{t("profileSection")}</h2>

@@ -8,4 +8,5 @@ export const professionalKeys = {
   reviews: (userId?: string) => ["professional-reviews", userId] as const,
   myTeam: (userId?: string, tenantId?: string) =>
     ["barbeiro-tp", userId, tenantId] as const,
+  telegramStatus: () => ["notification-telegram-status"] as const,
 };
