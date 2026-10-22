@@ -92,45 +92,53 @@ function SubtopicList({ topicIndex }: { topicIndex: number }) {
   return (
     <div className="space-y-3">
       {subtopics.map((subtopic, subIndex) => (
-        <div key={subtopic.id} className="flex gap-3 items-start">
-          <div className="flex-1 space-y-1">
+        <div
+          key={subtopic.id}
+          className="flex flex-col gap-3 sm:flex-row sm:items-start"
+        >
+          <div className="min-w-0 flex-1 space-y-1">
             <Input
               placeholder="Descrição do serviço (ex: Corte na Tesoura)"
               {...register(`servicos.${topicIndex}.itens.${subIndex}.descricao`)}
               className="bg-zinc-900 border-zinc-800 focus-visible:ring-yellow-500/50"
             />
           </div>
-          <div className="w-32 relative space-y-1">
-            <span className="absolute left-3 top-2.5 text-zinc-500 text-sm">R$</span>
-            <Input
-              type="number"
-              step="0.01"
-              placeholder="0.00"
-              {...register(`servicos.${topicIndex}.itens.${subIndex}.preco`, { valueAsNumber: true })}
-              className="bg-zinc-900 border-zinc-800 pl-8 pr-3 focus-visible:ring-yellow-500/50 text-right font-medium"
-            />
+          <div className="flex items-start gap-3">
+            <div className="w-32 relative space-y-1">
+              <span className="absolute left-3 top-2.5 text-zinc-500 text-sm">R$</span>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                inputMode="decimal"
+                placeholder="0.00"
+                {...register(`servicos.${topicIndex}.itens.${subIndex}.preco`, { valueAsNumber: true })}
+                className="bg-zinc-900 border-zinc-800 pl-8 pr-3 focus-visible:ring-yellow-500/50 text-right font-medium"
+              />
+            </div>
+            <div className="w-28 relative space-y-1">
+              <Input
+                type="number"
+                step="5"
+                min="5"
+                inputMode="numeric"
+                placeholder="30"
+                aria-label="Duração em minutos"
+                {...register(`servicos.${topicIndex}.itens.${subIndex}.duracao`, { valueAsNumber: true })}
+                className="bg-zinc-900 border-zinc-800 pr-10 focus-visible:ring-yellow-500/50 text-right font-medium"
+              />
+              <span className="absolute right-3 top-2.5 text-zinc-500 text-sm">min</span>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => removeSubtopic(subIndex)}
+              className="text-zinc-500 hover:text-red-500 hover:bg-red-500/10 shrink-0"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
-          <div className="w-28 relative space-y-1">
-            <Input
-              type="number"
-              step="5"
-              min="5"
-              placeholder="30"
-              aria-label="Duração em minutos"
-              {...register(`servicos.${topicIndex}.itens.${subIndex}.duracao`, { valueAsNumber: true })}
-              className="bg-zinc-900 border-zinc-800 pr-10 focus-visible:ring-yellow-500/50 text-right font-medium"
-            />
-            <span className="absolute right-3 top-2.5 text-zinc-500 text-sm">min</span>
-          </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => removeSubtopic(subIndex)}
-            className="text-zinc-500 hover:text-red-500 hover:bg-red-500/10 shrink-0"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
         </div>
       ))}
       
